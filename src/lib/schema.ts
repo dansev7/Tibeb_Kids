@@ -36,6 +36,7 @@ export const level = sqliteTable('level', {
   title: text('title').notNull(),
   description: text('description'),
   type: text('type', { enum: ['learn', 'review', 'tricky'] }).notNull(),
+  stagesJson: text('stages_json'),
 });
 
 // ---------------------------------------------------------------------------

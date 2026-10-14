@@ -60,7 +60,8 @@ export function seed() {
       order_num INTEGER NOT NULL,
       title TEXT NOT NULL,
       description TEXT,
-      type TEXT NOT NULL CHECK(type IN ('learn','review','tricky'))
+      type TEXT NOT NULL CHECK(type IN ('learn','review','tricky')),
+      stages_json TEXT
     );
 
     CREATE TABLE IF NOT EXISTS item (
@@ -145,6 +146,9 @@ export function seed() {
   try {
     sqlite.exec("ALTER TABLE settings ADD COLUMN voice_speed REAL DEFAULT 0.9");
   } catch {}
+  try {
+    sqlite.exec('ALTER TABLE level ADD COLUMN stages_json TEXT');
+  } catch {}
 
   // Run all inserts inside an idempotent transaction
   const seedTransaction = sqlite.transaction(() => {
@@ -201,8 +205,8 @@ export function seed() {
     `);
 
     const insertLevel = sqlite.prepare(`
-      INSERT INTO level (id, world_id, order_num, title, description, type)
-      VALUES (@id, @world_id, @order_num, @title, @description, @type)
+      INSERT INTO level (id, world_id, order_num, title, description, type, stages_json)
+      VALUES (@id, @world_id, @order_num, @title, @description, @type, @stages_json)
     `);
 
     const insertLevelProgress = sqlite.prepare(`
@@ -227,7 +231,9 @@ export function seed() {
 
       const levelsList = w.levels || [];
       // Sort levels by order to find the first level
-      const sortedLevels = [...levelsList].sort((a: any, b: any) => a.order - b.order);
+      const sortedLevels = [...levelsList].sort(
+        (a: { order: number }, b: { order: number }) => a.order - b.order
+      );
 
       for (let i = 0; i < sortedLevels.length; i++) {
         const lvl = sortedLevels[i];
@@ -238,6 +244,7 @@ export function seed() {
           title: lvl.title,
           description: lvl.description ?? null,
           type: lvl.type,
+          stages_json: Array.isArray(lvl.stages) ? JSON.stringify(lvl.stages) : null,
         });
         levelCount++;
 
@@ -265,7 +272,22 @@ export function seed() {
 
     let itemCount = 0;
 
-    function insertItemCollection(items: any[], defaultWorldId: string) {
+    interface SeedItem {
+      id: string;
+      kind: string;
+      symbol: string;
+      displayName?: string;
+      audioPath?: string;
+      picturePath?: string;
+      pictureWord?: string;
+      pictureWordAmharic?: string;
+      pictureWordEnglish?: string;
+      pictureWordAudioPath?: string;
+      strokePathsJson?: unknown;
+      confusableWith?: string[];
+    }
+
+    function insertItemCollection(items: SeedItem[], defaultWorldId: string) {
       for (const it of items) {
         insertItem.run({
           id: it.id,

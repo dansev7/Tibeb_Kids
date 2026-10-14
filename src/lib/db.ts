@@ -35,7 +35,8 @@ sqlite.exec(`
     order_num INTEGER NOT NULL,
     title TEXT NOT NULL,
     description TEXT,
-    type TEXT CHECK(type IN ('learn', 'review', 'tricky')) NOT NULL
+    type TEXT CHECK(type IN ('learn', 'review', 'tricky')) NOT NULL,
+    stages_json TEXT
   );
 
   CREATE TABLE IF NOT EXISTS item (
@@ -113,6 +114,13 @@ sqlite.exec(`
     voice_speed REAL DEFAULT 0.9
   );
 `);
+
+// Self-heal: add stages_json to pre-existing level tables (content-driven stage authoring)
+try {
+  sqlite.exec('ALTER TABLE level ADD COLUMN stages_json TEXT');
+} catch {
+  // Column already exists
+}
 
 // Self-heal default child and settings if absent
 try {

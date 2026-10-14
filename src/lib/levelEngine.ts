@@ -326,3 +326,140 @@ export function buildLevelStages<T extends ItemLike>(
 
   return stages;
 }
+
+// ---------------------------------------------------------------------------
+// Runtime stage builder (served by /api/levels/[levelId], consumed by /play)
+// ---------------------------------------------------------------------------
+
+/**
+ * A stage in the wire format the play page renders:
+ * items + optional distractors/pairs. This is the single source of truth
+ * for turning authored `stages` (levels.json) into a playable sequence.
+ */
+export interface GameStage<T extends ItemLike = ItemLike> {
+  type: string;
+  items: T[];
+  distractors?: T[];
+  pairs?: Array<{ left: T; right: T }>;
+}
+
+export interface GameStageOptions<T extends ItemLike> {
+  /** Authored stage order from levels.json; falls back to defaults by level type. */
+  stages?: string[] | null;
+  levelType: 'learn' | 'review' | 'tricky' | string;
+  worldSlug?: string | null;
+  /** All items belonging to the level, in authored order. */
+  items: T[];
+  /** Items from the same world that are NOT part of this level. */
+  distractorPool: T[];
+  /** Items marked is_new for this level (meet/trace focus). */
+  newItemIds?: string[];
+}
+
+/**
+ * Default stage pipeline when a level has no authored stages.
+ * Number worlds count instead of find; tricky levels always spot-difference.
+ */
+export function defaultStagesForLevel(levelType: string, hasNumbers: boolean): string[] {
+  const picker = hasNumbers ? 'count' : 'find';
+  if (levelType === 'review') {
+    return [picker, 'match', 'quiz', 'celebrate'];
+  }
+  if (levelType === 'tricky') {
+    return ['meet', picker, 'match', 'trace', 'spotDifference', 'quiz', 'celebrate'];
+  }
+  return ['meet', picker, 'match', 'trace', 'quiz', 'celebrate'];
+}
+
+/**
+ * Builds the playable stage list for a level, honoring the authored
+ * `stages` array when present. 'celebrate' is a marker only — the play
+ * page renders its CelebrationScreen once the returned list is exhausted,
+ * so it is not emitted as a stage here.
+ */
+export function buildGameStages<T extends ItemLike>(opts: GameStageOptions<T>): GameStage<T>[] {
+  const { levelType, items, distractorPool, newItemIds = [] } = opts;
+  if (items.length === 0) return [];
+
+  const hasNumbers = items.some((i) => i.kind === 'number');
+  const authored =
+    Array.isArray(opts.stages) && opts.stages.length > 0
+      ? opts.stages
+      : defaultStagesForLevel(levelType, hasNumbers);
+
+  const itemsToIntroduce =
+    newItemIds.length > 0
+      ? items.filter((i) => newItemIds.includes(i.id))
+      : items.slice(0, 4);
+
+  const stages: GameStage<T>[] = [];
+
+  for (const st of authored) {
+    switch (st) {
+      case 'meet':
+        stages.push({ type: 'meet', items: itemsToIntroduce });
+        break;
+      case 'find':
+        stages.push({
+          type: 'find',
+          items: items.slice(0, Math.min(items.length, 5)),
+          distractors: distractorPool.slice(0, 6),
+        });
+        break;
+      case 'count':
+        stages.push({ type: 'count', items: items.slice(0, 4) });
+        break;
+      case 'match': {
+        if (items.length < 2) break;
+        const pairs = items.slice(0, Math.min(items.length, 4)).map((item) => ({
+          left: item,
+          right: {
+            ...item,
+            symbol: item.pictureWord ?? item.symbol,
+            displayName: item.pictureWord ?? item.displayName,
+          } as T,
+        }));
+        stages.push({ type: 'match', items, pairs });
+        break;
+      }
+      case 'trace':
+        stages.push({ type: 'trace', items: itemsToIntroduce.slice(0, 3) });
+        break;
+      case 'spotDifference': {
+        if (levelType !== 'tricky' || !items[0]) break;
+        const target = items[0];
+        const confusableIds = getConfusables(target);
+        // Confusable siblings can live inside the level itself (e.g. b/d/p/q
+        // in "Tricky Twins") — search level items first, then world extras.
+        const pool = [...items, ...distractorPool].filter(
+          (i) => i.id !== target.id && confusableIds.includes(i.id)
+        );
+        stages.push({
+          type: 'spotDifference',
+          items: [target],
+          distractors: pool.length > 0 ? pool : distractorPool.slice(0, 3),
+        });
+        break;
+      }
+      case 'listen':
+        stages.push({
+          type: 'listen',
+          items: shuffleArray(items).slice(0, 4),
+          distractors: distractorPool.slice(0, 6),
+        });
+        break;
+      case 'quiz':
+        stages.push({
+          type: 'quiz',
+          items: shuffleArray(items).slice(0, Math.min(items.length, 6)),
+          distractors: distractorPool.slice(0, 6),
+        });
+        break;
+      case 'celebrate':
+        // Rendered by the play page after the last stage — nothing to emit.
+        break;
+    }
+  }
+
+  return stages;
+}

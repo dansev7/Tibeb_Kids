@@ -15,9 +15,22 @@
           "title": "Hello Letters!",
           "type": "learn",
           "description": "Review capitals you already know",
-          "itemIds": ["upper_A", "upper_B", "upper_C", "upper_D", "upper_E"],
+          "itemIds": [
+            "upper_A",
+            "upper_B",
+            "upper_C",
+            "upper_D",
+            "upper_E"
+          ],
           "newItemIds": [],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-2",
@@ -25,9 +38,28 @@
           "title": "Garden Friends F to J",
           "type": "learn",
           "description": "Meet letters F, G, H, I, and J",
-          "itemIds": ["upper_F", "upper_G", "upper_H", "upper_I", "upper_J"],
-          "newItemIds": ["upper_F", "upper_G", "upper_H", "upper_I", "upper_J"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "upper_F",
+            "upper_G",
+            "upper_H",
+            "upper_I",
+            "upper_J"
+          ],
+          "newItemIds": [
+            "upper_F",
+            "upper_G",
+            "upper_H",
+            "upper_I",
+            "upper_J"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-3",
@@ -35,9 +67,28 @@
           "title": "Flying High K to O",
           "type": "learn",
           "description": "Meet letters K, L, M, N, and O",
-          "itemIds": ["upper_K", "upper_L", "upper_M", "upper_N", "upper_O"],
-          "newItemIds": ["upper_K", "upper_L", "upper_M", "upper_N", "upper_O"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "upper_K",
+            "upper_L",
+            "upper_M",
+            "upper_N",
+            "upper_O"
+          ],
+          "newItemIds": [
+            "upper_K",
+            "upper_L",
+            "upper_M",
+            "upper_N",
+            "upper_O"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-4",
@@ -45,9 +96,28 @@
           "title": "Sunny Path P to T",
           "type": "learn",
           "description": "Meet letters P, Q, R, S, and T",
-          "itemIds": ["upper_P", "upper_Q", "upper_R", "upper_S", "upper_T"],
-          "newItemIds": ["upper_P", "upper_Q", "upper_R", "upper_S", "upper_T"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "upper_P",
+            "upper_Q",
+            "upper_R",
+            "upper_S",
+            "upper_T"
+          ],
+          "newItemIds": [
+            "upper_P",
+            "upper_Q",
+            "upper_R",
+            "upper_S",
+            "upper_T"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-5",
@@ -55,9 +125,26 @@
           "title": "Windy Way U to X",
           "type": "learn",
           "description": "Meet letters U, V, W, and X",
-          "itemIds": ["upper_U", "upper_V", "upper_W", "upper_X"],
-          "newItemIds": ["upper_U", "upper_V", "upper_W", "upper_X"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "upper_U",
+            "upper_V",
+            "upper_W",
+            "upper_X"
+          ],
+          "newItemIds": [
+            "upper_U",
+            "upper_V",
+            "upper_W",
+            "upper_X"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-6",
@@ -65,9 +152,24 @@
           "title": "Finish the Alphabet Y & Z",
           "type": "learn",
           "description": "Meet Y and Z, plus review U and V",
-          "itemIds": ["upper_U", "upper_V", "upper_Y", "upper_Z"],
-          "newItemIds": ["upper_Y", "upper_Z"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "upper_U",
+            "upper_V",
+            "upper_Y",
+            "upper_Z"
+          ],
+          "newItemIds": [
+            "upper_Y",
+            "upper_Z"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-7",
@@ -76,14 +178,40 @@
           "type": "review",
           "description": "Review all 26 capital letters",
           "itemIds": [
-            "upper_A", "upper_B", "upper_C", "upper_D", "upper_E", "upper_F",
-            "upper_G", "upper_H", "upper_I", "upper_J", "upper_K", "upper_L",
-            "upper_M", "upper_N", "upper_O", "upper_P", "upper_Q", "upper_R",
-            "upper_S", "upper_T", "upper_U", "upper_V", "upper_W", "upper_X",
-            "upper_Y", "upper_Z"
+            "upper_A",
+            "upper_B",
+            "upper_C",
+            "upper_D",
+            "upper_E",
+            "upper_F",
+            "upper_G",
+            "upper_H",
+            "upper_I",
+            "upper_J",
+            "upper_K",
+            "upper_L",
+            "upper_M",
+            "upper_N",
+            "upper_O",
+            "upper_P",
+            "upper_Q",
+            "upper_R",
+            "upper_S",
+            "upper_T",
+            "upper_U",
+            "upper_V",
+            "upper_W",
+            "upper_X",
+            "upper_Y",
+            "upper_Z"
           ],
           "newItemIds": [],
-          "stages": ["find", "match", "quiz", "celebrate"]
+          "stages": [
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-8",
@@ -91,9 +219,30 @@
           "title": "Round Letters",
           "type": "learn",
           "description": "Learn round small letters: c, o, a, d, g, q",
-          "itemIds": ["lower_c", "lower_o", "lower_a", "lower_d", "lower_g", "lower_q"],
-          "newItemIds": ["lower_c", "lower_o", "lower_a", "lower_d", "lower_g", "lower_q"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "lower_c",
+            "lower_o",
+            "lower_a",
+            "lower_d",
+            "lower_g",
+            "lower_q"
+          ],
+          "newItemIds": [
+            "lower_c",
+            "lower_o",
+            "lower_a",
+            "lower_d",
+            "lower_g",
+            "lower_q"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-9",
@@ -101,9 +250,26 @@
           "title": "Tall Stick Letters",
           "type": "learn",
           "description": "Learn tall stick letters: l, i, t, j",
-          "itemIds": ["lower_l", "lower_i", "lower_t", "lower_j"],
-          "newItemIds": ["lower_l", "lower_i", "lower_t", "lower_j"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "lower_l",
+            "lower_i",
+            "lower_t",
+            "lower_j"
+          ],
+          "newItemIds": [
+            "lower_l",
+            "lower_i",
+            "lower_t",
+            "lower_j"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-10",
@@ -111,9 +277,26 @@
           "title": "Hump Letters",
           "type": "learn",
           "description": "Learn hump letters: n, m, h, r",
-          "itemIds": ["lower_n", "lower_m", "lower_h", "lower_r"],
-          "newItemIds": ["lower_n", "lower_m", "lower_h", "lower_r"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "lower_n",
+            "lower_m",
+            "lower_h",
+            "lower_r"
+          ],
+          "newItemIds": [
+            "lower_n",
+            "lower_m",
+            "lower_h",
+            "lower_r"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-11",
@@ -121,9 +304,22 @@
           "title": "Ball & Stick Letters",
           "type": "learn",
           "description": "Learn ball and stick letters: b, p",
-          "itemIds": ["lower_b", "lower_p"],
-          "newItemIds": ["lower_b", "lower_p"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "lower_b",
+            "lower_p"
+          ],
+          "newItemIds": [
+            "lower_b",
+            "lower_p"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-12",
@@ -131,9 +327,30 @@
           "title": "Slant Letters",
           "type": "learn",
           "description": "Learn slant letters: v, w, x, y, z, k",
-          "itemIds": ["lower_v", "lower_w", "lower_x", "lower_y", "lower_z", "lower_k"],
-          "newItemIds": ["lower_v", "lower_w", "lower_x", "lower_y", "lower_z", "lower_k"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "lower_v",
+            "lower_w",
+            "lower_x",
+            "lower_y",
+            "lower_z",
+            "lower_k"
+          ],
+          "newItemIds": [
+            "lower_v",
+            "lower_w",
+            "lower_x",
+            "lower_y",
+            "lower_z",
+            "lower_k"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-13",
@@ -141,9 +358,26 @@
           "title": "Curl & Loop Letters",
           "type": "learn",
           "description": "Learn curl and loop letters: e, f, s, u",
-          "itemIds": ["lower_e", "lower_f", "lower_s", "lower_u"],
-          "newItemIds": ["lower_e", "lower_f", "lower_s", "lower_u"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "lower_e",
+            "lower_f",
+            "lower_s",
+            "lower_u"
+          ],
+          "newItemIds": [
+            "lower_e",
+            "lower_f",
+            "lower_s",
+            "lower_u"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-14",
@@ -152,13 +386,34 @@
           "type": "review",
           "description": "Match capital letters to their small letter friends",
           "itemIds": [
-            "upper_A", "lower_a", "upper_B", "lower_b", "upper_C", "lower_c",
-            "upper_D", "lower_d", "upper_E", "lower_e", "upper_M", "lower_m",
-            "upper_O", "lower_o", "upper_P", "lower_p", "upper_S", "lower_s",
-            "upper_T", "lower_t"
+            "upper_A",
+            "lower_a",
+            "upper_B",
+            "lower_b",
+            "upper_C",
+            "lower_c",
+            "upper_D",
+            "lower_d",
+            "upper_E",
+            "lower_e",
+            "upper_M",
+            "lower_m",
+            "upper_O",
+            "lower_o",
+            "upper_P",
+            "lower_p",
+            "upper_S",
+            "lower_s",
+            "upper_T",
+            "lower_t"
           ],
           "newItemIds": [],
-          "stages": ["find", "match", "quiz", "celebrate"]
+          "stages": [
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-15",
@@ -166,9 +421,22 @@
           "title": "Tricky Twins",
           "type": "tricky",
           "description": "Spot differences and master b, d, p, and q",
-          "itemIds": ["lower_b", "lower_d", "lower_p", "lower_q"],
+          "itemIds": [
+            "lower_b",
+            "lower_d",
+            "lower_p",
+            "lower_q"
+          ],
           "newItemIds": [],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "spotDifference",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-16",
@@ -177,11 +445,26 @@
           "type": "learn",
           "description": "Listen and connect letters to their sounds",
           "itemIds": [
-            "upper_A", "upper_B", "upper_C", "upper_D", "upper_E",
-            "upper_F", "upper_G", "upper_M", "upper_S", "upper_T"
+            "upper_A",
+            "upper_B",
+            "upper_C",
+            "upper_D",
+            "upper_E",
+            "upper_F",
+            "upper_G",
+            "upper_M",
+            "upper_S",
+            "upper_T"
           ],
           "newItemIds": [],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "abc-17",
@@ -190,14 +473,42 @@
           "type": "learn",
           "description": "Put all letters in alphabetical order from A to Z",
           "itemIds": [
-            "upper_A", "upper_B", "upper_C", "upper_D", "upper_E", "upper_F",
-            "upper_G", "upper_H", "upper_I", "upper_J", "upper_K", "upper_L",
-            "upper_M", "upper_N", "upper_O", "upper_P", "upper_Q", "upper_R",
-            "upper_S", "upper_T", "upper_U", "upper_V", "upper_W", "upper_X",
-            "upper_Y", "upper_Z"
+            "upper_A",
+            "upper_B",
+            "upper_C",
+            "upper_D",
+            "upper_E",
+            "upper_F",
+            "upper_G",
+            "upper_H",
+            "upper_I",
+            "upper_J",
+            "upper_K",
+            "upper_L",
+            "upper_M",
+            "upper_N",
+            "upper_O",
+            "upper_P",
+            "upper_Q",
+            "upper_R",
+            "upper_S",
+            "upper_T",
+            "upper_U",
+            "upper_V",
+            "upper_W",
+            "upper_X",
+            "upper_Y",
+            "upper_Z"
           ],
           "newItemIds": [],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         }
       ]
     },
@@ -216,9 +527,24 @@
           "title": "Numbers 1 to 3",
           "type": "learn",
           "description": "Count and learn numbers 1, 2, and 3",
-          "itemIds": ["num_1", "num_2", "num_3"],
-          "newItemIds": ["num_1", "num_2", "num_3"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "num_1",
+            "num_2",
+            "num_3"
+          ],
+          "newItemIds": [
+            "num_1",
+            "num_2",
+            "num_3"
+          ],
+          "stages": [
+            "meet",
+            "count",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "num-2",
@@ -226,9 +552,22 @@
           "title": "Numbers 4 and 5",
           "type": "learn",
           "description": "Count and learn numbers 4 and 5",
-          "itemIds": ["num_4", "num_5"],
-          "newItemIds": ["num_4", "num_5"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "num_4",
+            "num_5"
+          ],
+          "newItemIds": [
+            "num_4",
+            "num_5"
+          ],
+          "stages": [
+            "meet",
+            "count",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "num-3",
@@ -236,9 +575,24 @@
           "title": "Numbers 6 to 8",
           "type": "learn",
           "description": "Count and learn numbers 6, 7, and 8",
-          "itemIds": ["num_6", "num_7", "num_8"],
-          "newItemIds": ["num_6", "num_7", "num_8"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "num_6",
+            "num_7",
+            "num_8"
+          ],
+          "newItemIds": [
+            "num_6",
+            "num_7",
+            "num_8"
+          ],
+          "stages": [
+            "meet",
+            "count",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "num-4",
@@ -246,9 +600,22 @@
           "title": "Numbers 9 and 10",
           "type": "learn",
           "description": "Count and learn numbers 9 and 10",
-          "itemIds": ["num_9", "num_10"],
-          "newItemIds": ["num_9", "num_10"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "num_9",
+            "num_10"
+          ],
+          "newItemIds": [
+            "num_9",
+            "num_10"
+          ],
+          "stages": [
+            "meet",
+            "count",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "num-5",
@@ -256,9 +623,20 @@
           "title": "The Magic Zero",
           "type": "learn",
           "description": "Discover number 0 and what nothing looks like",
-          "itemIds": ["num_0"],
-          "newItemIds": ["num_0"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "num_0"
+          ],
+          "newItemIds": [
+            "num_0"
+          ],
+          "stages": [
+            "meet",
+            "count",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "num-6",
@@ -267,11 +645,25 @@
           "type": "review",
           "description": "Review and practice numbers 0 to 10",
           "itemIds": [
-            "num_0", "num_1", "num_2", "num_3", "num_4",
-            "num_5", "num_6", "num_7", "num_8", "num_9", "num_10"
+            "num_0",
+            "num_1",
+            "num_2",
+            "num_3",
+            "num_4",
+            "num_5",
+            "num_6",
+            "num_7",
+            "num_8",
+            "num_9",
+            "num_10"
           ],
           "newItemIds": [],
-          "stages": ["find", "match", "quiz", "celebrate"]
+          "stages": [
+            "count",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "num-7",
@@ -280,11 +672,25 @@
           "type": "learn",
           "description": "Count farm objects and tap the matching number",
           "itemIds": [
-            "num_1", "num_2", "num_3", "num_4", "num_5",
-            "num_6", "num_7", "num_8", "num_9", "num_10"
+            "num_1",
+            "num_2",
+            "num_3",
+            "num_4",
+            "num_5",
+            "num_6",
+            "num_7",
+            "num_8",
+            "num_9",
+            "num_10"
           ],
           "newItemIds": [],
-          "stages": ["find", "match", "quiz", "celebrate"]
+          "stages": [
+            "count",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "num-8",
@@ -292,9 +698,28 @@
           "title": "Numbers 11 to 15",
           "type": "learn",
           "description": "Count and learn teen numbers 11 to 15",
-          "itemIds": ["num_11", "num_12", "num_13", "num_14", "num_15"],
-          "newItemIds": ["num_11", "num_12", "num_13", "num_14", "num_15"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "num_11",
+            "num_12",
+            "num_13",
+            "num_14",
+            "num_15"
+          ],
+          "newItemIds": [
+            "num_11",
+            "num_12",
+            "num_13",
+            "num_14",
+            "num_15"
+          ],
+          "stages": [
+            "meet",
+            "count",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "num-9",
@@ -302,9 +727,28 @@
           "title": "Numbers 16 to 20",
           "type": "learn",
           "description": "Count all the way up to 20",
-          "itemIds": ["num_16", "num_17", "num_18", "num_19", "num_20"],
-          "newItemIds": ["num_16", "num_17", "num_18", "num_19", "num_20"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "num_16",
+            "num_17",
+            "num_18",
+            "num_19",
+            "num_20"
+          ],
+          "newItemIds": [
+            "num_16",
+            "num_17",
+            "num_18",
+            "num_19",
+            "num_20"
+          ],
+          "stages": [
+            "meet",
+            "count",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "num-10",
@@ -313,13 +757,36 @@
           "type": "learn",
           "description": "Put numbers in order from 1 to 20",
           "itemIds": [
-            "num_1", "num_2", "num_3", "num_4", "num_5",
-            "num_6", "num_7", "num_8", "num_9", "num_10",
-            "num_11", "num_12", "num_13", "num_14", "num_15",
-            "num_16", "num_17", "num_18", "num_19", "num_20"
+            "num_1",
+            "num_2",
+            "num_3",
+            "num_4",
+            "num_5",
+            "num_6",
+            "num_7",
+            "num_8",
+            "num_9",
+            "num_10",
+            "num_11",
+            "num_12",
+            "num_13",
+            "num_14",
+            "num_15",
+            "num_16",
+            "num_17",
+            "num_18",
+            "num_19",
+            "num_20"
           ],
           "newItemIds": [],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "stages": [
+            "meet",
+            "count",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "num-11",
@@ -327,9 +794,22 @@
           "title": "More or Less",
           "type": "learn",
           "description": "Compare quantities: which has more and which has less",
-          "itemIds": ["num_2", "num_4", "num_5", "num_8", "num_10"],
+          "itemIds": [
+            "num_2",
+            "num_4",
+            "num_5",
+            "num_8",
+            "num_10"
+          ],
           "newItemIds": [],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "stages": [
+            "meet",
+            "count",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "num-12",
@@ -337,9 +817,24 @@
           "title": "Tricky Twins 6/9, 1/7, 2/5",
           "type": "tricky",
           "description": "Distinguish easily confused numbers: 6 vs 9, 1 vs 7, and 2 vs 5",
-          "itemIds": ["num_1", "num_7", "num_2", "num_5", "num_6", "num_9"],
+          "itemIds": [
+            "num_1",
+            "num_7",
+            "num_2",
+            "num_5",
+            "num_6",
+            "num_9"
+          ],
           "newItemIds": [],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "stages": [
+            "meet",
+            "count",
+            "match",
+            "trace",
+            "spotDifference",
+            "quiz",
+            "celebrate"
+          ]
         }
       ]
     },
@@ -358,9 +853,30 @@
           "title": "ሀ ለ ሐ መ ሠ ረ",
           "type": "learn",
           "description": "Meet the first group of Ge'ez fidels: ሀ, ለ, ሐ, መ, ሠ, ረ",
-          "itemIds": ["fidel_ha", "fidel_le", "fidel_hha", "fidel_me", "fidel_sze", "fidel_re"],
-          "newItemIds": ["fidel_ha", "fidel_le", "fidel_hha", "fidel_me", "fidel_sze", "fidel_re"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "fidel_ha",
+            "fidel_le",
+            "fidel_hha",
+            "fidel_me",
+            "fidel_sze",
+            "fidel_re"
+          ],
+          "newItemIds": [
+            "fidel_ha",
+            "fidel_le",
+            "fidel_hha",
+            "fidel_me",
+            "fidel_sze",
+            "fidel_re"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "fidel-2",
@@ -368,9 +884,30 @@
           "title": "ሰ ሸ ቀ በ ተ ቸ",
           "type": "learn",
           "description": "Meet the second group: ሰ, ሸ, ቀ, በ, ተ, ቸ",
-          "itemIds": ["fidel_se", "fidel_she", "fidel_qe", "fidel_be", "fidel_te", "fidel_che"],
-          "newItemIds": ["fidel_se", "fidel_she", "fidel_qe", "fidel_be", "fidel_te", "fidel_che"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "fidel_se",
+            "fidel_she",
+            "fidel_qe",
+            "fidel_be",
+            "fidel_te",
+            "fidel_che"
+          ],
+          "newItemIds": [
+            "fidel_se",
+            "fidel_she",
+            "fidel_qe",
+            "fidel_be",
+            "fidel_te",
+            "fidel_che"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "fidel-3",
@@ -378,9 +915,28 @@
           "title": "ኀ ነ ኘ አ ከ",
           "type": "learn",
           "description": "Meet the third group: ኀ, ነ, ኘ, አ, ከ",
-          "itemIds": ["fidel_hhe", "fidel_ne", "fidel_nye", "fidel_a", "fidel_ke"],
-          "newItemIds": ["fidel_hhe", "fidel_ne", "fidel_nye", "fidel_a", "fidel_ke"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "fidel_hhe",
+            "fidel_ne",
+            "fidel_nye",
+            "fidel_a",
+            "fidel_ke"
+          ],
+          "newItemIds": [
+            "fidel_hhe",
+            "fidel_ne",
+            "fidel_nye",
+            "fidel_a",
+            "fidel_ke"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "fidel-4",
@@ -388,9 +944,28 @@
           "title": "ኸ ወ ዐ ዘ ዠ",
           "type": "learn",
           "description": "Meet the fourth group: ኸ, ወ, ዐ, ዘ, ዠ",
-          "itemIds": ["fidel_khe", "fidel_we", "fidel_aa", "fidel_ze", "fidel_zhe"],
-          "newItemIds": ["fidel_khe", "fidel_we", "fidel_aa", "fidel_ze", "fidel_zhe"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "fidel_khe",
+            "fidel_we",
+            "fidel_aa",
+            "fidel_ze",
+            "fidel_zhe"
+          ],
+          "newItemIds": [
+            "fidel_khe",
+            "fidel_we",
+            "fidel_aa",
+            "fidel_ze",
+            "fidel_zhe"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "fidel-5",
@@ -398,9 +973,28 @@
           "title": "የ ደ ጀ ገ ጠ",
           "type": "learn",
           "description": "Meet the fifth group: የ, ደ, ጀ, ገ, ጠ",
-          "itemIds": ["fidel_ye", "fidel_de", "fidel_je", "fidel_ge", "fidel_tte"],
-          "newItemIds": ["fidel_ye", "fidel_de", "fidel_je", "fidel_ge", "fidel_tte"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "fidel_ye",
+            "fidel_de",
+            "fidel_je",
+            "fidel_ge",
+            "fidel_tte"
+          ],
+          "newItemIds": [
+            "fidel_ye",
+            "fidel_de",
+            "fidel_je",
+            "fidel_ge",
+            "fidel_tte"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "fidel-6",
@@ -408,9 +1002,30 @@
           "title": "ጨ ጰ ጸ ፀ ፈ ፐ",
           "type": "learn",
           "description": "Meet the sixth group: ጨ, ጰ, ጸ, ፀ, ፈ, ፐ",
-          "itemIds": ["fidel_cche", "fidel_ppe", "fidel_tse", "fidel_tsse", "fidel_fe", "fidel_pe"],
-          "newItemIds": ["fidel_cche", "fidel_ppe", "fidel_tse", "fidel_tsse", "fidel_fe", "fidel_pe"],
-          "stages": ["meet", "find", "match", "quiz", "celebrate"]
+          "itemIds": [
+            "fidel_cche",
+            "fidel_ppe",
+            "fidel_tse",
+            "fidel_tsse",
+            "fidel_fe",
+            "fidel_pe"
+          ],
+          "newItemIds": [
+            "fidel_cche",
+            "fidel_ppe",
+            "fidel_tse",
+            "fidel_tsse",
+            "fidel_fe",
+            "fidel_pe"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         },
         {
           "id": "fidel-7",
@@ -419,15 +1034,47 @@
           "type": "review",
           "description": "ሁሉንም 33 የግዕዝ ፊደላት መከለስ",
           "itemIds": [
-            "fidel_ha", "fidel_le", "fidel_hha", "fidel_me", "fidel_sze", "fidel_re",
-            "fidel_se", "fidel_she", "fidel_qe", "fidel_be", "fidel_te", "fidel_che",
-            "fidel_hhe", "fidel_ne", "fidel_nye", "fidel_a", "fidel_ke", "fidel_khe",
-            "fidel_we", "fidel_aa", "fidel_ze", "fidel_zhe", "fidel_ye", "fidel_de",
-            "fidel_je", "fidel_ge", "fidel_tte", "fidel_cche", "fidel_ppe", "fidel_tse",
-            "fidel_tsse", "fidel_fe", "fidel_pe"
+            "fidel_ha",
+            "fidel_le",
+            "fidel_hha",
+            "fidel_me",
+            "fidel_sze",
+            "fidel_re",
+            "fidel_se",
+            "fidel_she",
+            "fidel_qe",
+            "fidel_be",
+            "fidel_te",
+            "fidel_che",
+            "fidel_hhe",
+            "fidel_ne",
+            "fidel_nye",
+            "fidel_a",
+            "fidel_ke",
+            "fidel_khe",
+            "fidel_we",
+            "fidel_aa",
+            "fidel_ze",
+            "fidel_zhe",
+            "fidel_ye",
+            "fidel_de",
+            "fidel_je",
+            "fidel_ge",
+            "fidel_tte",
+            "fidel_cche",
+            "fidel_ppe",
+            "fidel_tse",
+            "fidel_tsse",
+            "fidel_fe",
+            "fidel_pe"
           ],
           "newItemIds": [],
-          "stages": ["find", "match", "quiz", "celebrate"]
+          "stages": [
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
         }
       ]
     }

@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { levels, levelItems, items, worlds } from '@/lib/schema';
+import type { Item } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
+import { buildGameStages } from '@/lib/levelEngine';
 
 export async function GET(
   request: Request,
@@ -31,7 +33,7 @@ export async function GET(
     const itemIds = levelItemRows.map(li => li.itemId);
     const levelItemData = itemIds.map(itemId => {
       return db.select().from(items).where(eq(items.id, itemId)).get();
-    }).filter(Boolean);
+    }).filter((i): i is Item => Boolean(i));
 
     // Get all items in this world for distractors
     const allWorldItems = db.select().from(items)
@@ -39,7 +41,7 @@ export async function GET(
       .all();
 
     // Format items
-    const formatItem = (item: any) => ({
+    const formatItem = (item: Item) => ({
       id: item.id,
       symbol: item.symbol,
       displayName: item.displayName,
@@ -61,8 +63,30 @@ export async function GET(
       .filter(item => !itemIds.includes(item.id))
       .map(formatItem);
 
-    // Build stages based on level and world type
-    const stages = buildStages(level, world, formattedItems, distractorItems, levelItemRows);
+    // Authored stage pipeline (levels.json → level.stages_json), unified
+    // through src/lib/levelEngine so content fully drives the game flow.
+    let authoredStages: string[] | null = null;
+    if (level.stagesJson) {
+      try {
+        const parsed = JSON.parse(level.stagesJson);
+        if (Array.isArray(parsed) && parsed.length > 0) authoredStages = parsed;
+      } catch {
+        // Fall back to defaults below
+      }
+    }
+
+    const newItemIds = levelItemRows
+      .filter(li => li.isNew === 1)
+      .map(li => li.itemId);
+
+    const stages = buildGameStages({
+      stages: authoredStages,
+      levelType: level.type,
+      worldSlug: world.slug,
+      items: formattedItems,
+      distractorPool: distractorItems,
+      newItemIds,
+    });
 
     return NextResponse.json({
       id: level.id,
@@ -78,93 +102,4 @@ export async function GET(
     console.error('Error fetching level:', error);
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
-}
-
-function buildStages(
-  level: any,
-  world: any,
-  items: any[],
-  distractors: any[],
-  levelItemRows: any[]
-) {
-  const newItems = items.filter((item) => {
-    const row = levelItemRows.find(li => li.itemId === item.id);
-    return row?.isNew === 1;
-  });
-  const allItems = items;
-
-  const shuffle = <T>(arr: T[]): T[] => {
-    const shuffled = [...arr];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled;
-  };
-
-  const stages: any[] = [];
-  const itemsToIntroduce = newItems.length > 0 ? newItems : allItems.slice(0, 4);
-
-  // 1. MEET STAGE
-  stages.push({
-    type: 'meet',
-    items: itemsToIntroduce,
-  });
-
-  // 2. FIND / COUNT STAGE
-  if (world.slug === 'number-farm' && allItems.some(i => i.kind === 'number')) {
-    stages.push({
-      type: 'count',
-      items: allItems.slice(0, 4),
-    });
-  } else {
-    stages.push({
-      type: 'find',
-      items: allItems.slice(0, Math.min(allItems.length, 5)),
-      distractors: distractors.slice(0, 6),
-    });
-  }
-
-  // 3. MATCH STAGE
-  if (allItems.length >= 2) {
-    const pairs = allItems.slice(0, Math.min(allItems.length, 4)).map(item => ({
-      left: item,
-      right: {
-        ...item,
-        symbol: item.pictureWord || item.symbol,
-        displayName: item.pictureWord || item.displayName,
-      },
-    }));
-    stages.push({
-      type: 'match',
-      items: allItems,
-      pairs,
-    });
-  }
-
-  // 4. TRACE STAGE
-  stages.push({
-    type: 'trace',
-    items: itemsToIntroduce.slice(0, 3),
-  });
-
-  // 5. TRICKY TWINS / SPOT THE DIFFERENCE (for tricky levels)
-  if (level.type === 'tricky' && items[0]) {
-    const target = items[0];
-    const confusablePool = distractors.filter(d => target.confusableWith?.includes(d.id));
-    stages.push({
-      type: 'spotDifference',
-      items: [target],
-      distractors: confusablePool.length > 0 ? confusablePool : distractors.slice(0, 3),
-    });
-  }
-
-  // 6. QUIZ STAGE (Mixed questions, no hints)
-  stages.push({
-    type: 'quiz',
-    items: shuffle(allItems).slice(0, Math.min(allItems.length, 6)),
-    distractors: distractors.slice(0, 6),
-  });
-
-  return stages;
 }
