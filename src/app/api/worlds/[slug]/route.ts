@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { worlds, levels, levelItems, items, levelProgress } from '@/lib/schema';
+import { worlds, levels, levelProgress } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
+import { getEnabledWorlds } from '@/lib/worldAccess';
 
 export async function GET(
   request: Request,
@@ -10,6 +11,11 @@ export async function GET(
   try {
     const { slug } = await params;
     const childId = 1;
+
+    // Respect the parent's enabled-worlds setting
+    if (!getEnabledWorlds(childId).includes(slug)) {
+      return NextResponse.json({ error: 'World not found' }, { status: 404 });
+    }
 
     // Get world
     const world = db.select().from(worlds).where(eq(worlds.slug, slug)).get();

@@ -1,13 +1,26 @@
 'use client';
 
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import SessionTimer from '@/components/ui/SessionTimer';
 import { syncOfflineQueue } from '@/lib/offlineQueue';
+import { fetchSettings, applySettings } from '@/lib/settings';
+
+// usePathname defers to client during prerendering, so keep it in a small
+// component behind a Suspense boundary.
+function SessionTimerArea() {
+  const pathname = usePathname();
+  return <SessionTimer hidden={pathname?.startsWith('/parent')} />;
+}
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    // Register PWA Service Worker
-    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+    // Apply parent settings (volume, voice) on every page, not just settings
+    fetchSettings().then(applySettings);
+
+    // Register PWA Service Worker (production only — its cache-first rule
+    // for /_next/static/ serves stale chunks during `next dev`)
+    if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined' && 'serviceWorker' in navigator) {
       navigator.serviceWorker
         .register('/sw.js')
         .then(() => {
@@ -23,7 +36,9 @@ export default function ClientProviders({ children }: { children: React.ReactNod
   return (
     <>
       {children}
-      <SessionTimer />
+      <Suspense fallback={null}>
+        <SessionTimerArea />
+      </Suspense>
     </>
   );
 }

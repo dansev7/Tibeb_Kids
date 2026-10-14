@@ -18,6 +18,36 @@ function getAudioContext(): AudioContext | null {
 }
 
 /**
+ * Master volume (0..1) — parent-configured, persisted in localStorage so it
+ * applies on every page without visiting the settings screen.
+ */
+let currentVolume = 0.8;
+let volumeLoaded = false;
+
+export function setVolume(volume: number) {
+  currentVolume = Math.max(0, Math.min(1, volume));
+  volumeLoaded = true;
+  if (typeof window !== 'undefined') {
+    try {
+      localStorage.setItem('little_learner_volume', String(currentVolume));
+    } catch {}
+  }
+}
+
+export function getVolume(): number {
+  if (!volumeLoaded && typeof window !== 'undefined') {
+    try {
+      const stored = parseFloat(localStorage.getItem('little_learner_volume') ?? '');
+      if (!isNaN(stored) && stored >= 0 && stored <= 1) {
+        currentVolume = stored;
+      }
+    } catch {}
+    volumeLoaded = true;
+  }
+  return currentVolume;
+}
+
+/**
  * Play pleasant positive chime (C5 -> E5 -> G5 -> C6 arpeggio)
  */
 export function playChime() {
@@ -27,6 +57,8 @@ export function playChime() {
 
     const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
     const startTime = ctx.currentTime;
+    const vol = getVolume();
+    if (vol <= 0) return;
 
     notes.forEach((freq, idx) => {
       const osc = ctx.createOscillator();
@@ -36,7 +68,7 @@ export function playChime() {
       osc.frequency.setValueAtTime(freq, startTime + idx * 0.08);
 
       gain.gain.setValueAtTime(0, startTime + idx * 0.08);
-      gain.gain.linearRampToValueAtTime(0.25, startTime + idx * 0.08 + 0.02);
+      gain.gain.linearRampToValueAtTime(0.25 * vol, startTime + idx * 0.08 + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.001, startTime + idx * 0.08 + 0.35);
 
       osc.connect(gain);
@@ -63,10 +95,11 @@ export function playBoop() {
 
     osc.type = 'triangle';
     const now = ctx.currentTime;
+    if (getVolume() <= 0) return;
     osc.frequency.setValueAtTime(240, now);
     osc.frequency.exponentialRampToValueAtTime(180, now + 0.18);
 
-    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.setValueAtTime(0.15 * getVolume(), now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
 
     osc.connect(gain);
@@ -91,11 +124,12 @@ export function playPop() {
     const gain = ctx.createGain();
 
     const now = ctx.currentTime;
+    if (getVolume() <= 0) return;
     osc.type = 'sine';
     osc.frequency.setValueAtTime(400, now);
     osc.frequency.exponentialRampToValueAtTime(800, now + 0.08);
 
-    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.setValueAtTime(0.2 * getVolume(), now);
     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
 
     osc.connect(gain);
@@ -125,6 +159,8 @@ export function playFanfare() {
     ];
 
     const now = ctx.currentTime;
+    const vol = getVolume();
+    if (vol <= 0) return;
 
     chords.forEach((note) => {
       const osc = ctx.createOscillator();
@@ -134,7 +170,7 @@ export function playFanfare() {
       osc.frequency.setValueAtTime(note.freq, now + note.time);
 
       gain.gain.setValueAtTime(0, now + note.time);
-      gain.gain.linearRampToValueAtTime(0.25, now + note.time + 0.03);
+      gain.gain.linearRampToValueAtTime(0.25 * vol, now + note.time + 0.03);
       gain.gain.exponentialRampToValueAtTime(0.001, now + note.time + note.dur);
 
       osc.connect(gain);
@@ -255,6 +291,7 @@ export function speakText(text: string, lang = 'en-US') {
 
     // Adjust rate according to parent setting
     utterance.rate = Math.max(0.5, Math.min(1.6, speed));
+    utterance.volume = getVolume();
 
     // Pitch: higher warm pitch for female (~1.2), deeper resonant pitch for male (~0.85)
     utterance.pitch = gender === 'female' ? 1.2 : 0.85;
@@ -279,6 +316,7 @@ export function playAudioOrSpeech(
   if (audioPath && audioPath.trim().length > 0) {
     try {
       const audio = new Audio(audioPath);
+      audio.volume = getVolume();
       let fallbackTriggered = false;
 
       const triggerFallback = () => {

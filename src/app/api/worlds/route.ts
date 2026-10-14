@@ -2,14 +2,17 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { worlds, levels, levelProgress, children } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
+import { getEnabledWorlds } from '@/lib/worldAccess';
 
 export async function GET() {
   try {
     // Get all worlds with progress
-    const allWorlds = db.select().from(worlds).orderBy(worlds.orderNum).all();
+    const childId = 1;
+    const enabled = getEnabledWorlds(childId);
+    const allWorlds = db.select().from(worlds).orderBy(worlds.orderNum).all()
+      .filter(world => enabled.includes(world.slug));
 
     // Get child (default child id = 1)
-    const childId = 1;
     const childResult = db.select().from(children).where(eq(children.id, childId)).get();
 
 

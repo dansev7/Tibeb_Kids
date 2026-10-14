@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { setVoiceSettings, speakText } from '@/utils/sound';
+import { setVoiceSettings, speakText, setVolume } from '@/utils/sound';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -31,6 +31,7 @@ export default function SettingsPage() {
             enabledWorlds: Array.isArray(data.enabledWorlds) ? data.enabledWorlds : prev.enabledWorlds,
           }));
           setVoiceSettings(data.voiceGender || 'female', data.voiceSpeed ?? 0.9);
+          setVolume(typeof data.volume === 'number' ? data.volume : 0.8);
         }
       })
       .catch(console.error);
@@ -38,6 +39,7 @@ export default function SettingsPage() {
 
   const handleSave = () => {
     setVoiceSettings(settings.voiceGender, settings.voiceSpeed);
+    setVolume(settings.volume);
 
     fetch('/api/parent/settings', {
       method: 'POST',
