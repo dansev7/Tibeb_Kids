@@ -18,6 +18,8 @@ export interface StageResult {
   correct: boolean;
   usedHint: boolean;
   firstTry: boolean;
+  /** Stage/game that produced this result — attached by the play page. */
+  gameType?: string;
 }
 
 export type StageType = 'meet' | 'find' | 'match' | 'quiz' | 'celebrate';

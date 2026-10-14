@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { queueOfflineProgress } from '@/lib/offlineQueue';
+import type { StageResult } from '@/types';
 
 // Dynamic imports for game components
 const MeetCard = dynamic(() => import('@/components/games/MeetCard'), { ssr: false });
@@ -12,7 +13,6 @@ const FindIt = dynamic(() => import('@/components/games/FindIt'), { ssr: false }
 const MatchPairs = dynamic(() => import('@/components/games/MatchPairs'), { ssr: false });
 const TraceIt = dynamic(() => import('@/components/games/TraceIt'), { ssr: false });
 const CountIt = dynamic(() => import('@/components/games/CountIt'), { ssr: false });
-const WhatsNext = dynamic(() => import('@/components/games/WhatsNext'), { ssr: false });
 const SpotTheDifference = dynamic(() => import('@/components/games/SpotTheDifference'), { ssr: false });
 const ListenAndTap = dynamic(() => import('@/components/games/ListenAndTap'), { ssr: false });
 const CelebrationScreen = dynamic(() => import('@/components/games/CelebrationScreen'), { ssr: false });
@@ -27,13 +27,6 @@ interface GameItem {
   pictureWordAudioPath: string;
   kind: 'letter_upper' | 'letter_lower' | 'number' | 'fidel';
   confusableWith?: string[];
-}
-
-interface StageResult {
-  itemId: string;
-  correct: boolean;
-  usedHint: boolean;
-  firstTry: boolean;
 }
 
 interface LevelData {
@@ -85,8 +78,12 @@ function PlayContent() {
   }, []);
 
   const handleStageComplete = useCallback((results?: StageResult[]) => {
-    if (results) {
-      setAllResults(prev => [...prev, ...results]);
+    // Tag each result with the stage that produced it so analytics stay accurate
+    const stageType = levelData?.stages[currentStageIndex]?.type;
+    const taggedResults = results?.map(r => ({ ...r, gameType: r.gameType ?? stageType }));
+
+    if (taggedResults) {
+      setAllResults(prev => [...prev, ...taggedResults]);
     }
 
     if (!levelData) return;
@@ -94,7 +91,7 @@ function PlayContent() {
     const nextIndex = currentStageIndex + 1;
     if (nextIndex >= levelData.stages.length) {
       // Level complete! Calculate stars
-      const finalResults = results ? [...allResults, ...results] : allResults;
+      const finalResults = taggedResults ? [...allResults, ...taggedResults] : allResults;
       const earnedStars = calculateStars(finalResults);
       setStars(earnedStars);
 
@@ -104,15 +101,19 @@ function PlayContent() {
         results: finalResults,
       };
 
-      // Save progress with offline fallback
+      // Save progress with offline fallback (queue on network OR server errors)
       fetch('/api/progress', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
-      }).catch((err) => {
-        console.warn('Network issue saving progress, queueing offline:', err);
-        queueOfflineProgress('/api/progress', payload);
-      });
+      })
+        .then((res) => {
+          if (!res.ok) throw new Error(`Progress save failed with status ${res.status}`);
+        })
+        .catch((err) => {
+          console.warn('Could not save progress, queueing offline:', err);
+          queueOfflineProgress('/api/progress', payload);
+        });
     }
 
     setCurrentStageIndex(nextIndex);
