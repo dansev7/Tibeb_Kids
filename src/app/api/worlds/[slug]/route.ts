@@ -23,28 +23,35 @@ export async function GET(
       return NextResponse.json({ error: 'World not found' }, { status: 404 });
     }
 
-    // Get levels for this world
-    const worldLevels = db.select().from(levels)
+    // Get levels for this world with progress in one join (no per-level query)
+    const levelRows = db
+      .select({
+        id: levels.id,
+        order: levels.orderNum,
+        title: levels.title,
+        type: levels.type,
+        stars: levelProgress.stars,
+        unlocked: levelProgress.unlocked,
+        completedAt: levelProgress.completedAt,
+      })
+      .from(levels)
+      .leftJoin(
+        levelProgress,
+        sql`${levelProgress.levelId} = ${levels.id} AND ${levelProgress.childId} = ${childId}`,
+      )
       .where(eq(levels.worldId, world.id))
       .orderBy(levels.orderNum)
       .all();
 
-    // Get progress for each level
-    const levelsWithProgress = worldLevels.map(level => {
-      const progress = db.select().from(levelProgress)
-        .where(sql`${levelProgress.childId} = ${childId} AND ${levelProgress.levelId} = ${level.id}`)
-        .get();
-
-      return {
-        id: level.id,
-        order: level.orderNum,
-        title: level.title,
-        type: level.type,
-        stars: progress?.stars || 0,
-        unlocked: progress?.unlocked === 1 || false,
-        completed: !!progress?.completedAt,
-      };
-    });
+    const levelsWithProgress = levelRows.map(row => ({
+      id: row.id,
+      order: row.order,
+      title: row.title,
+      type: row.type,
+      stars: row.stars || 0,
+      unlocked: row.unlocked === 1 || false,
+      completed: !!row.completedAt,
+    }));
 
     return NextResponse.json({
       id: world.id,

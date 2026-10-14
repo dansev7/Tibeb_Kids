@@ -1,58 +1,76 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { worlds, levels, levelProgress, items, itemMastery } from '@/lib/schema';
-import { eq, sql, desc } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 
 export async function GET() {
   try {
     const childId = 1;
 
-    // Get all worlds with progress
-    const allWorlds = db.select().from(worlds).orderBy(worlds.orderNum).all();
-    const worldsWithProgress = allWorlds.map(world => {
-      const worldLevels = db.select().from(levels).where(eq(levels.worldId, world.id)).all();
-      let completedLevels = 0;
-      let totalStars = 0;
-      for (const level of worldLevels) {
-        const progress = db.select().from(levelProgress)
-          .where(sql`${levelProgress.childId} = ${childId} AND ${levelProgress.levelId} = ${level.id}`)
-          .get();
-        if (progress?.completedAt) {
-          completedLevels++;
-          totalStars += progress.stars || 0;
-        }
-      }
+    // Worlds with progress in one aggregate query (no per-world/per-level loop)
+    const worldRows = db
+      .select({
+        id: worlds.id,
+        emoji: worlds.emoji,
+        title: worlds.title,
+        themeColor: worlds.themeColor,
+        totalLevels: sql<number>`count(${levels.id})`,
+        completedLevels: sql<number>`sum(case when ${levelProgress.completedAt} is not null then 1 else 0 end)`,
+        totalStars: sql<number>`coalesce(sum(case when ${levelProgress.completedAt} is not null then ${levelProgress.stars} else 0 end), 0)`,
+      })
+      .from(worlds)
+      .leftJoin(levels, sql`${levels.worldId} = ${worlds.id}`)
+      .leftJoin(
+        levelProgress,
+        sql`${levelProgress.levelId} = ${levels.id} AND ${levelProgress.childId} = ${childId}`,
+      )
+      .groupBy(worlds.id)
+      .orderBy(worlds.orderNum)
+      .all();
+
+    const worldsWithProgress = worldRows.map(w => ({
+      id: w.id,
+      emoji: w.emoji,
+      title: w.title,
+      themeColor: w.themeColor,
+      totalLevels: Number(w.totalLevels),
+      completedLevels: Number(w.completedLevels),
+      totalStars: Number(w.totalStars),
+    }));
+
+    // All items with mastery in one left join (no per-item query)
+    const itemRows = db
+      .select({
+        id: items.id,
+        symbol: items.symbol,
+        kind: items.kind,
+        leitnerBox: itemMastery.leitnerBox,
+        correctDays: itemMastery.correctDays,
+        totalCorrect: itemMastery.totalCorrect,
+        totalWrong: itemMastery.totalWrong,
+      })
+      .from(items)
+      .leftJoin(
+        itemMastery,
+        sql`${itemMastery.itemId} = ${items.id} AND ${itemMastery.childId} = ${childId}`,
+      )
+      .all();
+
+    const itemsWithMastery = itemRows.map(row => {
+      const totalCorrect = row.totalCorrect || 0;
+      const totalWrong = row.totalWrong || 0;
+      const status: 'not_started' | 'learning' | 'mastered' = row.leitnerBox
+        ? ((row.correctDays || 0) >= 3 ? 'mastered' : 'learning')
+        : 'not_started';
+
       return {
-        id: world.id,
-        emoji: world.emoji,
-        title: world.title,
-        themeColor: world.themeColor,
-        totalLevels: worldLevels.length,
-        completedLevels,
-        totalStars,
-      };
-    });
-
-    // Get all items with mastery status
-    const allItems = db.select().from(items).all();
-    const itemsWithMastery = allItems.map(item => {
-      const mastery = db.select().from(itemMastery)
-        .where(sql`${itemMastery.childId} = ${childId} AND ${itemMastery.itemId} = ${item.id}`)
-        .get();
-
-      let status: 'not_started' | 'learning' | 'mastered' = 'not_started';
-      if (mastery) {
-        status = (mastery.correctDays || 0) >= 3 ? 'mastered' : 'learning';
-      }
-
-      return {
-        id: item.id,
-        symbol: item.symbol,
-        kind: item.kind,
+        id: row.id,
+        symbol: row.symbol,
+        kind: row.kind,
         status,
-        totalCorrect: mastery?.totalCorrect || 0,
-        totalWrong: mastery?.totalWrong || 0,
-        leitnerBox: mastery?.leitnerBox || 0,
+        totalCorrect,
+        totalWrong,
+        leitnerBox: row.leitnerBox || 0,
       };
     });
 

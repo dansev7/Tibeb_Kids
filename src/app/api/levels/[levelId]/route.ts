@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { levels, levelItems, items, worlds } from '@/lib/schema';
 import type { Item } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { buildGameStages } from '@/lib/levelEngine';
 
 export async function GET(
@@ -31,9 +31,15 @@ export async function GET(
       .all();
 
     const itemIds = levelItemRows.map(li => li.itemId);
-    const levelItemData = itemIds.map(itemId => {
-      return db.select().from(items).where(eq(items.id, itemId)).get();
-    }).filter((i): i is Item => Boolean(i));
+    // One batched query, then preserve the level_item ordering in memory
+    const itemsById = new Map(
+      itemIds.length > 0
+        ? db.select().from(items).where(inArray(items.id, itemIds)).all().map(i => [i.id, i])
+        : [],
+    );
+    const levelItemData = itemIds
+      .map(itemId => itemsById.get(itemId))
+      .filter((i): i is Item => Boolean(i));
 
     // Get all items in this world for distractors
     const allWorldItems = db.select().from(items)

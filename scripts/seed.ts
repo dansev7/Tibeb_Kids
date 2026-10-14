@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
+import { ensureSchema } from '../src/lib/ddl';
 
 function findContentDir(): string {
   const candidates = [
@@ -35,120 +36,8 @@ export function seed() {
   sqlite.pragma('journal_mode = WAL');
   sqlite.pragma('foreign_keys = ON');
 
-  // 1. Create tables
-  sqlite.exec(`
-    CREATE TABLE IF NOT EXISTS child (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      name TEXT NOT NULL,
-      avatar TEXT,
-      created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS world (
-      id TEXT PRIMARY KEY,
-      slug TEXT UNIQUE NOT NULL,
-      title TEXT NOT NULL,
-      emoji TEXT,
-      theme_color TEXT,
-      mascot TEXT,
-      order_num INTEGER NOT NULL
-    );
-
-    CREATE TABLE IF NOT EXISTS level (
-      id TEXT PRIMARY KEY,
-      world_id TEXT NOT NULL REFERENCES world(id) ON DELETE CASCADE,
-      order_num INTEGER NOT NULL,
-      title TEXT NOT NULL,
-      description TEXT,
-      type TEXT NOT NULL CHECK(type IN ('learn','review','tricky')),
-      stages_json TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS item (
-      id TEXT PRIMARY KEY,
-      world_id TEXT REFERENCES world(id) ON DELETE SET NULL,
-      kind TEXT NOT NULL CHECK(kind IN ('letter_upper','letter_lower','number','fidel')),
-      symbol TEXT NOT NULL,
-      display_name TEXT,
-      audio_path TEXT,
-      picture_path TEXT,
-      picture_word TEXT,
-      picture_word_amharic TEXT,
-      picture_word_english TEXT,
-      picture_word_audio_path TEXT,
-      stroke_paths_json TEXT,
-      confusable_with_json TEXT
-    );
-
-    CREATE TABLE IF NOT EXISTS level_item (
-      level_id TEXT NOT NULL REFERENCES level(id) ON DELETE CASCADE,
-      item_id TEXT NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-      order_num INTEGER NOT NULL,
-      is_new INTEGER DEFAULT 0,
-      PRIMARY KEY(level_id, item_id)
-    );
-
-    CREATE TABLE IF NOT EXISTS level_progress (
-      child_id INTEGER NOT NULL REFERENCES child(id) ON DELETE CASCADE,
-      level_id TEXT NOT NULL REFERENCES level(id) ON DELETE CASCADE,
-      stars INTEGER DEFAULT 0,
-      best_score REAL DEFAULT 0,
-      completed_at TEXT,
-      unlocked INTEGER DEFAULT 0,
-      PRIMARY KEY(child_id, level_id)
-    );
-
-    CREATE TABLE IF NOT EXISTS item_mastery (
-      child_id INTEGER NOT NULL REFERENCES child(id) ON DELETE CASCADE,
-      item_id TEXT NOT NULL REFERENCES item(id) ON DELETE CASCADE,
-      leitner_box INTEGER DEFAULT 1,
-      correct_days INTEGER DEFAULT 0,
-      last_seen_at TEXT,
-      next_review_at TEXT,
-      total_correct INTEGER DEFAULT 0,
-      total_wrong INTEGER DEFAULT 0,
-      PRIMARY KEY(child_id, item_id)
-    );
-
-    CREATE TABLE IF NOT EXISTS attempt (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      child_id INTEGER NOT NULL REFERENCES child(id) ON DELETE CASCADE,
-      item_id TEXT REFERENCES item(id) ON DELETE SET NULL,
-      level_id TEXT REFERENCES level(id) ON DELETE SET NULL,
-      game_type TEXT,
-      correct INTEGER,
-      used_hint INTEGER,
-      first_try INTEGER,
-      created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    );
-
-    CREATE TABLE IF NOT EXISTS session (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      child_id INTEGER NOT NULL REFERENCES child(id) ON DELETE CASCADE,
-      started_at TEXT,
-      ended_at TEXT,
-      minutes REAL
-    );
-
-    CREATE TABLE IF NOT EXISTS settings (
-      child_id INTEGER PRIMARY KEY REFERENCES child(id) ON DELETE CASCADE,
-      session_limit_min INTEGER DEFAULT 15,
-      volume REAL DEFAULT 0.8,
-      enabled_worlds_json TEXT DEFAULT '["abc-garden","number-farm","fidel-village"]',
-      voice_gender TEXT DEFAULT 'female',
-      voice_speed REAL DEFAULT 0.9
-    );
-  `);
-
-  try {
-    sqlite.exec("ALTER TABLE settings ADD COLUMN voice_gender TEXT DEFAULT 'female'");
-  } catch {}
-  try {
-    sqlite.exec("ALTER TABLE settings ADD COLUMN voice_speed REAL DEFAULT 0.9");
-  } catch {}
-  try {
-    sqlite.exec('ALTER TABLE level ADD COLUMN stages_json TEXT');
-  } catch {}
+  // 1. Create tables (canonical DDL shared with src/lib/db.ts)
+  ensureSchema(sqlite);
 
   // Run all inserts inside an idempotent transaction
   const seedTransaction = sqlite.transaction(() => {

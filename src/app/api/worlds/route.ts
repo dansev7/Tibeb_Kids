@@ -6,49 +6,48 @@ import { getEnabledWorlds } from '@/lib/worldAccess';
 
 export async function GET() {
   try {
-    // Get all worlds with progress
     const childId = 1;
-    const enabled = getEnabledWorlds(childId);
-    const allWorlds = db.select().from(worlds).orderBy(worlds.orderNum).all()
-      .filter(world => enabled.includes(world.slug));
+    const enabled = new Set(getEnabledWorlds(childId));
 
-    // Get child (default child id = 1)
+    // One aggregate query instead of a per-world/per-level N+1 loop
+    const worldRows = db
+      .select({
+        id: worlds.id,
+        slug: worlds.slug,
+        title: worlds.title,
+        emoji: worlds.emoji,
+        themeColor: worlds.themeColor,
+        mascot: worlds.mascot,
+        totalLevels: sql<number>`count(${levels.id})`,
+        completedLevels: sql<number>`sum(case when ${levelProgress.completedAt} is not null then 1 else 0 end)`,
+        totalStars: sql<number>`coalesce(sum(case when ${levelProgress.completedAt} is not null then ${levelProgress.stars} else 0 end), 0)`,
+      })
+      .from(worlds)
+      .leftJoin(levels, eq(levels.worldId, worlds.id))
+      .leftJoin(
+        levelProgress,
+        sql`${levelProgress.levelId} = ${levels.id} AND ${levelProgress.childId} = ${childId}`,
+      )
+      .groupBy(worlds.id)
+      .orderBy(worlds.orderNum)
+      .all();
+
     const childResult = db.select().from(children).where(eq(children.id, childId)).get();
 
-
-    const worldsWithProgress = allWorlds.map(world => {
-      // Count levels for this world
-      const worldLevels = db.select().from(levels).where(eq(levels.worldId, world.id)).all();
-      const totalLevels = worldLevels.length;
-
-      // Count completed levels and stars
-      let completedLevels = 0;
-      let totalStars = 0;
-      for (const level of worldLevels) {
-        const progress = db.select().from(levelProgress)
-          .where(sql`${levelProgress.childId} = ${childId} AND ${levelProgress.levelId} = ${level.id}`)
-          .get();
-        if (progress && progress.completedAt) {
-          completedLevels++;
-          totalStars += progress.stars || 0;
-        }
-      }
-
-      return {
-        id: world.id,
-        slug: world.slug,
-        title: world.title,
-        emoji: world.emoji,
-        themeColor: world.themeColor,
-        mascot: world.mascot,
-        totalLevels,
-        completedLevels,
-        totalStars,
-      };
-    });
-
     return NextResponse.json({
-      worlds: worldsWithProgress,
+      worlds: worldRows
+        .filter(w => enabled.has(w.slug))
+        .map(w => ({
+          id: w.id,
+          slug: w.slug,
+          title: w.title,
+          emoji: w.emoji,
+          themeColor: w.themeColor,
+          mascot: w.mascot,
+          totalLevels: Number(w.totalLevels),
+          completedLevels: Number(w.completedLevels),
+          totalStars: Number(w.totalStars),
+        })),
       childName: childResult?.name || 'Learner',
     });
   } catch (error) {
