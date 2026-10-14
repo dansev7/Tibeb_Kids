@@ -20,6 +20,10 @@
 # production
 /build
 
+# local runtime state (SQLite dev database: child progress, SRS scheduling)
+# recreate with: npm run db:seed
+/data
+
 # misc
 .DS_Store
 *.pem
