@@ -9,9 +9,17 @@ export async function GET() {
     const currentChild = db.select().from(children).where(eq(children.id, childId)).get();
     const currentSettings = db.select().from(settings).where(eq(settings.childId, childId)).get();
 
-    const enabledWorlds = currentSettings?.enabledWorldsJson
-      ? JSON.parse(currentSettings.enabledWorldsJson)
-      : ['abc-garden', 'number-farm', 'fidel-village'];
+    let enabledWorlds = ['abc-garden', 'number-farm', 'fidel-village'];
+    if (currentSettings?.enabledWorldsJson) {
+      try {
+        const parsed = JSON.parse(currentSettings.enabledWorldsJson);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          enabledWorlds = parsed;
+        }
+      } catch (e) {
+        console.error('Failed to parse enabledWorldsJson:', e);
+      }
+    }
 
     return NextResponse.json({
       childName: currentChild?.name || 'Learner',
@@ -23,7 +31,15 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Error fetching settings:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    // Return safe fallback settings instead of 500 error to keep client working
+    return NextResponse.json({
+      childName: 'Learner',
+      sessionLimitMin: 15,
+      volume: 0.8,
+      voiceGender: 'female',
+      voiceSpeed: 0.9,
+      enabledWorlds: ['abc-garden', 'number-farm', 'fidel-village'],
+    });
   }
 }
 
@@ -33,26 +49,28 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { childName, sessionLimitMin, volume, enabledWorlds, voiceGender, voiceSpeed } = body;
 
-    if (childName) {
+    if (childName && typeof childName === 'string') {
       db.update(children)
-        .set({ name: childName })
+        .set({ name: childName.trim() })
         .where(eq(children.id, childId))
         .run();
     }
 
-    const enabledWorldsJson = JSON.stringify(
-      enabledWorlds || ['abc-garden', 'number-farm', 'fidel-village']
-    );
+    const worldsToSave = Array.isArray(enabledWorlds) && enabledWorlds.length > 0
+      ? enabledWorlds
+      : ['abc-garden', 'number-farm', 'fidel-village'];
+
+    const enabledWorldsJson = JSON.stringify(worldsToSave);
 
     const existingSettings = db.select().from(settings).where(eq(settings.childId, childId)).get();
     if (existingSettings) {
       db.update(settings)
         .set({
-          sessionLimitMin: sessionLimitMin ?? 15,
-          volume: volume ?? 0.8,
+          sessionLimitMin: typeof sessionLimitMin === 'number' ? sessionLimitMin : 15,
+          volume: typeof volume === 'number' ? volume : 0.8,
           enabledWorldsJson,
-          voiceGender: voiceGender || 'female',
-          voiceSpeed: voiceSpeed ?? 0.9,
+          voiceGender: voiceGender === 'male' ? 'male' : 'female',
+          voiceSpeed: typeof voiceSpeed === 'number' ? voiceSpeed : 0.9,
         })
         .where(eq(settings.childId, childId))
         .run();
@@ -60,16 +78,16 @@ export async function POST(request: Request) {
       db.insert(settings)
         .values({
           childId,
-          sessionLimitMin: sessionLimitMin ?? 15,
-          volume: volume ?? 0.8,
+          sessionLimitMin: typeof sessionLimitMin === 'number' ? sessionLimitMin : 15,
+          volume: typeof volume === 'number' ? volume : 0.8,
           enabledWorldsJson,
-          voiceGender: voiceGender || 'female',
-          voiceSpeed: voiceSpeed ?? 0.9,
+          voiceGender: voiceGender === 'male' ? 'male' : 'female',
+          voiceSpeed: typeof voiceSpeed === 'number' ? voiceSpeed : 0.9,
         })
         .run();
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, enabledWorlds: worldsToSave });
   } catch (error) {
     console.error('Error saving settings:', error);
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });

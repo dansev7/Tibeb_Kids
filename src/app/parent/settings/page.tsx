@@ -21,15 +21,15 @@ export default function SettingsPage() {
     fetch('/api/parent/settings')
       .then(res => res.json())
       .then(data => {
-        if (data) {
-          setSettings({
-            childName: data.childName || 'Learner',
-            sessionLimitMin: data.sessionLimitMin ?? 15,
-            volume: data.volume ?? 0.8,
-            voiceGender: data.voiceGender || 'female',
-            voiceSpeed: data.voiceSpeed ?? 0.9,
-            enabledWorlds: data.enabledWorlds || ['abc-garden', 'number-farm', 'fidel-village'],
-          });
+        if (data && !data.error) {
+          setSettings(prev => ({
+            childName: data.childName || prev.childName,
+            sessionLimitMin: typeof data.sessionLimitMin === 'number' ? data.sessionLimitMin : prev.sessionLimitMin,
+            volume: typeof data.volume === 'number' ? data.volume : prev.volume,
+            voiceGender: (data.voiceGender === 'male' || data.voiceGender === 'female') ? data.voiceGender : prev.voiceGender,
+            voiceSpeed: typeof data.voiceSpeed === 'number' ? data.voiceSpeed : prev.voiceSpeed,
+            enabledWorlds: Array.isArray(data.enabledWorlds) ? data.enabledWorlds : prev.enabledWorlds,
+          }));
           setVoiceSettings(data.voiceGender || 'female', data.voiceSpeed ?? 0.9);
         }
       })
@@ -59,12 +59,15 @@ export default function SettingsPage() {
   };
 
   const toggleWorld = (worldId: string) => {
-    setSettings(prev => ({
-      ...prev,
-      enabledWorlds: prev.enabledWorlds.includes(worldId)
-        ? prev.enabledWorlds.filter(w => w !== worldId)
-        : [...prev.enabledWorlds, worldId],
-    }));
+    setSettings(prev => {
+      const current = Array.isArray(prev.enabledWorlds) ? prev.enabledWorlds : ['abc-garden', 'number-farm', 'fidel-village'];
+      return {
+        ...prev,
+        enabledWorlds: current.includes(worldId)
+          ? current.filter(w => w !== worldId)
+          : [...current, worldId],
+      };
+    });
   };
 
   return (
@@ -140,11 +143,11 @@ export default function SettingsPage() {
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between mb-2">
               <label className="text-sm font-semibold text-gray-600">
-                Voice Speed: <span className="text-blue-600 font-bold">{settings.voiceSpeed.toFixed(1)}x</span>
+                Voice Speed: <span className="text-blue-600 font-bold">{(settings.voiceSpeed ?? 0.9).toFixed(1)}x</span>
               </label>
               <button
                 type="button"
-                onClick={() => handleTestVoice(settings.voiceGender, settings.voiceSpeed)}
+                onClick={() => handleTestVoice(settings.voiceGender || 'female', settings.voiceSpeed ?? 0.9)}
                 className={`px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                   isTestingVoice
                     ? 'bg-amber-400 text-white animate-pulse'
@@ -160,11 +163,11 @@ export default function SettingsPage() {
               min="0.6"
               max="1.4"
               step="0.1"
-              value={settings.voiceSpeed}
+              value={settings.voiceSpeed ?? 0.9}
               onChange={(e) => {
                 const newSpeed = parseFloat(e.target.value);
                 setSettings(prev => ({ ...prev, voiceSpeed: newSpeed }));
-                setVoiceSettings(settings.voiceGender, newSpeed);
+                setVoiceSettings(settings.voiceGender || 'female', newSpeed);
               }}
               className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
             />
@@ -178,15 +181,15 @@ export default function SettingsPage() {
           {/* Session Time Limit */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <label className="block text-sm font-semibold text-gray-600 mb-2">
-              Session Time Limit: <span className="text-blue-600 font-bold">{settings.sessionLimitMin} minutes</span>
+              Session Time Limit: <span className="text-blue-600 font-bold">{settings.sessionLimitMin ?? 15} minutes</span>
             </label>
             <input
               type="range"
               min="5"
               max="30"
               step="5"
-              value={settings.sessionLimitMin}
-              onChange={(e) => setSettings(prev => ({ ...prev, sessionLimitMin: parseInt(e.target.value) }))}
+              value={settings.sessionLimitMin ?? 15}
+              onChange={(e) => setSettings(prev => ({ ...prev, sessionLimitMin: parseInt(e.target.value) || 15 }))}
               className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
             />
             <div className="flex justify-between text-xs text-gray-400 mt-1">
@@ -199,15 +202,15 @@ export default function SettingsPage() {
           {/* Volume */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <label className="block text-sm font-semibold text-gray-600 mb-2">
-              Sound Volume: <span className="text-blue-600 font-bold">{Math.round(settings.volume * 100)}%</span>
+              Sound Volume: <span className="text-blue-600 font-bold">{Math.round((settings.volume ?? 0.8) * 100)}%</span>
             </label>
             <input
               type="range"
               min="0"
               max="1"
               step="0.1"
-              value={settings.volume}
-              onChange={(e) => setSettings(prev => ({ ...prev, volume: parseFloat(e.target.value) }))}
+              value={settings.volume ?? 0.8}
+              onChange={(e) => setSettings(prev => ({ ...prev, volume: parseFloat(e.target.value) || 0.8 }))}
               className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
             />
           </div>
@@ -220,21 +223,27 @@ export default function SettingsPage() {
                 { id: 'abc-garden', emoji: '🔤', name: 'ABC Garden', color: 'emerald' },
                 { id: 'number-farm', emoji: '🔢', name: 'Number Farm', color: 'amber' },
                 { id: 'fidel-village', emoji: 'ፊ', name: 'Fidel Village', color: 'purple' },
-              ].map(world => (
-                <label
-                  key={world.id}
-                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 cursor-pointer"
-                >
-                  <input
-                    type="checkbox"
-                    checked={settings.enabledWorlds.includes(world.id)}
-                    onChange={() => toggleWorld(world.id)}
-                    className="w-6 h-6 rounded accent-blue-500"
-                  />
-                  <span className="text-2xl">{world.emoji}</span>
-                  <span className="font-semibold text-gray-700">{world.name}</span>
-                </label>
-              ))}
+              ].map(world => {
+                const isEnabled = Array.isArray(settings.enabledWorlds)
+                  ? settings.enabledWorlds.includes(world.id)
+                  : true;
+
+                return (
+                  <label
+                    key={world.id}
+                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 cursor-pointer"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={isEnabled}
+                      onChange={() => toggleWorld(world.id)}
+                      className="w-6 h-6 rounded accent-blue-500"
+                    />
+                    <span className="text-2xl">{world.emoji}</span>
+                    <span className="font-semibold text-gray-700">{world.name}</span>
+                  </label>
+                );
+              })}
             </div>
           </div>
 
