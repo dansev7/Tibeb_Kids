@@ -1,0 +1,554 @@
+{
+  "items": [
+    {
+      "id": "fidel_ha",
+      "kind": "fidel",
+      "symbol": "ሀ",
+      "displayName": "ሀ",
+      "audioPath": "/audio/am/ha_1.mp3",
+      "pictureWord": "ሀብሐብ",
+      "pictureWordAmharic": "ሀብሐብ",
+      "pictureWordEnglish": "Watermelon",
+      "pictureWordAudioPath": "/audio/am/word_habhab.mp3",
+      "picturePath": "/images/am/habhab.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_hha",
+        "fidel_hhe",
+        "fidel_me"
+      ]
+    },
+    {
+      "id": "fidel_le",
+      "kind": "fidel",
+      "symbol": "ለ",
+      "displayName": "ለ",
+      "audioPath": "/audio/am/le_1.mp3",
+      "pictureWord": "ለውዝ",
+      "pictureWordAmharic": "ለውዝ",
+      "pictureWordEnglish": "Peanut",
+      "pictureWordAudioPath": "/audio/am/word_lewuz.mp3",
+      "picturePath": "/images/am/lewuz.png",
+      "strokePathsJson": null,
+      "confusableWith": []
+    },
+    {
+      "id": "fidel_hha",
+      "kind": "fidel",
+      "symbol": "ሐ",
+      "displayName": "ሐ",
+      "audioPath": "/audio/am/hha_1.mp3",
+      "pictureWord": "ሐር",
+      "pictureWordAmharic": "ሐር",
+      "pictureWordEnglish": "Silk",
+      "pictureWordAudioPath": "/audio/am/word_hhar.mp3",
+      "picturePath": "/images/am/hhar.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_ha",
+        "fidel_hhe",
+        "fidel_re",
+        "fidel_me"
+      ]
+    },
+    {
+      "id": "fidel_me",
+      "kind": "fidel",
+      "symbol": "መ",
+      "displayName": "መ",
+      "audioPath": "/audio/am/me_1.mp3",
+      "pictureWord": "መኪና",
+      "pictureWordAmharic": "መኪና",
+      "pictureWordEnglish": "Car",
+      "pictureWordAudioPath": "/audio/am/word_mekina.mp3",
+      "picturePath": "/images/am/mekina.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_ha",
+        "fidel_sze"
+      ]
+    },
+    {
+      "id": "fidel_sze",
+      "kind": "fidel",
+      "symbol": "ሠ",
+      "displayName": "ሠ",
+      "audioPath": "/audio/am/sze_1.mp3",
+      "pictureWord": "ሠረገላ",
+      "pictureWordAmharic": "ሠረገላ",
+      "pictureWordEnglish": "Chariot",
+      "pictureWordAudioPath": "/audio/am/word_seregela.mp3",
+      "picturePath": "/images/am/seregela.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_se",
+        "fidel_ha"
+      ]
+    },
+    {
+      "id": "fidel_re",
+      "kind": "fidel",
+      "symbol": "ረ",
+      "displayName": "ረ",
+      "audioPath": "/audio/am/re_1.mp3",
+      "pictureWord": "ረከቦት",
+      "pictureWordAmharic": "ረከቦት",
+      "pictureWordEnglish": "Coffee Tray",
+      "pictureWordAudioPath": "/audio/am/word_rekebot.mp3",
+      "picturePath": "/images/am/rekebot.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_de"
+      ]
+    },
+    {
+      "id": "fidel_se",
+      "kind": "fidel",
+      "symbol": "ሰ",
+      "displayName": "ሰ",
+      "audioPath": "/audio/am/se_1.mp3",
+      "pictureWord": "ሰዓት",
+      "pictureWordAmharic": "ሰዓት",
+      "pictureWordEnglish": "Clock",
+      "pictureWordAudioPath": "/audio/am/word_seat.mp3",
+      "picturePath": "/images/am/seat.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_she",
+        "fidel_sze"
+      ]
+    },
+    {
+      "id": "fidel_she",
+      "kind": "fidel",
+      "symbol": "ሸ",
+      "displayName": "ሸ",
+      "audioPath": "/audio/am/she_1.mp3",
+      "pictureWord": "ሸሚዝ",
+      "pictureWordAmharic": "ሸሚዝ",
+      "pictureWordEnglish": "Shirt",
+      "pictureWordAudioPath": "/audio/am/word_shemiz.mp3",
+      "picturePath": "/images/am/shemiz.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_se"
+      ]
+    },
+    {
+      "id": "fidel_qe",
+      "kind": "fidel",
+      "symbol": "ቀ",
+      "displayName": "ቀ",
+      "audioPath": "/audio/am/qe_1.mp3",
+      "pictureWord": "ቀበሮ",
+      "pictureWordAmharic": "ቀበሮ",
+      "pictureWordEnglish": "Fox",
+      "pictureWordAudioPath": "/audio/am/word_qebero.mp3",
+      "picturePath": "/images/am/qebero.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_be"
+      ]
+    },
+    {
+      "id": "fidel_be",
+      "kind": "fidel",
+      "symbol": "በ",
+      "displayName": "በ",
+      "audioPath": "/audio/am/be_1.mp3",
+      "pictureWord": "በግ",
+      "pictureWordAmharic": "በግ",
+      "pictureWordEnglish": "Sheep",
+      "pictureWordAudioPath": "/audio/am/word_beg.mp3",
+      "picturePath": "/images/am/beg.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_te",
+        "fidel_che",
+        "fidel_qe"
+      ]
+    },
+    {
+      "id": "fidel_te",
+      "kind": "fidel",
+      "symbol": "ተ",
+      "displayName": "ተ",
+      "audioPath": "/audio/am/te_1.mp3",
+      "pictureWord": "ተራራ",
+      "pictureWordAmharic": "ተራራ",
+      "pictureWordEnglish": "Mountain",
+      "pictureWordAudioPath": "/audio/am/word_terara.mp3",
+      "picturePath": "/images/am/terara.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_be",
+        "fidel_che"
+      ]
+    },
+    {
+      "id": "fidel_che",
+      "kind": "fidel",
+      "symbol": "ቸ",
+      "displayName": "ቸ",
+      "audioPath": "/audio/am/che_1.mp3",
+      "pictureWord": "ቸኮሌት",
+      "pictureWordAmharic": "ቸኮሌት",
+      "pictureWordEnglish": "Chocolate",
+      "pictureWordAudioPath": "/audio/am/word_chocolate.mp3",
+      "picturePath": "/images/am/chocolate.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_te",
+        "fidel_be"
+      ]
+    },
+    {
+      "id": "fidel_hhe",
+      "kind": "fidel",
+      "symbol": "ኀ",
+      "displayName": "ኀ",
+      "audioPath": "/audio/am/hhe_1.mp3",
+      "pictureWord": "ኀብስት",
+      "pictureWordAmharic": "ኀብስት",
+      "pictureWordEnglish": "Bread",
+      "pictureWordAudioPath": "/audio/am/word_hibist.mp3",
+      "picturePath": "/images/am/hibist.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_ha",
+        "fidel_hha"
+      ]
+    },
+    {
+      "id": "fidel_ne",
+      "kind": "fidel",
+      "symbol": "ነ",
+      "displayName": "ነ",
+      "audioPath": "/audio/am/ne_1.mp3",
+      "pictureWord": "ነብር",
+      "pictureWordAmharic": "ነብር",
+      "pictureWordEnglish": "Leopard",
+      "pictureWordAudioPath": "/audio/am/word_nebr.mp3",
+      "picturePath": "/images/am/nebr.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_nye",
+        "fidel_ke"
+      ]
+    },
+    {
+      "id": "fidel_nye",
+      "kind": "fidel",
+      "symbol": "ኘ",
+      "displayName": "ኘ",
+      "audioPath": "/audio/am/nye_1.mp3",
+      "pictureWord": "ኘው",
+      "pictureWordAmharic": "ኘው",
+      "pictureWordEnglish": "Kitten Meow",
+      "pictureWordAudioPath": "/audio/am/word_nyew.mp3",
+      "picturePath": "/images/am/nyew.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_ne"
+      ]
+    },
+    {
+      "id": "fidel_a",
+      "kind": "fidel",
+      "symbol": "አ",
+      "displayName": "አ",
+      "audioPath": "/audio/am/a_1.mp3",
+      "pictureWord": "አበባ",
+      "pictureWordAmharic": "አበባ",
+      "pictureWordEnglish": "Flower",
+      "pictureWordAudioPath": "/audio/am/word_abeba.mp3",
+      "picturePath": "/images/am/abeba.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_aa",
+        "fidel_ke"
+      ]
+    },
+    {
+      "id": "fidel_ke",
+      "kind": "fidel",
+      "symbol": "ከ",
+      "displayName": "ከ",
+      "audioPath": "/audio/am/ke_1.mp3",
+      "pictureWord": "ከበሮ",
+      "pictureWordAmharic": "ከበሮ",
+      "pictureWordEnglish": "Drum",
+      "pictureWordAudioPath": "/audio/am/word_kebero.mp3",
+      "picturePath": "/images/am/kebero.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_khe",
+        "fidel_a"
+      ]
+    },
+    {
+      "id": "fidel_khe",
+      "kind": "fidel",
+      "symbol": "ኸ",
+      "displayName": "ኸ",
+      "audioPath": "/audio/am/khe_1.mp3",
+      "pictureWord": "ኸሚስ",
+      "pictureWordAmharic": "ኸሚስ",
+      "pictureWordEnglish": "Thursday",
+      "pictureWordAudioPath": "/audio/am/word_khemis.mp3",
+      "picturePath": "/images/am/khemis.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_ke"
+      ]
+    },
+    {
+      "id": "fidel_we",
+      "kind": "fidel",
+      "symbol": "ወ",
+      "displayName": "ወ",
+      "audioPath": "/audio/am/we_1.mp3",
+      "pictureWord": "ወተት",
+      "pictureWordAmharic": "ወተት",
+      "pictureWordEnglish": "Milk",
+      "pictureWordAudioPath": "/audio/am/word_wetet.mp3",
+      "picturePath": "/images/am/wetet.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_aa",
+        "fidel_de"
+      ]
+    },
+    {
+      "id": "fidel_aa",
+      "kind": "fidel",
+      "symbol": "ዐ",
+      "displayName": "ዐ",
+      "audioPath": "/audio/am/aa_1.mp3",
+      "pictureWord": "ዐሣ",
+      "pictureWordAmharic": "ዐሣ",
+      "pictureWordEnglish": "Fish",
+      "pictureWordAudioPath": "/audio/am/word_asa.mp3",
+      "picturePath": "/images/am/asa.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_a",
+        "fidel_we"
+      ]
+    },
+    {
+      "id": "fidel_ze",
+      "kind": "fidel",
+      "symbol": "ዘ",
+      "displayName": "ዘ",
+      "audioPath": "/audio/am/ze_1.mp3",
+      "pictureWord": "ዘውድ",
+      "pictureWordAmharic": "ዘውድ",
+      "pictureWordEnglish": "Crown",
+      "pictureWordAudioPath": "/audio/am/word_zewd.mp3",
+      "picturePath": "/images/am/zewd.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_zhe",
+        "fidel_ye"
+      ]
+    },
+    {
+      "id": "fidel_zhe",
+      "kind": "fidel",
+      "symbol": "ዠ",
+      "displayName": "ዠ",
+      "audioPath": "/audio/am/zhe_1.mp3",
+      "pictureWord": "ዠንበር",
+      "pictureWordAmharic": "ዠንበር",
+      "pictureWordEnglish": "Sun",
+      "pictureWordAudioPath": "/audio/am/word_zhenber.mp3",
+      "picturePath": "/images/am/zhenber.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_ze"
+      ]
+    },
+    {
+      "id": "fidel_ye",
+      "kind": "fidel",
+      "symbol": "የ",
+      "displayName": "የ",
+      "audioPath": "/audio/am/ye_1.mp3",
+      "pictureWord": "የኔታ",
+      "pictureWordAmharic": "የኔታ",
+      "pictureWordEnglish": "Teacher",
+      "pictureWordAudioPath": "/audio/am/word_yeneta.mp3",
+      "picturePath": "/images/am/yeneta.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_ze"
+      ]
+    },
+    {
+      "id": "fidel_de",
+      "kind": "fidel",
+      "symbol": "ደ",
+      "displayName": "ደ",
+      "audioPath": "/audio/am/de_1.mp3",
+      "pictureWord": "ደብተር",
+      "pictureWordAmharic": "ደብተር",
+      "pictureWordEnglish": "Notebook",
+      "pictureWordAudioPath": "/audio/am/word_debter.mp3",
+      "picturePath": "/images/am/debter.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_je",
+        "fidel_re"
+      ]
+    },
+    {
+      "id": "fidel_je",
+      "kind": "fidel",
+      "symbol": "ጀ",
+      "displayName": "ጀ",
+      "audioPath": "/audio/am/je_1.mp3",
+      "pictureWord": "ጀልባ",
+      "pictureWordAmharic": "ጀልባ",
+      "pictureWordEnglish": "Boat",
+      "pictureWordAudioPath": "/audio/am/word_jelba.mp3",
+      "picturePath": "/images/am/jelba.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_de"
+      ]
+    },
+    {
+      "id": "fidel_ge",
+      "kind": "fidel",
+      "symbol": "ገ",
+      "displayName": "ገ",
+      "audioPath": "/audio/am/ge_1.mp3",
+      "pictureWord": "ገመድ",
+      "pictureWordAmharic": "ገመድ",
+      "pictureWordEnglish": "Rope",
+      "pictureWordAudioPath": "/audio/am/word_gemed.mp3",
+      "picturePath": "/images/am/gemed.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_tte"
+      ]
+    },
+    {
+      "id": "fidel_tte",
+      "kind": "fidel",
+      "symbol": "ጠ",
+      "displayName": "ጠ",
+      "audioPath": "/audio/am/tte_1.mp3",
+      "pictureWord": "ጠረጴዛ",
+      "pictureWordAmharic": "ጠረጴዛ",
+      "pictureWordEnglish": "Table",
+      "pictureWordAudioPath": "/audio/am/word_terepeza.mp3",
+      "picturePath": "/images/am/terepeza.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_cche",
+        "fidel_ge"
+      ]
+    },
+    {
+      "id": "fidel_cche",
+      "kind": "fidel",
+      "symbol": "ጨ",
+      "displayName": "ጨ",
+      "audioPath": "/audio/am/cche_1.mp3",
+      "pictureWord": "ጨረቃ",
+      "pictureWordAmharic": "ጨረቃ",
+      "pictureWordEnglish": "Moon",
+      "pictureWordAudioPath": "/audio/am/word_chereqa.mp3",
+      "picturePath": "/images/am/chereqa.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_tte"
+      ]
+    },
+    {
+      "id": "fidel_ppe",
+      "kind": "fidel",
+      "symbol": "ጰ",
+      "displayName": "ጰ",
+      "audioPath": "/audio/am/ppe_1.mp3",
+      "pictureWord": "ጰራቅሊጦስ",
+      "pictureWordAmharic": "ጰራቅሊጦስ",
+      "pictureWordEnglish": "Paraclete",
+      "pictureWordAudioPath": "/audio/am/word_paraclitos.mp3",
+      "picturePath": "/images/am/paraclitos.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_tse",
+        "fidel_pe"
+      ]
+    },
+    {
+      "id": "fidel_tse",
+      "kind": "fidel",
+      "symbol": "ጸ",
+      "displayName": "ጸ",
+      "audioPath": "/audio/am/tse_1.mp3",
+      "pictureWord": "ጸሐይ",
+      "pictureWordAmharic": "ጸሐይ",
+      "pictureWordEnglish": "Sun",
+      "pictureWordAudioPath": "/audio/am/word_tsehay.mp3",
+      "picturePath": "/images/am/tsehay.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_tsse",
+        "fidel_ppe"
+      ]
+    },
+    {
+      "id": "fidel_tsse",
+      "kind": "fidel",
+      "symbol": "ፀ",
+      "displayName": "ፀ",
+      "audioPath": "/audio/am/tsse_1.mp3",
+      "pictureWord": "ፀጉር",
+      "pictureWordAmharic": "ፀጉር",
+      "pictureWordEnglish": "Hair",
+      "pictureWordAudioPath": "/audio/am/word_tsegur.mp3",
+      "picturePath": "/images/am/tsegur.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_tse"
+      ]
+    },
+    {
+      "id": "fidel_fe",
+      "kind": "fidel",
+      "symbol": "ፈ",
+      "displayName": "ፈ",
+      "audioPath": "/audio/am/fe_1.mp3",
+      "pictureWord": "ፈረስ",
+      "pictureWordAmharic": "ፈረስ",
+      "pictureWordEnglish": "Horse",
+      "pictureWordAudioPath": "/audio/am/word_feres.mp3",
+      "picturePath": "/images/am/feres.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_pe"
+      ]
+    },
+    {
+      "id": "fidel_pe",
+      "kind": "fidel",
+      "symbol": "ፐ",
+      "displayName": "ፐ",
+      "audioPath": "/audio/am/pe_1.mp3",
+      "pictureWord": "ፐርሰንት",
+      "pictureWordAmharic": "ፐርሰንት",
+      "pictureWordEnglish": "Percent",
+      "pictureWordAudioPath": "/audio/am/word_percent.mp3",
+      "picturePath": "/images/am/percent.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "fidel_fe",
+        "fidel_ppe"
+      ]
+    }
+  ]
+}
