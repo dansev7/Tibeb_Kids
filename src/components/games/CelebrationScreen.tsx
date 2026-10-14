@@ -4,11 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { playAudioOrSpeech, playFanfare, playPop } from '@/utils/sound';
 import { getThemeConfig } from '@/utils/theme';
+import { isAmharicWorld, mascotEmoji } from '@/lib/worldTheme';
 import { ConfettiBurst } from './ConfettiBurst';
 
 export interface CelebrationScreenProps {
   stars: number; // 1, 2, or 3
-  mascot: 'bird' | 'cow' | 'lion';
+  mascot: string;
+  worldSlug?: string;
   onNext: () => void;
   themeColor?: string;
 }
@@ -43,32 +45,32 @@ const AMHARIC_STICKER_LABELS: Record<string, string> = {
 export function CelebrationScreen({
   stars,
   mascot,
+  worldSlug,
   onNext,
   themeColor,
 }: CelebrationScreenProps) {
-  const [earnedSticker, setEarnedSticker] = useState<{ emoji: string; label: string } | null>(null);
+  // Component is client-only (dynamic ssr:false), so picking a random
+  // sticker during state init is safe and avoids an extra render pass.
+  const [earnedSticker] = useState<{ emoji: string; label: string }>(
+    () => STICKERS[Math.floor(Math.random() * STICKERS.length)],
+  );
   const theme = getThemeConfig(themeColor);
+  // Language follows the world; falls back to the lion mascot for older callers.
+  const isAmharic = worldSlug ? isAmharicWorld(worldSlug) : mascot === 'lion';
 
   // Clamp stars between 1 and 3
   const starCount = Math.max(1, Math.min(3, Math.round(stars || 1)));
 
-  // Pick sticker on client mount
-  useEffect(() => {
-    const randomSticker = STICKERS[Math.floor(Math.random() * STICKERS.length)];
-    setEarnedSticker(randomSticker);
-  }, []);
-
   // Celebration fanfare and spoken cheer
   useEffect(() => {
     playFanfare();
-    const isAmharic = mascot === 'lion';
     const cheer = isAmharic ? 'እንኳን ደስ አለህ! ድንቅ ሥራ! በጣም ጎበዝ!' : 'You did it! Amazing job!';
     const cheerTimer = setTimeout(() => {
       playAudioOrSpeech(undefined, cheer);
     }, 600);
 
     return () => clearTimeout(cheerTimer);
-  }, [mascot]);
+  }, [isAmharic]);
 
   return (
     <div
@@ -90,7 +92,7 @@ export function CelebrationScreen({
         >
           <span className="text-4xl sm:text-5xl font-black text-amber-500 tracking-tight drop-shadow-sm flex items-center justify-center gap-2">
             <span>🎉</span>
-            <span>{mascot === 'lion' ? 'ጎበዝ! ድንቅ ሥራ!' : 'You did it!'}</span>
+            <span>{isAmharic ? 'ጎበዝ! ድንቅ ሥራ!' : 'You did it!'}</span>
             <span>✨</span>
           </span>
         </motion.div>
@@ -177,6 +179,12 @@ export function CelebrationScreen({
             {mascot === 'bird' && <BirdMascot />}
             {mascot === 'cow' && <CowMascot />}
             {mascot === 'lion' && <LionMascot />}
+            {!['bird', 'cow', 'lion'].includes(mascot) && (
+              /* Emoji fallback so mascots without bespoke SVG art (e.g. sheep) still dance */
+              <div className="w-full h-full flex items-center justify-center text-[110px] sm:text-[130px] leading-none drop-shadow-2xl">
+                {mascotEmoji(mascot)}
+              </div>
+            )}
           </motion.div>
 
           {/* Dancing shadow underneath */}
@@ -204,10 +212,10 @@ export function CelebrationScreen({
               <span className="text-4xl animate-bounce">{earnedSticker.emoji}</span>
               <div className="flex flex-col text-left">
                 <span className="text-xs uppercase font-black text-amber-500 tracking-wider">
-                  {mascot === 'lion' ? 'አዲስ ስቲከር!' : 'New Sticker!'}
+                  {isAmharic ? 'አዲስ ስቲከር!' : 'New Sticker!'}
                 </span>
                 <span className="text-lg font-extrabold text-slate-800">
-                  {mascot === 'lion'
+                  {isAmharic
                     ? (AMHARIC_STICKER_LABELS[earnedSticker.emoji] || earnedSticker.label)
                     : earnedSticker.label}
                 </span>
@@ -226,7 +234,7 @@ export function CelebrationScreen({
             playPop();
             onNext();
           }}
-          aria-label={mascot === 'lion' ? 'ወደ መንደሩ ተመለስ' : 'Continue to world map'}
+          aria-label={isAmharic ? 'ወደ መንደሩ ተመለስ' : 'Continue to world map'}
           className="min-w-[72px] min-h-[72px] px-10 py-4 rounded-full shadow-2xl flex items-center justify-center gap-3 text-white text-3xl font-black cursor-pointer border-4 border-white transition-transform active:brightness-95"
           style={{
             backgroundColor: theme.primary,

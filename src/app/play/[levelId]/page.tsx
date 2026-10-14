@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { queueOfflineProgress } from '@/lib/offlineQueue';
+import LoadingScreen from '@/components/ui/LoadingScreen';
 import type { StageResult } from '@/types';
 
 // Dynamic imports for game components
@@ -126,17 +127,7 @@ function PlayContent() {
   }, [currentStageIndex, levelData, allResults, calculateStars, levelId, postProgress]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-sky-100">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-          className="text-6xl"
-        >
-          ⭐
-        </motion.div>
-      </div>
-    );
+    return <LoadingScreen bgClass="bg-sky-100" />;
   }
 
   if (!levelData) {
@@ -196,7 +187,8 @@ function PlayContent() {
             >
               <CelebrationScreen
                 stars={stars}
-                mascot={levelData.mascot as 'bird' | 'cow' | 'lion'}
+                mascot={levelData.mascot}
+                worldSlug={levelData.worldSlug}
                 onNext={() => router.push(`/world/${levelData.worldSlug}`)}
                 themeColor={levelData.themeColor}
               />
@@ -331,13 +323,7 @@ function PlayContent() {
 
 export default function PlayPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-sky-100">
-          <div className="text-6xl animate-spin">⭐</div>
-        </div>
-      }
-    >
+    <Suspense fallback={<LoadingScreen bgClass="bg-sky-100" />}>
       <PlayContent />
     </Suspense>
   );

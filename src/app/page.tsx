@@ -3,6 +3,8 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import LoadingScreen from '@/components/ui/LoadingScreen';
+import { getWorldVisuals, isAmharicWorld, mascotEmoji } from '@/lib/worldTheme';
 
 interface WorldInfo {
   id: string;
@@ -15,24 +17,6 @@ interface WorldInfo {
   completedLevels: number;
   totalStars: number;
 }
-
-const mascotEmojis: Record<string, string> = {
-  bird: '🐦',
-  cow: '🐄',
-  lion: '🦁',
-};
-
-const worldBgColors: Record<string, string> = {
-  'abc-garden': 'from-emerald-400 to-green-500',
-  'number-farm': 'from-amber-400 to-orange-500',
-  'fidel-village': 'from-purple-400 to-violet-500',
-};
-
-const worldBorderColors: Record<string, string> = {
-  'abc-garden': 'border-emerald-300',
-  'number-farm': 'border-amber-300',
-  'fidel-village': 'border-purple-300',
-};
 
 export default function AdventureMap() {
   const [worlds, setWorlds] = useState<WorldInfo[]>([]);
@@ -51,17 +35,7 @@ export default function AdventureMap() {
   }, []);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-sky-300 to-sky-100">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-          className="text-6xl"
-        >
-          ⭐
-        </motion.div>
-      </div>
-    );
+    return <LoadingScreen bgClass="bg-gradient-to-b from-sky-300 to-sky-100" />;
   }
 
   return (
@@ -120,7 +94,10 @@ export default function AdventureMap() {
 
       {/* World Cards */}
       <div className="relative z-10 flex flex-col items-center gap-6 px-4 pb-8 max-w-lg mx-auto">
-        {worlds.map((world, index) => (
+        {worlds.map((world, index) => {
+          const visuals = getWorldVisuals(world.slug);
+          const amharic = isAmharicWorld(world.slug);
+          return (
           <motion.div
             key={world.id}
             initial={{ x: index % 2 === 0 ? -100 : 100, opacity: 0 }}
@@ -134,14 +111,14 @@ export default function AdventureMap() {
                 whileTap={{ scale: 0.97 }}
                 className={`
                   w-full rounded-3xl p-6 shadow-2xl cursor-pointer
-                  bg-gradient-to-br ${worldBgColors[world.slug] || 'from-blue-400 to-blue-500'}
-                  border-4 ${worldBorderColors[world.slug] || 'border-blue-300'}
+                  bg-gradient-to-br ${visuals.cardGradient}
+                  border-4 ${visuals.cardBorder}
                   relative overflow-hidden
                 `}
               >
                 {/* Background decoration */}
                 <div className="absolute -right-4 -bottom-4 text-[80px] opacity-20">
-                  {mascotEmojis[world.mascot] || '⭐'}
+                  {mascotEmoji(world.mascot)}
                 </div>
 
                 <div className="relative z-10 flex items-center gap-4">
@@ -165,7 +142,7 @@ export default function AdventureMap() {
                         {world.totalStars > 5 && ` +${world.totalStars - 5}`}
                       </span>
                       <span className="text-white/80 text-sm font-semibold">
-                        {world.slug === 'fidel-village'
+                        {amharic
                           ? `${world.completedLevels}/${world.totalLevels} ደረጃዎች`
                           : `${world.completedLevels}/${world.totalLevels} levels`}
                       </span>
@@ -178,13 +155,14 @@ export default function AdventureMap() {
                     transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                     className="text-4xl md:text-5xl"
                   >
-                    {mascotEmojis[world.mascot] || '⭐'}
+                    {mascotEmoji(world.mascot)}
                   </motion.div>
                 </div>
               </motion.div>
             </Link>
           </motion.div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Parent area button - hidden at bottom */}

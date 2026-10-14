@@ -4,6 +4,8 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useEffect, useState, Suspense } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import LoadingScreen from '@/components/ui/LoadingScreen';
+import { getWorldVisuals, isAmharicWorld, mascotEmoji } from '@/lib/worldTheme';
 
 interface LevelInfo {
   id: string;
@@ -25,48 +27,6 @@ interface WorldData {
   levels: LevelInfo[];
 }
 
-const mascotEmojis: Record<string, string> = {
-  bird: '🐦',
-  cow: '🐄',
-  lion: '🦁',
-};
-
-const worldGradients: Record<string, string> = {
-  'abc-garden': 'from-emerald-200 via-green-100 to-sky-100',
-  'number-farm': 'from-amber-200 via-orange-100 to-sky-100',
-  'fidel-village': 'from-purple-200 via-violet-100 to-sky-100',
-};
-
-const worldThemeStyles: Record<string, {
-  activeBtn: string;
-  completedBtn: string;
-  lockedBtn: string;
-  glowRing: string;
-  pillBorder: string;
-}> = {
-  'abc-garden': {
-    activeBtn: 'bg-emerald-500 border-emerald-600 text-white shadow-emerald-400/50',
-    completedBtn: 'bg-emerald-600 border-emerald-700 text-white shadow-emerald-300/40',
-    lockedBtn: 'bg-slate-200 border-slate-300 text-slate-400',
-    glowRing: 'ring-4 ring-emerald-400 ring-offset-4 ring-offset-green-100',
-    pillBorder: 'border-emerald-300',
-  },
-  'number-farm': {
-    activeBtn: 'bg-amber-500 border-amber-600 text-white shadow-amber-400/50',
-    completedBtn: 'bg-amber-600 border-amber-700 text-white shadow-amber-300/40',
-    lockedBtn: 'bg-slate-200 border-slate-300 text-slate-400',
-    glowRing: 'ring-4 ring-amber-400 ring-offset-4 ring-offset-amber-100',
-    pillBorder: 'border-amber-300',
-  },
-  'fidel-village': {
-    activeBtn: 'bg-purple-500 border-purple-600 text-white shadow-purple-400/50',
-    completedBtn: 'bg-purple-600 border-purple-700 text-white shadow-purple-300/40',
-    lockedBtn: 'bg-slate-200 border-slate-300 text-slate-400',
-    glowRing: 'ring-4 ring-purple-400 ring-offset-4 ring-offset-purple-100',
-    pillBorder: 'border-purple-300',
-  },
-};
-
 function WorldContent() {
   const params = useParams();
   const router = useRouter();
@@ -74,7 +34,7 @@ function WorldContent() {
   const [world, setWorld] = useState<WorldData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const isAmharicWorld = slug === 'fidel-village';
+  const isAmharic = isAmharicWorld(slug);
 
   useEffect(() => {
     if (!slug) return;
@@ -88,17 +48,7 @@ function WorldContent() {
   }, [slug]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-sky-100">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-          className="text-6xl"
-        >
-          ⭐
-        </motion.div>
-      </div>
-    );
+    return <LoadingScreen bgClass="bg-sky-100" />;
   }
 
   if (!world) {
@@ -114,10 +64,11 @@ function WorldContent() {
   const nextPlayableId = nextPlayableIndex >= 0 ? world.levels[nextPlayableIndex].id : null;
 
   const totalEarnedStars = world.levels.reduce((acc, l) => acc + (l.stars || 0), 0);
-  const theme = worldThemeStyles[slug] || worldThemeStyles['abc-garden'];
+  const visuals = getWorldVisuals(slug);
+  const theme = visuals.theme;
 
   return (
-    <div className={`min-h-screen bg-gradient-to-b ${worldGradients[slug] || 'from-sky-200 to-sky-100'} relative pb-20`}>
+    <div className={`min-h-screen bg-gradient-to-b ${visuals.pageGradient} relative pb-20`}>
       {/* Top Header Bar */}
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-white/60 px-4 py-3 shadow-sm">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -126,7 +77,7 @@ function WorldContent() {
             whileTap={{ scale: 0.92 }}
             onClick={() => router.push('/')}
             className="w-14 h-14 rounded-2xl bg-white shadow-md border-2 border-gray-200 flex items-center justify-center text-2xl cursor-pointer hover:bg-gray-50 transition-colors"
-            aria-label={isAmharicWorld ? 'ወደ ዋና ገጽ ተመለስ' : 'Back to home map'}
+            aria-label={isAmharic ? 'ወደ ዋና ገጽ ተመለስ' : 'Back to home map'}
           >
             🏠
           </motion.button>
@@ -137,7 +88,7 @@ function WorldContent() {
               <span>{world.title}</span>
             </h1>
             <div className="text-xs sm:text-sm font-bold text-gray-600 mt-0.5">
-              {isAmharicWorld
+              {isAmharic
                 ? `⭐ ${totalEarnedStars} ኮከቦች ተሰብስበዋል`
                 : `⭐ ${totalEarnedStars} stars earned`}
             </div>
@@ -148,7 +99,7 @@ function WorldContent() {
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
             className="text-4xl sm:text-5xl"
           >
-            {mascotEmojis[world.mascot] || '⭐'}
+            {mascotEmoji(world.mascot)}
           </motion.div>
         </div>
       </header>
@@ -204,7 +155,7 @@ function WorldContent() {
                       {/* Floating Play Badge on Next Playable Level */}
                       {isNext && (
                         <div className="absolute -top-3 px-2.5 py-0.5 rounded-full bg-yellow-400 text-yellow-950 font-black text-[10px] sm:text-xs shadow-md border border-yellow-200 animate-pulse whitespace-nowrap">
-                          {isAmharicWorld ? '▶ ጀምር' : '▶ Play'}
+                          {isAmharic ? '▶ ጀምር' : '▶ Play'}
                         </div>
                       )}
 
@@ -260,13 +211,7 @@ function WorldContent() {
 
 export default function WorldPage() {
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-sky-100">
-          <div className="text-6xl animate-spin">⭐</div>
-        </div>
-      }
-    >
+    <Suspense fallback={<LoadingScreen bgClass="bg-sky-100" />}>
       <WorldContent />
     </Suspense>
   );

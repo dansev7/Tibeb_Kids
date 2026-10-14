@@ -18,3 +18,6 @@ export type { ParentGateProps } from './ParentGate';
 
 export { default as ProgressBar } from './ProgressBar';
 export type { ProgressBarProps, ProgressBarVariant } from './ProgressBar';
+
+export { default as LoadingScreen } from './LoadingScreen';
+export type { LoadingScreenProps } from './LoadingScreen';
