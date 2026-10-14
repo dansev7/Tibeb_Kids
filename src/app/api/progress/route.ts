@@ -7,66 +7,72 @@ import { updateMastery, getNextReviewDate } from '@/lib/srs';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { levelId, stars, results } = body;
+    const { levelId, stars, results, partial } = body;
     const childId = 1;
 
-    // Update level progress
-    const existing = db.select().from(levelProgress)
-      .where(sql`${levelProgress.childId} = ${childId} AND ${levelProgress.levelId} = ${levelId}`)
-      .get();
-
-    const now = new Date().toISOString();
-
-    if (existing) {
-      // Update only if better stars
-      const newStars = Math.max(existing.stars || 0, stars);
-      db.update(levelProgress)
-        .set({
-          stars: newStars,
-          bestScore: Math.max(existing.bestScore || 0, stars),
-          completedAt: now,
-        })
+    // Partial saves stream per-stage results while the level is still in
+    // progress; only the final save may complete the level and unlock stars.
+    if (!partial) {
+      // Update level progress
+      const existing = db.select().from(levelProgress)
         .where(sql`${levelProgress.childId} = ${childId} AND ${levelProgress.levelId} = ${levelId}`)
-        .run();
-    } else {
-      db.insert(levelProgress).values({
-        childId,
-        levelId,
-        stars,
-        bestScore: stars,
-        completedAt: now,
-        unlocked: 1,
-      }).run();
-    }
-
-    // Unlock the next level
-    const level = db.select().from(levels).where(eq(levels.id, levelId)).get();
-    if (level) {
-      const nextLevel = db.select().from(levels)
-        .where(sql`${levels.worldId} = ${level.worldId} AND ${levels.orderNum} = ${level.orderNum + 1}`)
         .get();
 
-      if (nextLevel) {
-        const nextProgress = db.select().from(levelProgress)
-          .where(sql`${levelProgress.childId} = ${childId} AND ${levelProgress.levelId} = ${nextLevel.id}`)
+      const now = new Date().toISOString();
+
+      if (existing) {
+        // Update only if better stars
+        const newStars = Math.max(existing.stars || 0, stars);
+        db.update(levelProgress)
+          .set({
+            stars: newStars,
+            bestScore: Math.max(existing.bestScore || 0, stars),
+            completedAt: now,
+          })
+          .where(sql`${levelProgress.childId} = ${childId} AND ${levelProgress.levelId} = ${levelId}`)
+          .run();
+      } else {
+        db.insert(levelProgress).values({
+          childId,
+          levelId,
+          stars,
+          bestScore: stars,
+          completedAt: now,
+          unlocked: 1,
+        }).run();
+      }
+
+      // Unlock the next level
+      const level = db.select().from(levels).where(eq(levels.id, levelId)).get();
+      if (level) {
+        const nextLevel = db.select().from(levels)
+          .where(sql`${levels.worldId} = ${level.worldId} AND ${levels.orderNum} = ${level.orderNum + 1}`)
           .get();
 
-        if (!nextProgress) {
-          db.insert(levelProgress).values({
-            childId,
-            levelId: nextLevel.id,
-            stars: 0,
-            bestScore: 0,
-            unlocked: 1,
-          }).run();
-        } else if (!nextProgress.unlocked) {
-          db.update(levelProgress)
-            .set({ unlocked: 1 })
+        if (nextLevel) {
+          const nextProgress = db.select().from(levelProgress)
             .where(sql`${levelProgress.childId} = ${childId} AND ${levelProgress.levelId} = ${nextLevel.id}`)
-            .run();
+            .get();
+
+          if (!nextProgress) {
+            db.insert(levelProgress).values({
+              childId,
+              levelId: nextLevel.id,
+              stars: 0,
+              bestScore: 0,
+              unlocked: 1,
+            }).run();
+          } else if (!nextProgress.unlocked) {
+            db.update(levelProgress)
+              .set({ unlocked: 1 })
+              .where(sql`${levelProgress.childId} = ${childId} AND ${levelProgress.levelId} = ${nextLevel.id}`)
+              .run();
+          }
         }
       }
     }
+
+    const now = new Date().toISOString();
 
     // Record attempts and update mastery
     if (results && Array.isArray(results)) {

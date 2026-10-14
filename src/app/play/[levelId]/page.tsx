@@ -77,6 +77,22 @@ function PlayContent() {
     return 1;
   }, []);
 
+  const postProgress = useCallback((payload: Record<string, unknown>) => {
+    // Save progress with offline fallback (queue on network OR server errors)
+    fetch('/api/progress', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`Progress save failed with status ${res.status}`);
+      })
+      .catch((err) => {
+        console.warn('Could not save progress, queueing offline:', err);
+        queueOfflineProgress('/api/progress', payload);
+      });
+  }, []);
+
   const handleStageComplete = useCallback((results?: StageResult[]) => {
     // Tag each result with the stage that produced it so analytics stay accurate
     const stageType = levelData?.stages[currentStageIndex]?.type;
@@ -88,6 +104,12 @@ function PlayContent() {
 
     if (!levelData) return;
 
+    // Stream this stage's results immediately so exiting mid-level
+    // doesn't lose mastery data or attempts
+    if (taggedResults && taggedResults.length > 0) {
+      postProgress({ levelId, results: taggedResults, partial: true });
+    }
+
     const nextIndex = currentStageIndex + 1;
     if (nextIndex >= levelData.stages.length) {
       // Level complete! Calculate stars
@@ -95,29 +117,13 @@ function PlayContent() {
       const earnedStars = calculateStars(finalResults);
       setStars(earnedStars);
 
-      const payload = {
-        levelId,
-        stars: earnedStars,
-        results: finalResults,
-      };
-
-      // Save progress with offline fallback (queue on network OR server errors)
-      fetch('/api/progress', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error(`Progress save failed with status ${res.status}`);
-        })
-        .catch((err) => {
-          console.warn('Could not save progress, queueing offline:', err);
-          queueOfflineProgress('/api/progress', payload);
-        });
+      // Attempts were already streamed via partial saves; final save only
+      // completes the level and records stars.
+      postProgress({ levelId, stars: earnedStars, results: [], partial: false });
     }
 
     setCurrentStageIndex(nextIndex);
-  }, [currentStageIndex, levelData, allResults, calculateStars, levelId]);
+  }, [currentStageIndex, levelData, allResults, calculateStars, levelId, postProgress]);
 
   if (loading) {
     return (
