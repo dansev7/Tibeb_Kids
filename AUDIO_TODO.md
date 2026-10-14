@@ -1,0 +1,237 @@
+# Audio Recording Checklist (AUDIO_TODO.md)
+
+Plan for human-recorded audio (a family member's voice). Amharic text-to-speech is not suitable for teaching a 5-year-old child.
+Record in high-quality (44.1kHz or 48kHz mono/stereo MP3), warm, encouraging and clear for young ears.
+
+## 1. System & Prompt Sounds (`/public/audio/prompts/`)
+
+- [ ] `/public/audio/prompts/tap_the.mp3` — "Tap the..."
+- [ ] `/public/audio/prompts/find_the.mp3` — "Find the..."
+- [ ] `/public/audio/prompts/great_job.mp3` — "Great job!"
+- [ ] `/public/audio/prompts/try_again.mp3` — "Try again! Almost there!"
+- [ ] `/public/audio/prompts/you_did_it.mp3` — "You did it! Amazing!"
+- [ ] `/public/audio/prompts/lets_match.mp3` — "Let's match them up!"
+- [ ] `/public/audio/prompts/listen_carefully.mp3` — "Listen carefully!"
+- [ ] `/public/audio/prompts/goodbye_tomorrow.mp3` — "Great job today! See you tomorrow!"
+- [ ] `/public/audio/prompts/see_you_soon.mp3` — "Time for a break! See you soon!"
+
+## 2. English Alphabet & Words (`/public/audio/en/`)
+
+- [ ] `/audio/en/upper_A.mp3` — Pronounce: "Capital A" (A)
+- [ ] `/audio/en/word_apple.mp3` — Word: "Apple"
+- [ ] `/audio/en/upper_B.mp3` — Pronounce: "Capital B" (B)
+- [ ] `/audio/en/word_ball.mp3` — Word: "Ball"
+- [ ] `/audio/en/upper_C.mp3` — Pronounce: "Capital C" (C)
+- [ ] `/audio/en/word_cat.mp3` — Word: "Cat"
+- [ ] `/audio/en/upper_D.mp3` — Pronounce: "Capital D" (D)
+- [ ] `/audio/en/word_dog.mp3` — Word: "Dog"
+- [ ] `/audio/en/upper_E.mp3` — Pronounce: "Capital E" (E)
+- [ ] `/audio/en/word_egg.mp3` — Word: "Egg"
+- [ ] `/audio/en/upper_F.mp3` — Pronounce: "Capital F" (F)
+- [ ] `/audio/en/word_fish.mp3` — Word: "Fish"
+- [ ] `/audio/en/upper_G.mp3` — Pronounce: "Capital G" (G)
+- [ ] `/audio/en/word_goat.mp3` — Word: "Goat"
+- [ ] `/audio/en/upper_H.mp3` — Pronounce: "Capital H" (H)
+- [ ] `/audio/en/word_house.mp3` — Word: "House"
+- [ ] `/audio/en/upper_I.mp3` — Pronounce: "Capital I" (I)
+- [ ] `/audio/en/word_injera.mp3` — Word: "Injera"
+- [ ] `/audio/en/upper_J.mp3` — Pronounce: "Capital J" (J)
+- [ ] `/audio/en/word_jebena.mp3` — Word: "Jebena"
+- [ ] `/audio/en/upper_K.mp3` — Pronounce: "Capital K" (K)
+- [ ] `/audio/en/word_kite.mp3` — Word: "Kite"
+- [ ] `/audio/en/upper_L.mp3` — Pronounce: "Capital L" (L)
+- [ ] `/audio/en/word_lion.mp3` — Word: "Lion"
+- [ ] `/audio/en/upper_M.mp3` — Pronounce: "Capital M" (M)
+- [ ] `/audio/en/word_mango.mp3` — Word: "Mango"
+- [ ] `/audio/en/upper_N.mp3` — Pronounce: "Capital N" (N)
+- [ ] `/audio/en/word_nest.mp3` — Word: "Nest"
+- [ ] `/audio/en/upper_O.mp3` — Pronounce: "Capital O" (O)
+- [ ] `/audio/en/word_orange.mp3` — Word: "Orange"
+- [ ] `/audio/en/upper_P.mp3` — Pronounce: "Capital P" (P)
+- [ ] `/audio/en/word_pencil.mp3` — Word: "Pencil"
+- [ ] `/audio/en/upper_Q.mp3` — Pronounce: "Capital Q" (Q)
+- [ ] `/audio/en/word_queen.mp3` — Word: "Queen"
+- [ ] `/audio/en/upper_R.mp3` — Pronounce: "Capital R" (R)
+- [ ] `/audio/en/word_rabbit.mp3` — Word: "Rabbit"
+- [ ] `/audio/en/upper_S.mp3` — Pronounce: "Capital S" (S)
+- [ ] `/audio/en/word_sun.mp3` — Word: "Sun"
+- [ ] `/audio/en/upper_T.mp3` — Pronounce: "Capital T" (T)
+- [ ] `/audio/en/word_tree.mp3` — Word: "Tree"
+- [ ] `/audio/en/upper_U.mp3` — Pronounce: "Capital U" (U)
+- [ ] `/audio/en/word_umbrella.mp3` — Word: "Umbrella"
+- [ ] `/audio/en/upper_V.mp3` — Pronounce: "Capital V" (V)
+- [ ] `/audio/en/word_van.mp3` — Word: "Van"
+- [ ] `/audio/en/upper_W.mp3` — Pronounce: "Capital W" (W)
+- [ ] `/audio/en/word_water.mp3` — Word: "Water"
+- [ ] `/audio/en/upper_X.mp3` — Pronounce: "Capital X" (X)
+- [ ] `/audio/en/word_xray.mp3` — Word: "X-ray"
+- [ ] `/audio/en/upper_Y.mp3` — Pronounce: "Capital Y" (Y)
+- [ ] `/audio/en/word_yellow.mp3` — Word: "Yellow"
+- [ ] `/audio/en/upper_Z.mp3` — Pronounce: "Capital Z" (Z)
+- [ ] `/audio/en/word_zebra.mp3` — Word: "Zebra"
+- [ ] `/audio/en/lower_a.mp3` — Pronounce: "Small a" (a)
+- [ ] `/audio/en/word_apple.mp3` — Word: "Apple"
+- [ ] `/audio/en/lower_b.mp3` — Pronounce: "Small b" (b)
+- [ ] `/audio/en/word_ball.mp3` — Word: "Ball"
+- [ ] `/audio/en/lower_c.mp3` — Pronounce: "Small c" (c)
+- [ ] `/audio/en/word_cat.mp3` — Word: "Cat"
+- [ ] `/audio/en/lower_d.mp3` — Pronounce: "Small d" (d)
+- [ ] `/audio/en/word_dog.mp3` — Word: "Dog"
+- [ ] `/audio/en/lower_e.mp3` — Pronounce: "Small e" (e)
+- [ ] `/audio/en/word_egg.mp3` — Word: "Egg"
+- [ ] `/audio/en/lower_f.mp3` — Pronounce: "Small f" (f)
+- [ ] `/audio/en/word_fish.mp3` — Word: "Fish"
+- [ ] `/audio/en/lower_g.mp3` — Pronounce: "Small g" (g)
+- [ ] `/audio/en/word_goat.mp3` — Word: "Goat"
+- [ ] `/audio/en/lower_h.mp3` — Pronounce: "Small h" (h)
+- [ ] `/audio/en/word_house.mp3` — Word: "House"
+- [ ] `/audio/en/lower_i.mp3` — Pronounce: "Small i" (i)
+- [ ] `/audio/en/word_injera.mp3` — Word: "Injera"
+- [ ] `/audio/en/lower_j.mp3` — Pronounce: "Small j" (j)
+- [ ] `/audio/en/word_jebena.mp3` — Word: "Jebena"
+- [ ] `/audio/en/lower_k.mp3` — Pronounce: "Small k" (k)
+- [ ] `/audio/en/word_kite.mp3` — Word: "Kite"
+- [ ] `/audio/en/lower_l.mp3` — Pronounce: "Small l" (l)
+- [ ] `/audio/en/word_lion.mp3` — Word: "Lion"
+- [ ] `/audio/en/lower_m.mp3` — Pronounce: "Small m" (m)
+- [ ] `/audio/en/word_mango.mp3` — Word: "Mango"
+- [ ] `/audio/en/lower_n.mp3` — Pronounce: "Small n" (n)
+- [ ] `/audio/en/word_nest.mp3` — Word: "Nest"
+- [ ] `/audio/en/lower_o.mp3` — Pronounce: "Small o" (o)
+- [ ] `/audio/en/word_orange.mp3` — Word: "Orange"
+- [ ] `/audio/en/lower_p.mp3` — Pronounce: "Small p" (p)
+- [ ] `/audio/en/word_pencil.mp3` — Word: "Pencil"
+- [ ] `/audio/en/lower_q.mp3` — Pronounce: "Small q" (q)
+- [ ] `/audio/en/word_queen.mp3` — Word: "Queen"
+- [ ] `/audio/en/lower_r.mp3` — Pronounce: "Small r" (r)
+- [ ] `/audio/en/word_rabbit.mp3` — Word: "Rabbit"
+- [ ] `/audio/en/lower_s.mp3` — Pronounce: "Small s" (s)
+- [ ] `/audio/en/word_sun.mp3` — Word: "Sun"
+- [ ] `/audio/en/lower_t.mp3` — Pronounce: "Small t" (t)
+- [ ] `/audio/en/word_tree.mp3` — Word: "Tree"
+- [ ] `/audio/en/lower_u.mp3` — Pronounce: "Small u" (u)
+- [ ] `/audio/en/word_umbrella.mp3` — Word: "Umbrella"
+- [ ] `/audio/en/lower_v.mp3` — Pronounce: "Small v" (v)
+- [ ] `/audio/en/word_van.mp3` — Word: "Van"
+- [ ] `/audio/en/lower_w.mp3` — Pronounce: "Small w" (w)
+- [ ] `/audio/en/word_water.mp3` — Word: "Water"
+- [ ] `/audio/en/lower_x.mp3` — Pronounce: "Small x" (x)
+- [ ] `/audio/en/word_xray.mp3` — Word: "X-ray"
+- [ ] `/audio/en/lower_y.mp3` — Pronounce: "Small y" (y)
+- [ ] `/audio/en/word_yellow.mp3` — Word: "Yellow"
+- [ ] `/audio/en/lower_z.mp3` — Pronounce: "Small z" (z)
+- [ ] `/audio/en/word_zebra.mp3` — Word: "Zebra"
+
+## 3. Numbers & Quantities (`/public/audio/num/`)
+
+- [ ] `/audio/num/0.mp3` — Number: "Zero" (0)
+- [ ] `/audio/num/word_basket.mp3` — Countable: "Empty Basket"
+- [ ] `/audio/num/1.mp3` — Number: "One" (1)
+- [ ] `/audio/num/word_sun.mp3` — Countable: "Sun"
+- [ ] `/audio/num/2.mp3` — Number: "Two" (2)
+- [ ] `/audio/num/word_shoes.mp3` — Countable: "Shoes"
+- [ ] `/audio/num/3.mp3` — Number: "Three" (3)
+- [ ] `/audio/num/word_balls.mp3` — Countable: "Balls"
+- [ ] `/audio/num/4.mp3` — Number: "Four" (4)
+- [ ] `/audio/num/word_apples.mp3` — Countable: "Apples"
+- [ ] `/audio/num/5.mp3` — Number: "Five" (5)
+- [ ] `/audio/num/word_bananas.mp3` — Countable: "Bananas"
+- [ ] `/audio/num/6.mp3` — Number: "Six" (6)
+- [ ] `/audio/num/word_eggs.mp3` — Countable: "Eggs"
+- [ ] `/audio/num/7.mp3` — Number: "Seven" (7)
+- [ ] `/audio/num/word_carrots.mp3` — Countable: "Carrots"
+- [ ] `/audio/num/8.mp3` — Number: "Eight" (8)
+- [ ] `/audio/num/word_butterflies.mp3` — Countable: "Butterflies"
+- [ ] `/audio/num/9.mp3` — Number: "Nine" (9)
+- [ ] `/audio/num/word_flowers.mp3` — Countable: "Flowers"
+- [ ] `/audio/num/10.mp3` — Number: "Ten" (10)
+- [ ] `/audio/num/word_mangoes.mp3` — Countable: "Mangoes"
+- [ ] `/audio/num/11.mp3` — Number: "Eleven" (11)
+- [ ] `/audio/num/word_pencils.mp3` — Countable: "Pencils"
+- [ ] `/audio/num/12.mp3` — Number: "Twelve" (12)
+- [ ] `/audio/num/word_oranges.mp3` — Countable: "Oranges"
+- [ ] `/audio/num/13.mp3` — Number: "Thirteen" (13)
+- [ ] `/audio/num/word_fish.mp3` — Countable: "Fish"
+- [ ] `/audio/num/14.mp3` — Number: "Fourteen" (14)
+- [ ] `/audio/num/word_balloons.mp3` — Countable: "Balloons"
+- [ ] `/audio/num/15.mp3` — Number: "Fifteen" (15)
+- [ ] `/audio/num/word_kites.mp3` — Countable: "Kites"
+- [ ] `/audio/num/16.mp3` — Number: "Sixteen" (16)
+- [ ] `/audio/num/word_stars.mp3` — Countable: "Stars"
+- [ ] `/audio/num/17.mp3` — Number: "Seventeen" (17)
+- [ ] `/audio/num/word_leaves.mp3` — Countable: "Leaves"
+- [ ] `/audio/num/18.mp3` — Number: "Eighteen" (18)
+- [ ] `/audio/num/word_candies.mp3` — Countable: "Candies"
+- [ ] `/audio/num/19.mp3` — Number: "Nineteen" (19)
+- [ ] `/audio/num/word_buttons.mp3` — Countable: "Buttons"
+- [ ] `/audio/num/20.mp3` — Number: "Twenty" (20)
+- [ ] `/audio/num/word_cows.mp3` — Countable: "Cows"
+
+## 4. Amharic Fidel & Words (`/public/audio/am/`)
+
+- [ ] `/audio/am/ha_1.mp3` — Fidel: "ሀ" (ሀ)
+- [ ] `/audio/am/word_habhab.mp3` — Amharic Word: "ሀብሐብ" (Watermelon)
+- [ ] `/audio/am/le_1.mp3` — Fidel: "ለ" (ለ)
+- [ ] `/audio/am/word_lewuz.mp3` — Amharic Word: "ለውዝ" (Peanut)
+- [ ] `/audio/am/hha_1.mp3` — Fidel: "ሐ" (ሐ)
+- [ ] `/audio/am/word_hhar.mp3` — Amharic Word: "ሐር" (Silk)
+- [ ] `/audio/am/me_1.mp3` — Fidel: "መ" (መ)
+- [ ] `/audio/am/word_mekina.mp3` — Amharic Word: "መኪና" (Car)
+- [ ] `/audio/am/sze_1.mp3` — Fidel: "ሠ" (ሠ)
+- [ ] `/audio/am/word_seregela.mp3` — Amharic Word: "ሠረገላ" (Chariot)
+- [ ] `/audio/am/re_1.mp3` — Fidel: "ረ" (ረ)
+- [ ] `/audio/am/word_rekebot.mp3` — Amharic Word: "ረከቦት" (Coffee Tray)
+- [ ] `/audio/am/se_1.mp3` — Fidel: "ሰ" (ሰ)
+- [ ] `/audio/am/word_seat.mp3` — Amharic Word: "ሰዓት" (Clock)
+- [ ] `/audio/am/she_1.mp3` — Fidel: "ሸ" (ሸ)
+- [ ] `/audio/am/word_shemiz.mp3` — Amharic Word: "ሸሚዝ" (Shirt)
+- [ ] `/audio/am/qe_1.mp3` — Fidel: "ቀ" (ቀ)
+- [ ] `/audio/am/word_qebero.mp3` — Amharic Word: "ቀበሮ" (Fox)
+- [ ] `/audio/am/be_1.mp3` — Fidel: "በ" (በ)
+- [ ] `/audio/am/word_beg.mp3` — Amharic Word: "በግ" (Sheep)
+- [ ] `/audio/am/te_1.mp3` — Fidel: "ተ" (ተ)
+- [ ] `/audio/am/word_terara.mp3` — Amharic Word: "ተራራ" (Mountain)
+- [ ] `/audio/am/che_1.mp3` — Fidel: "ቸ" (ቸ)
+- [ ] `/audio/am/word_chocolate.mp3` — Amharic Word: "ቸኮሌት" (Chocolate)
+- [ ] `/audio/am/hhe_1.mp3` — Fidel: "ኀ" (ኀ)
+- [ ] `/audio/am/word_hibist.mp3` — Amharic Word: "ኀብስት" (Bread)
+- [ ] `/audio/am/ne_1.mp3` — Fidel: "ነ" (ነ)
+- [ ] `/audio/am/word_nebr.mp3` — Amharic Word: "ነብር" (Leopard)
+- [ ] `/audio/am/nye_1.mp3` — Fidel: "ኘ" (ኘ)
+- [ ] `/audio/am/word_nyew.mp3` — Amharic Word: "ኘው" (Kitten Meow)
+- [ ] `/audio/am/a_1.mp3` — Fidel: "አ" (አ)
+- [ ] `/audio/am/word_abeba.mp3` — Amharic Word: "አበባ" (Flower)
+- [ ] `/audio/am/ke_1.mp3` — Fidel: "ከ" (ከ)
+- [ ] `/audio/am/word_kebero.mp3` — Amharic Word: "ከበሮ" (Drum)
+- [ ] `/audio/am/khe_1.mp3` — Fidel: "ኸ" (ኸ)
+- [ ] `/audio/am/word_khemis.mp3` — Amharic Word: "ኸሚስ" (Thursday)
+- [ ] `/audio/am/we_1.mp3` — Fidel: "ወ" (ወ)
+- [ ] `/audio/am/word_wetet.mp3` — Amharic Word: "ወተት" (Milk)
+- [ ] `/audio/am/aa_1.mp3` — Fidel: "ዐ" (ዐ)
+- [ ] `/audio/am/word_asa.mp3` — Amharic Word: "ዐሣ" (Fish)
+- [ ] `/audio/am/ze_1.mp3` — Fidel: "ዘ" (ዘ)
+- [ ] `/audio/am/word_zewd.mp3` — Amharic Word: "ዘውድ" (Crown)
+- [ ] `/audio/am/zhe_1.mp3` — Fidel: "ዠ" (ዠ)
+- [ ] `/audio/am/word_zhenber.mp3` — Amharic Word: "ዠንበር" (Sun)
+- [ ] `/audio/am/ye_1.mp3` — Fidel: "የ" (የ)
+- [ ] `/audio/am/word_yeneta.mp3` — Amharic Word: "የኔታ" (Teacher)
+- [ ] `/audio/am/de_1.mp3` — Fidel: "ደ" (ደ)
+- [ ] `/audio/am/word_debter.mp3` — Amharic Word: "ደብተር" (Notebook)
+- [ ] `/audio/am/je_1.mp3` — Fidel: "ጀ" (ጀ)
+- [ ] `/audio/am/word_jelba.mp3` — Amharic Word: "ጀልባ" (Boat)
+- [ ] `/audio/am/ge_1.mp3` — Fidel: "ገ" (ገ)
+- [ ] `/audio/am/word_gemed.mp3` — Amharic Word: "ገመድ" (Rope)
+- [ ] `/audio/am/tte_1.mp3` — Fidel: "ጠ" (ጠ)
+- [ ] `/audio/am/word_terepeza.mp3` — Amharic Word: "ጠረጴዛ" (Table)
+- [ ] `/audio/am/cche_1.mp3` — Fidel: "ጨ" (ጨ)
+- [ ] `/audio/am/word_chereqa.mp3` — Amharic Word: "ጨረቃ" (Moon)
+- [ ] `/audio/am/ppe_1.mp3` — Fidel: "ጰ" (ጰ)
+- [ ] `/audio/am/word_paraclitos.mp3` — Amharic Word: "ጰራቅሊጦስ" (Paraclete)
+- [ ] `/audio/am/tse_1.mp3` — Fidel: "ጸ" (ጸ)
+- [ ] `/audio/am/word_tsehay.mp3` — Amharic Word: "ጸሐይ" (Sun)
+- [ ] `/audio/am/tsse_1.mp3` — Fidel: "ፀ" (ፀ)
+- [ ] `/audio/am/word_tsegur.mp3` — Amharic Word: "ፀጉር" (Hair)
+- [ ] `/audio/am/fe_1.mp3` — Fidel: "ፈ" (ፈ)
+- [ ] `/audio/am/word_feres.mp3` — Amharic Word: "ፈረስ" (Horse)
+- [ ] `/audio/am/pe_1.mp3` — Fidel: "ፐ" (ፐ)
+- [ ] `/audio/am/word_percent.mp3` — Amharic Word: "ፐርሰንት" (Percent)
