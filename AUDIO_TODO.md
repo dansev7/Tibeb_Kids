@@ -26,45 +26,45 @@ Record in high-quality (44.1kHz or 48kHz mono/stereo MP3), warm, encouraging and
 - [ ] `/audio/en/upper_D.mp3` — Pronounce: "Capital D" (D)
 - [ ] `/audio/en/word_dog.mp3` — Word: "Dog"
 - [ ] `/audio/en/upper_E.mp3` — Pronounce: "Capital E" (E)
-- [ ] `/audio/en/word_egg.mp3` — Word: "Egg"
+- [ ] `/audio/en/word_elephant.mp3` — Word: "Elephant"
 - [ ] `/audio/en/upper_F.mp3` — Pronounce: "Capital F" (F)
-- [ ] `/audio/en/word_fish.mp3` — Word: "Fish"
+- [ ] `/audio/en/word_food.mp3` — Word: "Food"
 - [ ] `/audio/en/upper_G.mp3` — Pronounce: "Capital G" (G)
-- [ ] `/audio/en/word_goat.mp3` — Word: "Goat"
+- [ ] `/audio/en/word_grapes.mp3` — Word: "Grapes"
 - [ ] `/audio/en/upper_H.mp3` — Pronounce: "Capital H" (H)
-- [ ] `/audio/en/word_house.mp3` — Word: "House"
+- [ ] `/audio/en/word_hat.mp3` — Word: "Hat"
 - [ ] `/audio/en/upper_I.mp3` — Pronounce: "Capital I" (I)
-- [ ] `/audio/en/word_injera.mp3` — Word: "Injera"
+- [ ] `/audio/en/word_icecream.mp3` — Word: "Ice Cream"
 - [ ] `/audio/en/upper_J.mp3` — Pronounce: "Capital J" (J)
-- [ ] `/audio/en/word_jebena.mp3` — Word: "Jebena"
+- [ ] `/audio/en/word_jeep.mp3` — Word: "Jeep"
 - [ ] `/audio/en/upper_K.mp3` — Pronounce: "Capital K" (K)
-- [ ] `/audio/en/word_kite.mp3` — Word: "Kite"
+- [ ] `/audio/en/word_key.mp3` — Word: "Key"
 - [ ] `/audio/en/upper_L.mp3` — Pronounce: "Capital L" (L)
 - [ ] `/audio/en/word_lion.mp3` — Word: "Lion"
 - [ ] `/audio/en/upper_M.mp3` — Pronounce: "Capital M" (M)
-- [ ] `/audio/en/word_mango.mp3` — Word: "Mango"
+- [ ] `/audio/en/word_motorbike.mp3` — Word: "Motorbike"
 - [ ] `/audio/en/upper_N.mp3` — Pronounce: "Capital N" (N)
 - [ ] `/audio/en/word_nest.mp3` — Word: "Nest"
 - [ ] `/audio/en/upper_O.mp3` — Pronounce: "Capital O" (O)
 - [ ] `/audio/en/word_orange.mp3` — Word: "Orange"
 - [ ] `/audio/en/upper_P.mp3` — Pronounce: "Capital P" (P)
-- [ ] `/audio/en/word_pencil.mp3` — Word: "Pencil"
+- [ ] `/audio/en/word_parrot.mp3` — Word: "Parrot"
 - [ ] `/audio/en/upper_Q.mp3` — Pronounce: "Capital Q" (Q)
 - [ ] `/audio/en/word_queen.mp3` — Word: "Queen"
 - [ ] `/audio/en/upper_R.mp3` — Pronounce: "Capital R" (R)
-- [ ] `/audio/en/word_rabbit.mp3` — Word: "Rabbit"
+- [ ] `/audio/en/word_ring.mp3` — Word: "Ring"
 - [ ] `/audio/en/upper_S.mp3` — Pronounce: "Capital S" (S)
-- [ ] `/audio/en/word_sun.mp3` — Word: "Sun"
+- [ ] `/audio/en/word_shoes.mp3` — Word: "Shoes"
 - [ ] `/audio/en/upper_T.mp3` — Pronounce: "Capital T" (T)
-- [ ] `/audio/en/word_tree.mp3` — Word: "Tree"
+- [ ] `/audio/en/word_tea.mp3` — Word: "Tea"
 - [ ] `/audio/en/upper_U.mp3` — Pronounce: "Capital U" (U)
 - [ ] `/audio/en/word_umbrella.mp3` — Word: "Umbrella"
 - [ ] `/audio/en/upper_V.mp3` — Pronounce: "Capital V" (V)
-- [ ] `/audio/en/word_van.mp3` — Word: "Van"
+- [ ] `/audio/en/word_violin.mp3` — Word: "Violin"
 - [ ] `/audio/en/upper_W.mp3` — Pronounce: "Capital W" (W)
-- [ ] `/audio/en/word_water.mp3` — Word: "Water"
+- [ ] `/audio/en/word_watch.mp3` — Word: "Watch"
 - [ ] `/audio/en/upper_X.mp3` — Pronounce: "Capital X" (X)
-- [ ] `/audio/en/word_xray.mp3` — Word: "X-ray"
+- [ ] `/audio/en/word_xylophone.mp3` — Word: "Xylophone"
 - [ ] `/audio/en/upper_Y.mp3` — Pronounce: "Capital Y" (Y)
 - [ ] `/audio/en/word_yellow.mp3` — Word: "Yellow"
 - [ ] `/audio/en/upper_Z.mp3` — Pronounce: "Capital Z" (Z)
@@ -78,45 +78,45 @@ Record in high-quality (44.1kHz or 48kHz mono/stereo MP3), warm, encouraging and
 - [ ] `/audio/en/lower_d.mp3` — Pronounce: "Small d" (d)
 - [ ] `/audio/en/word_dog.mp3` — Word: "Dog"
 - [ ] `/audio/en/lower_e.mp3` — Pronounce: "Small e" (e)
-- [ ] `/audio/en/word_egg.mp3` — Word: "Egg"
+- [ ] `/audio/en/word_elephant.mp3` — Word: "Elephant"
 - [ ] `/audio/en/lower_f.mp3` — Pronounce: "Small f" (f)
-- [ ] `/audio/en/word_fish.mp3` — Word: "Fish"
+- [ ] `/audio/en/word_food.mp3` — Word: "Food"
 - [ ] `/audio/en/lower_g.mp3` — Pronounce: "Small g" (g)
-- [ ] `/audio/en/word_goat.mp3` — Word: "Goat"
+- [ ] `/audio/en/word_grapes.mp3` — Word: "Grapes"
 - [ ] `/audio/en/lower_h.mp3` — Pronounce: "Small h" (h)
-- [ ] `/audio/en/word_house.mp3` — Word: "House"
+- [ ] `/audio/en/word_hat.mp3` — Word: "Hat"
 - [ ] `/audio/en/lower_i.mp3` — Pronounce: "Small i" (i)
-- [ ] `/audio/en/word_injera.mp3` — Word: "Injera"
+- [ ] `/audio/en/word_icecream.mp3` — Word: "Ice Cream"
 - [ ] `/audio/en/lower_j.mp3` — Pronounce: "Small j" (j)
-- [ ] `/audio/en/word_jebena.mp3` — Word: "Jebena"
+- [ ] `/audio/en/word_jeep.mp3` — Word: "Jeep"
 - [ ] `/audio/en/lower_k.mp3` — Pronounce: "Small k" (k)
-- [ ] `/audio/en/word_kite.mp3` — Word: "Kite"
+- [ ] `/audio/en/word_key.mp3` — Word: "Key"
 - [ ] `/audio/en/lower_l.mp3` — Pronounce: "Small l" (l)
 - [ ] `/audio/en/word_lion.mp3` — Word: "Lion"
 - [ ] `/audio/en/lower_m.mp3` — Pronounce: "Small m" (m)
-- [ ] `/audio/en/word_mango.mp3` — Word: "Mango"
+- [ ] `/audio/en/word_motorbike.mp3` — Word: "Motorbike"
 - [ ] `/audio/en/lower_n.mp3` — Pronounce: "Small n" (n)
 - [ ] `/audio/en/word_nest.mp3` — Word: "Nest"
 - [ ] `/audio/en/lower_o.mp3` — Pronounce: "Small o" (o)
 - [ ] `/audio/en/word_orange.mp3` — Word: "Orange"
 - [ ] `/audio/en/lower_p.mp3` — Pronounce: "Small p" (p)
-- [ ] `/audio/en/word_pencil.mp3` — Word: "Pencil"
+- [ ] `/audio/en/word_parrot.mp3` — Word: "Parrot"
 - [ ] `/audio/en/lower_q.mp3` — Pronounce: "Small q" (q)
 - [ ] `/audio/en/word_queen.mp3` — Word: "Queen"
 - [ ] `/audio/en/lower_r.mp3` — Pronounce: "Small r" (r)
-- [ ] `/audio/en/word_rabbit.mp3` — Word: "Rabbit"
+- [ ] `/audio/en/word_ring.mp3` — Word: "Ring"
 - [ ] `/audio/en/lower_s.mp3` — Pronounce: "Small s" (s)
-- [ ] `/audio/en/word_sun.mp3` — Word: "Sun"
+- [ ] `/audio/en/word_shoes.mp3` — Word: "Shoes"
 - [ ] `/audio/en/lower_t.mp3` — Pronounce: "Small t" (t)
-- [ ] `/audio/en/word_tree.mp3` — Word: "Tree"
+- [ ] `/audio/en/word_tea.mp3` — Word: "Tea"
 - [ ] `/audio/en/lower_u.mp3` — Pronounce: "Small u" (u)
 - [ ] `/audio/en/word_umbrella.mp3` — Word: "Umbrella"
 - [ ] `/audio/en/lower_v.mp3` — Pronounce: "Small v" (v)
-- [ ] `/audio/en/word_van.mp3` — Word: "Van"
+- [ ] `/audio/en/word_violin.mp3` — Word: "Violin"
 - [ ] `/audio/en/lower_w.mp3` — Pronounce: "Small w" (w)
-- [ ] `/audio/en/word_water.mp3` — Word: "Water"
+- [ ] `/audio/en/word_watch.mp3` — Word: "Watch"
 - [ ] `/audio/en/lower_x.mp3` — Pronounce: "Small x" (x)
-- [ ] `/audio/en/word_xray.mp3` — Word: "X-ray"
+- [ ] `/audio/en/word_xylophone.mp3` — Word: "Xylophone"
 - [ ] `/audio/en/lower_y.mp3` — Pronounce: "Small y" (y)
 - [ ] `/audio/en/word_yellow.mp3` — Word: "Yellow"
 - [ ] `/audio/en/lower_z.mp3` — Pronounce: "Small z" (z)

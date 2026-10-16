@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GameItem } from '@/types';
 import { playAudioOrSpeech, playPop } from '@/utils/sound';
 import { getThemeConfig } from '@/utils/theme';
+import ItemVisualBadge from '@/components/ui/ItemVisualBadge';
 
 export interface MeetCardProps {
   items: GameItem[];
@@ -200,19 +201,12 @@ export function MeetCard({ items, onComplete, themeColor }: MeetCardProps) {
 
             {/* Picture & Word Area */}
             <div className="w-full flex flex-col items-center justify-center pt-2 border-t-2 border-slate-100 mt-1 shrink-0">
-              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-amber-50/80 flex items-center justify-center overflow-hidden border-2 border-amber-200 shadow-inner mb-1.5">
-                {currentItem.picturePath && !imgError ? (
-                  <img
-                    src={currentItem.picturePath}
-                    alt={currentItem.pictureWord}
-                    onError={() => setImgError(true)}
-                    className="w-full h-full object-contain p-1.5"
-                  />
-                ) : (
-                  <span className="text-5xl sm:text-6xl select-none" role="img" aria-label={currentItem.pictureWord}>
-                    🎨
-                  </span>
-                )}
+              <div className="mb-1.5">
+                <ItemVisualBadge
+                  item={currentItem}
+                  className="w-24 h-24 sm:w-28 sm:h-28"
+                  emojiSize="text-6xl sm:text-7xl"
+                />
               </div>
 
               {/* Picture Word - Large, friendly font */}

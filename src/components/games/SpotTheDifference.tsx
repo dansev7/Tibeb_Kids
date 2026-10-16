@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { GameItem, StageResult } from '@/types';
 import { playFeedbackTone, playAudioOrSpeech } from '@/utils/sound';
 import SpeakerButton from '@/components/ui/SpeakerButton';
+import { getItemEmoji } from '@/utils/itemVisuals';
 
 interface SpotTheDifferenceProps {
   targetItem: GameItem;
@@ -85,8 +86,9 @@ export default function SpotTheDifference({
             {targetItem.symbol}
           </span>
           {targetItem.pictureWord && (
-            <span className="text-xl font-bold text-purple-900">
-              {targetItem.pictureWord}
+            <span className="text-xl font-bold text-purple-900 flex items-center gap-2">
+              <span className="text-2xl" role="img" aria-hidden="true">{getItemEmoji(targetItem)}</span>
+              <span>{targetItem.pictureWord}</span>
             </span>
           )}
         </div>

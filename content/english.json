@@ -34,7 +34,10 @@
       "pictureWordAudioPath": "/audio/en/word_cat.mp3",
       "picturePath": "/images/en/cat.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_G", "upper_O"]
+      "confusableWith": [
+        "upper_G",
+        "upper_O"
+      ]
     },
     {
       "id": "upper_D",
@@ -46,7 +49,10 @@
       "pictureWordAudioPath": "/audio/en/word_dog.mp3",
       "picturePath": "/images/en/dog.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_O", "upper_B"]
+      "confusableWith": [
+        "upper_O",
+        "upper_B"
+      ]
     },
     {
       "id": "upper_E",
@@ -54,11 +60,13 @@
       "symbol": "E",
       "displayName": "Capital E",
       "audioPath": "/audio/en/upper_E.mp3",
-      "pictureWord": "Egg",
-      "pictureWordAudioPath": "/audio/en/word_egg.mp3",
-      "picturePath": "/images/en/egg.png",
+      "pictureWord": "Elephant",
+      "pictureWordAudioPath": "/audio/en/word_elephant.mp3",
+      "picturePath": "/images/en/elephant.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_F"]
+      "confusableWith": [
+        "upper_F"
+      ]
     },
     {
       "id": "upper_F",
@@ -66,11 +74,13 @@
       "symbol": "F",
       "displayName": "Capital F",
       "audioPath": "/audio/en/upper_F.mp3",
-      "pictureWord": "Fish",
-      "pictureWordAudioPath": "/audio/en/word_fish.mp3",
-      "picturePath": "/images/en/fish.png",
+      "pictureWord": "Food",
+      "pictureWordAudioPath": "/audio/en/word_food.mp3",
+      "picturePath": "/images/en/food.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_E"]
+      "confusableWith": [
+        "upper_E"
+      ]
     },
     {
       "id": "upper_G",
@@ -78,11 +88,14 @@
       "symbol": "G",
       "displayName": "Capital G",
       "audioPath": "/audio/en/upper_G.mp3",
-      "pictureWord": "Goat",
-      "pictureWordAudioPath": "/audio/en/word_goat.mp3",
-      "picturePath": "/images/en/goat.png",
+      "pictureWord": "Grapes",
+      "pictureWordAudioPath": "/audio/en/word_grapes.mp3",
+      "picturePath": "/images/en/grapes.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_C", "upper_O"]
+      "confusableWith": [
+        "upper_C",
+        "upper_O"
+      ]
     },
     {
       "id": "upper_H",
@@ -90,9 +103,9 @@
       "symbol": "H",
       "displayName": "Capital H",
       "audioPath": "/audio/en/upper_H.mp3",
-      "pictureWord": "House",
-      "pictureWordAudioPath": "/audio/en/word_house.mp3",
-      "picturePath": "/images/en/house.png",
+      "pictureWord": "Hat",
+      "pictureWordAudioPath": "/audio/en/word_hat.mp3",
+      "picturePath": "/images/en/hat.png",
       "strokePathsJson": null,
       "confusableWith": []
     },
@@ -102,11 +115,14 @@
       "symbol": "I",
       "displayName": "Capital I",
       "audioPath": "/audio/en/upper_I.mp3",
-      "pictureWord": "Injera",
-      "pictureWordAudioPath": "/audio/en/word_injera.mp3",
-      "picturePath": "/images/en/injera.png",
+      "pictureWord": "Ice Cream",
+      "pictureWordAudioPath": "/audio/en/word_icecream.mp3",
+      "picturePath": "/images/en/icecream.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_L", "lower_l"]
+      "confusableWith": [
+        "upper_L",
+        "lower_l"
+      ]
     },
     {
       "id": "upper_J",
@@ -114,9 +130,9 @@
       "symbol": "J",
       "displayName": "Capital J",
       "audioPath": "/audio/en/upper_J.mp3",
-      "pictureWord": "Jebena",
-      "pictureWordAudioPath": "/audio/en/word_jebena.mp3",
-      "picturePath": "/images/en/jebena.png",
+      "pictureWord": "Jeep",
+      "pictureWordAudioPath": "/audio/en/word_jeep.mp3",
+      "picturePath": "/images/en/jeep.png",
       "strokePathsJson": null,
       "confusableWith": []
     },
@@ -126,9 +142,9 @@
       "symbol": "K",
       "displayName": "Capital K",
       "audioPath": "/audio/en/upper_K.mp3",
-      "pictureWord": "Kite",
-      "pictureWordAudioPath": "/audio/en/word_kite.mp3",
-      "picturePath": "/images/en/kite.png",
+      "pictureWord": "Key",
+      "pictureWordAudioPath": "/audio/en/word_key.mp3",
+      "picturePath": "/images/en/key.png",
       "strokePathsJson": null,
       "confusableWith": []
     },
@@ -142,7 +158,9 @@
       "pictureWordAudioPath": "/audio/en/word_lion.mp3",
       "picturePath": "/images/en/lion.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_I"]
+      "confusableWith": [
+        "upper_I"
+      ]
     },
     {
       "id": "upper_M",
@@ -150,11 +168,13 @@
       "symbol": "M",
       "displayName": "Capital M",
       "audioPath": "/audio/en/upper_M.mp3",
-      "pictureWord": "Mango",
-      "pictureWordAudioPath": "/audio/en/word_mango.mp3",
-      "picturePath": "/images/en/mango.png",
+      "pictureWord": "Motorbike",
+      "pictureWordAudioPath": "/audio/en/word_motorbike.mp3",
+      "picturePath": "/images/en/motorbike.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_W"]
+      "confusableWith": [
+        "upper_W"
+      ]
     },
     {
       "id": "upper_N",
@@ -178,7 +198,11 @@
       "pictureWordAudioPath": "/audio/en/word_orange.mp3",
       "picturePath": "/images/en/orange.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_Q", "upper_D", "upper_C"]
+      "confusableWith": [
+        "upper_Q",
+        "upper_D",
+        "upper_C"
+      ]
     },
     {
       "id": "upper_P",
@@ -186,11 +210,14 @@
       "symbol": "P",
       "displayName": "Capital P",
       "audioPath": "/audio/en/upper_P.mp3",
-      "pictureWord": "Pencil",
-      "pictureWordAudioPath": "/audio/en/word_pencil.mp3",
-      "picturePath": "/images/en/pencil.png",
+      "pictureWord": "Parrot",
+      "pictureWordAudioPath": "/audio/en/word_parrot.mp3",
+      "picturePath": "/images/en/parrot.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_R", "upper_B"]
+      "confusableWith": [
+        "upper_R",
+        "upper_B"
+      ]
     },
     {
       "id": "upper_Q",
@@ -202,7 +229,9 @@
       "pictureWordAudioPath": "/audio/en/word_queen.mp3",
       "picturePath": "/images/en/queen.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_O"]
+      "confusableWith": [
+        "upper_O"
+      ]
     },
     {
       "id": "upper_R",
@@ -210,11 +239,13 @@
       "symbol": "R",
       "displayName": "Capital R",
       "audioPath": "/audio/en/upper_R.mp3",
-      "pictureWord": "Rabbit",
-      "pictureWordAudioPath": "/audio/en/word_rabbit.mp3",
-      "picturePath": "/images/en/rabbit.png",
+      "pictureWord": "Ring",
+      "pictureWordAudioPath": "/audio/en/word_ring.mp3",
+      "picturePath": "/images/en/ring.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_P"]
+      "confusableWith": [
+        "upper_P"
+      ]
     },
     {
       "id": "upper_S",
@@ -222,9 +253,9 @@
       "symbol": "S",
       "displayName": "Capital S",
       "audioPath": "/audio/en/upper_S.mp3",
-      "pictureWord": "Sun",
-      "pictureWordAudioPath": "/audio/en/word_sun.mp3",
-      "picturePath": "/images/en/sun.png",
+      "pictureWord": "Shoes",
+      "pictureWordAudioPath": "/audio/en/word_shoes.mp3",
+      "picturePath": "/images/en/shoes.png",
       "strokePathsJson": null,
       "confusableWith": []
     },
@@ -234,11 +265,13 @@
       "symbol": "T",
       "displayName": "Capital T",
       "audioPath": "/audio/en/upper_T.mp3",
-      "pictureWord": "Tree",
-      "pictureWordAudioPath": "/audio/en/word_tree.mp3",
-      "picturePath": "/images/en/tree.png",
+      "pictureWord": "Tea",
+      "pictureWordAudioPath": "/audio/en/word_tea.mp3",
+      "picturePath": "/images/en/tea.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_I"]
+      "confusableWith": [
+        "upper_I"
+      ]
     },
     {
       "id": "upper_U",
@@ -250,7 +283,9 @@
       "pictureWordAudioPath": "/audio/en/word_umbrella.mp3",
       "picturePath": "/images/en/umbrella.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_V"]
+      "confusableWith": [
+        "upper_V"
+      ]
     },
     {
       "id": "upper_V",
@@ -258,11 +293,13 @@
       "symbol": "V",
       "displayName": "Capital V",
       "audioPath": "/audio/en/upper_V.mp3",
-      "pictureWord": "Van",
-      "pictureWordAudioPath": "/audio/en/word_van.mp3",
-      "picturePath": "/images/en/van.png",
+      "pictureWord": "Violin",
+      "pictureWordAudioPath": "/audio/en/word_violin.mp3",
+      "picturePath": "/images/en/violin.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_U"]
+      "confusableWith": [
+        "upper_U"
+      ]
     },
     {
       "id": "upper_W",
@@ -270,11 +307,13 @@
       "symbol": "W",
       "displayName": "Capital W",
       "audioPath": "/audio/en/upper_W.mp3",
-      "pictureWord": "Water",
-      "pictureWordAudioPath": "/audio/en/word_water.mp3",
-      "picturePath": "/images/en/water.png",
+      "pictureWord": "Watch",
+      "pictureWordAudioPath": "/audio/en/word_watch.mp3",
+      "picturePath": "/images/en/watch.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_M"]
+      "confusableWith": [
+        "upper_M"
+      ]
     },
     {
       "id": "upper_X",
@@ -282,9 +321,9 @@
       "symbol": "X",
       "displayName": "Capital X",
       "audioPath": "/audio/en/upper_X.mp3",
-      "pictureWord": "X-ray",
-      "pictureWordAudioPath": "/audio/en/word_xray.mp3",
-      "picturePath": "/images/en/xray.png",
+      "pictureWord": "Xylophone",
+      "pictureWordAudioPath": "/audio/en/word_xylophone.mp3",
+      "picturePath": "/images/en/xylophone.png",
       "strokePathsJson": null,
       "confusableWith": []
     },
@@ -322,7 +361,10 @@
       "pictureWordAudioPath": "/audio/en/word_apple.mp3",
       "picturePath": "/images/en/apple.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_o", "lower_d"]
+      "confusableWith": [
+        "lower_o",
+        "lower_d"
+      ]
     },
     {
       "id": "lower_b",
@@ -334,7 +376,11 @@
       "pictureWordAudioPath": "/audio/en/word_ball.mp3",
       "picturePath": "/images/en/ball.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_d", "lower_p", "lower_q"]
+      "confusableWith": [
+        "lower_d",
+        "lower_p",
+        "lower_q"
+      ]
     },
     {
       "id": "lower_c",
@@ -346,7 +392,10 @@
       "pictureWordAudioPath": "/audio/en/word_cat.mp3",
       "picturePath": "/images/en/cat.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_e", "lower_o"]
+      "confusableWith": [
+        "lower_e",
+        "lower_o"
+      ]
     },
     {
       "id": "lower_d",
@@ -358,7 +407,11 @@
       "pictureWordAudioPath": "/audio/en/word_dog.mp3",
       "picturePath": "/images/en/dog.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_b", "lower_p", "lower_q"]
+      "confusableWith": [
+        "lower_b",
+        "lower_p",
+        "lower_q"
+      ]
     },
     {
       "id": "lower_e",
@@ -366,11 +419,13 @@
       "symbol": "e",
       "displayName": "Small e",
       "audioPath": "/audio/en/lower_e.mp3",
-      "pictureWord": "Egg",
-      "pictureWordAudioPath": "/audio/en/word_egg.mp3",
-      "picturePath": "/images/en/egg.png",
+      "pictureWord": "Elephant",
+      "pictureWordAudioPath": "/audio/en/word_elephant.mp3",
+      "picturePath": "/images/en/elephant.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_c"]
+      "confusableWith": [
+        "lower_c"
+      ]
     },
     {
       "id": "lower_f",
@@ -378,11 +433,13 @@
       "symbol": "f",
       "displayName": "Small f",
       "audioPath": "/audio/en/lower_f.mp3",
-      "pictureWord": "Fish",
-      "pictureWordAudioPath": "/audio/en/word_fish.mp3",
-      "picturePath": "/images/en/fish.png",
+      "pictureWord": "Food",
+      "pictureWordAudioPath": "/audio/en/word_food.mp3",
+      "picturePath": "/images/en/food.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_t"]
+      "confusableWith": [
+        "lower_t"
+      ]
     },
     {
       "id": "lower_g",
@@ -390,11 +447,14 @@
       "symbol": "g",
       "displayName": "Small g",
       "audioPath": "/audio/en/lower_g.mp3",
-      "pictureWord": "Goat",
-      "pictureWordAudioPath": "/audio/en/word_goat.mp3",
-      "picturePath": "/images/en/goat.png",
+      "pictureWord": "Grapes",
+      "pictureWordAudioPath": "/audio/en/word_grapes.mp3",
+      "picturePath": "/images/en/grapes.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_q", "lower_p"]
+      "confusableWith": [
+        "lower_q",
+        "lower_p"
+      ]
     },
     {
       "id": "lower_h",
@@ -402,11 +462,13 @@
       "symbol": "h",
       "displayName": "Small h",
       "audioPath": "/audio/en/lower_h.mp3",
-      "pictureWord": "House",
-      "pictureWordAudioPath": "/audio/en/word_house.mp3",
-      "picturePath": "/images/en/house.png",
+      "pictureWord": "Hat",
+      "pictureWordAudioPath": "/audio/en/word_hat.mp3",
+      "picturePath": "/images/en/hat.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_n"]
+      "confusableWith": [
+        "lower_n"
+      ]
     },
     {
       "id": "lower_i",
@@ -414,11 +476,14 @@
       "symbol": "i",
       "displayName": "Small i",
       "audioPath": "/audio/en/lower_i.mp3",
-      "pictureWord": "Injera",
-      "pictureWordAudioPath": "/audio/en/word_injera.mp3",
-      "picturePath": "/images/en/injera.png",
+      "pictureWord": "Ice Cream",
+      "pictureWordAudioPath": "/audio/en/word_icecream.mp3",
+      "picturePath": "/images/en/icecream.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_j", "lower_l"]
+      "confusableWith": [
+        "lower_j",
+        "lower_l"
+      ]
     },
     {
       "id": "lower_j",
@@ -426,11 +491,13 @@
       "symbol": "j",
       "displayName": "Small j",
       "audioPath": "/audio/en/lower_j.mp3",
-      "pictureWord": "Jebena",
-      "pictureWordAudioPath": "/audio/en/word_jebena.mp3",
-      "picturePath": "/images/en/jebena.png",
+      "pictureWord": "Jeep",
+      "pictureWordAudioPath": "/audio/en/word_jeep.mp3",
+      "picturePath": "/images/en/jeep.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_i"]
+      "confusableWith": [
+        "lower_i"
+      ]
     },
     {
       "id": "lower_k",
@@ -438,9 +505,9 @@
       "symbol": "k",
       "displayName": "Small k",
       "audioPath": "/audio/en/lower_k.mp3",
-      "pictureWord": "Kite",
-      "pictureWordAudioPath": "/audio/en/word_kite.mp3",
-      "picturePath": "/images/en/kite.png",
+      "pictureWord": "Key",
+      "pictureWordAudioPath": "/audio/en/word_key.mp3",
+      "picturePath": "/images/en/key.png",
       "strokePathsJson": null,
       "confusableWith": []
     },
@@ -454,7 +521,10 @@
       "pictureWordAudioPath": "/audio/en/word_lion.mp3",
       "picturePath": "/images/en/lion.png",
       "strokePathsJson": null,
-      "confusableWith": ["upper_I", "lower_i"]
+      "confusableWith": [
+        "upper_I",
+        "lower_i"
+      ]
     },
     {
       "id": "lower_m",
@@ -462,11 +532,14 @@
       "symbol": "m",
       "displayName": "Small m",
       "audioPath": "/audio/en/lower_m.mp3",
-      "pictureWord": "Mango",
-      "pictureWordAudioPath": "/audio/en/word_mango.mp3",
-      "picturePath": "/images/en/mango.png",
+      "pictureWord": "Motorbike",
+      "pictureWordAudioPath": "/audio/en/word_motorbike.mp3",
+      "picturePath": "/images/en/motorbike.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_w", "lower_n"]
+      "confusableWith": [
+        "lower_w",
+        "lower_n"
+      ]
     },
     {
       "id": "lower_n",
@@ -478,7 +551,11 @@
       "pictureWordAudioPath": "/audio/en/word_nest.mp3",
       "picturePath": "/images/en/nest.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_u", "lower_m", "lower_h"]
+      "confusableWith": [
+        "lower_u",
+        "lower_m",
+        "lower_h"
+      ]
     },
     {
       "id": "lower_o",
@@ -490,7 +567,10 @@
       "pictureWordAudioPath": "/audio/en/word_orange.mp3",
       "picturePath": "/images/en/orange.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_a", "lower_c"]
+      "confusableWith": [
+        "lower_a",
+        "lower_c"
+      ]
     },
     {
       "id": "lower_p",
@@ -498,11 +578,15 @@
       "symbol": "p",
       "displayName": "Small p",
       "audioPath": "/audio/en/lower_p.mp3",
-      "pictureWord": "Pencil",
-      "pictureWordAudioPath": "/audio/en/word_pencil.mp3",
-      "picturePath": "/images/en/pencil.png",
+      "pictureWord": "Parrot",
+      "pictureWordAudioPath": "/audio/en/word_parrot.mp3",
+      "picturePath": "/images/en/parrot.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_q", "lower_b", "lower_d"]
+      "confusableWith": [
+        "lower_q",
+        "lower_b",
+        "lower_d"
+      ]
     },
     {
       "id": "lower_q",
@@ -514,7 +598,12 @@
       "pictureWordAudioPath": "/audio/en/word_queen.mp3",
       "picturePath": "/images/en/queen.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_p", "lower_g", "lower_d", "lower_b"]
+      "confusableWith": [
+        "lower_p",
+        "lower_g",
+        "lower_d",
+        "lower_b"
+      ]
     },
     {
       "id": "lower_r",
@@ -522,11 +611,13 @@
       "symbol": "r",
       "displayName": "Small r",
       "audioPath": "/audio/en/lower_r.mp3",
-      "pictureWord": "Rabbit",
-      "pictureWordAudioPath": "/audio/en/word_rabbit.mp3",
-      "picturePath": "/images/en/rabbit.png",
+      "pictureWord": "Ring",
+      "pictureWordAudioPath": "/audio/en/word_ring.mp3",
+      "picturePath": "/images/en/ring.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_n"]
+      "confusableWith": [
+        "lower_n"
+      ]
     },
     {
       "id": "lower_s",
@@ -534,9 +625,9 @@
       "symbol": "s",
       "displayName": "Small s",
       "audioPath": "/audio/en/lower_s.mp3",
-      "pictureWord": "Sun",
-      "pictureWordAudioPath": "/audio/en/word_sun.mp3",
-      "picturePath": "/images/en/sun.png",
+      "pictureWord": "Shoes",
+      "pictureWordAudioPath": "/audio/en/word_shoes.mp3",
+      "picturePath": "/images/en/shoes.png",
       "strokePathsJson": null,
       "confusableWith": []
     },
@@ -546,11 +637,14 @@
       "symbol": "t",
       "displayName": "Small t",
       "audioPath": "/audio/en/lower_t.mp3",
-      "pictureWord": "Tree",
-      "pictureWordAudioPath": "/audio/en/word_tree.mp3",
-      "picturePath": "/images/en/tree.png",
+      "pictureWord": "Tea",
+      "pictureWordAudioPath": "/audio/en/word_tea.mp3",
+      "picturePath": "/images/en/tea.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_f", "lower_l"]
+      "confusableWith": [
+        "lower_f",
+        "lower_l"
+      ]
     },
     {
       "id": "lower_u",
@@ -562,7 +656,10 @@
       "pictureWordAudioPath": "/audio/en/word_umbrella.mp3",
       "picturePath": "/images/en/umbrella.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_n", "lower_v"]
+      "confusableWith": [
+        "lower_n",
+        "lower_v"
+      ]
     },
     {
       "id": "lower_v",
@@ -570,11 +667,14 @@
       "symbol": "v",
       "displayName": "Small v",
       "audioPath": "/audio/en/lower_v.mp3",
-      "pictureWord": "Van",
-      "pictureWordAudioPath": "/audio/en/word_van.mp3",
-      "picturePath": "/images/en/van.png",
+      "pictureWord": "Violin",
+      "pictureWordAudioPath": "/audio/en/word_violin.mp3",
+      "picturePath": "/images/en/violin.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_u", "lower_w"]
+      "confusableWith": [
+        "lower_u",
+        "lower_w"
+      ]
     },
     {
       "id": "lower_w",
@@ -582,11 +682,14 @@
       "symbol": "w",
       "displayName": "Small w",
       "audioPath": "/audio/en/lower_w.mp3",
-      "pictureWord": "Water",
-      "pictureWordAudioPath": "/audio/en/word_water.mp3",
-      "picturePath": "/images/en/water.png",
+      "pictureWord": "Watch",
+      "pictureWordAudioPath": "/audio/en/word_watch.mp3",
+      "picturePath": "/images/en/watch.png",
       "strokePathsJson": null,
-      "confusableWith": ["lower_m", "lower_v"]
+      "confusableWith": [
+        "lower_m",
+        "lower_v"
+      ]
     },
     {
       "id": "lower_x",
@@ -594,9 +697,9 @@
       "symbol": "x",
       "displayName": "Small x",
       "audioPath": "/audio/en/lower_x.mp3",
-      "pictureWord": "X-ray",
-      "pictureWordAudioPath": "/audio/en/word_xray.mp3",
-      "picturePath": "/images/en/xray.png",
+      "pictureWord": "Xylophone",
+      "pictureWordAudioPath": "/audio/en/word_xylophone.mp3",
+      "picturePath": "/images/en/xylophone.png",
       "strokePathsJson": null,
       "confusableWith": []
     },

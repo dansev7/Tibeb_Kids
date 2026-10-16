@@ -6,6 +6,7 @@ import { GameItem, StageResult } from '@/types';
 import { playAudioOrSpeech, playChime, playBoop, playPop, speakText } from '@/utils/sound';
 import { getThemeConfig } from '@/utils/theme';
 import { ConfettiBurst } from './ConfettiBurst';
+import ItemVisualBadge from '@/components/ui/ItemVisualBadge';
 
 export interface MatchPairsProps {
   pairs: Array<{ left: GameItem; right: GameItem }>;
@@ -282,19 +283,14 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
                     minWidth: '64px',
                   }}
                 >
-                  {/* If item has picture and pictureWord is distinct, show picture; else show symbol */}
-                  {item.picturePath ? (
+                  {/* If item has picture or pictureWord, show visual badge with word; else show symbol */}
+                  {item.picturePath || (item.pictureWord && item.pictureWord !== item.symbol) ? (
                     <div className="flex items-center gap-2">
-                      <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-amber-50 flex items-center justify-center overflow-hidden border border-amber-200">
-                        <img
-                          src={item.picturePath}
-                          alt={item.pictureWord}
-                          className="w-full h-full object-contain p-1"
-                          onError={(e) => {
-                            (e.target as HTMLElement).style.display = 'none';
-                          }}
-                        />
-                      </div>
+                      <ItemVisualBadge
+                        item={item}
+                        className="w-14 h-14 sm:w-16 sm:h-16"
+                        emojiSize="text-3xl sm:text-4xl"
+                      />
                       <span className="text-xl sm:text-2xl font-bold text-slate-700 capitalize">
                         {item.pictureWord || item.symbol}
                       </span>
