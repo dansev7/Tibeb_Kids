@@ -258,6 +258,7 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
               const isMatched = isMatchedRight(item.id);
               const isSelected = selectedRight === item.id;
               const isWiggling = wigglingRight === item.id;
+              const hasVisual = Boolean(item.picturePath || (item.pictureWord && item.pictureWord !== item.symbol));
 
               return (
                 <motion.button
@@ -272,7 +273,9 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
                   whileTap={!isMatched ? { scale: 0.95 } : undefined}
                   onClick={() => handleRightClick(item)}
                   aria-label={`Right card ${item.displayName || item.pictureWord}`}
-                  className={`relative min-h-[88px] sm:min-h-[110px] rounded-3xl p-3 flex items-center justify-center border-4 shadow-lg transition-colors cursor-pointer ${
+                  className={`relative min-h-[88px] sm:min-h-[110px] rounded-3xl border-4 shadow-lg transition-colors cursor-pointer flex items-center ${
+                    hasVisual ? 'justify-start px-3.5 sm:px-5' : 'justify-center p-3'
+                  } ${
                     isMatched
                       ? 'border-emerald-500 bg-emerald-50/80 cursor-default'
                       : isSelected
@@ -284,14 +287,14 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
                   }}
                 >
                   {/* If item has picture or pictureWord, show visual badge with word; else show symbol */}
-                  {item.picturePath || (item.pictureWord && item.pictureWord !== item.symbol) ? (
-                    <div className="flex items-center gap-2">
+                  {hasVisual ? (
+                    <div className="flex items-center gap-3 sm:gap-4 w-full">
                       <ItemVisualBadge
                         item={item}
-                        className="w-14 h-14 sm:w-16 sm:h-16"
+                        className="w-13 h-13 sm:w-16 sm:h-16 shrink-0"
                         emojiSize="text-3xl sm:text-4xl"
                       />
-                      <span className="text-xl sm:text-2xl font-bold text-slate-700 capitalize">
+                      <span className="text-xl sm:text-2xl font-bold text-slate-700 capitalize truncate">
                         {item.pictureWord || item.symbol}
                       </span>
                     </div>

@@ -38,7 +38,7 @@ export default function ItemVisualBadge({
         />
       ) : (
         <span
-          className={`${emojiSize} select-none leading-none transform transition-transform hover:scale-110`}
+          className={`${emojiSize} w-full h-full flex items-center justify-center text-center select-none leading-none transform transition-transform hover:scale-110`}
           role="img"
           aria-label={item?.pictureWord || ''}
         >
