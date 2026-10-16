@@ -17,7 +17,20 @@ interface Checkpoint {
   x: number;
   y: number;
   hit: boolean;
+  zone: number;
 }
+
+interface GlyphData {
+  checkpoints: Checkpoint[];
+  activeZones: number[];
+  startPoint: { x: number; y: number } | null;
+  boundingBox: { minX: number; maxX: number; minY: number; maxY: number };
+}
+
+const CANVAS_SIZE = 400;
+const PASSING_ACCURACY_THRESHOLD = 65; // Must achieve at least 65% match accuracy to pass
+const ON_PATH_RADIUS = 26; // Tolerance radius around stroke for precision calculation
+const CHECKPOINT_HIT_RADIUS = 22; // Checkpoint collection radius
 
 export default function TraceIt({
   items,
@@ -28,12 +41,16 @@ export default function TraceIt({
   const [results, setResults] = useState<StageResult[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [completedStrokes, setCompletedStrokes] = useState(false);
-  const [coveragePercent, setCoveragePercent] = useState(0);
+  const [matchAccuracy, setMatchAccuracy] = useState(0);
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
-  const [showDoneNotice, setShowDoneNotice] = useState(false);
+  const [showNotice, setShowNotice] = useState<string | null>(null);
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const checkpointsRef = useRef<Checkpoint[]>([]);
+  const guideCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const drawCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const glyphDataRef = useRef<GlyphData | null>(null);
+  const lastPointRef = useRef<{ x: number; y: number } | null>(null);
+  const totalDrawnPointsRef = useRef(0);
+  const onTargetPointsRef = useRef(0);
   const completedRef = useRef(false);
 
   const currentItem = items[currentIndex];
@@ -42,82 +59,175 @@ export default function TraceIt({
   const playPrompt = useCallback(() => {
     if (!currentItem) return;
     const prompt = isFidel
-      ? `${currentItem.symbol} ፊደልን ጻፍ!`
-      : `Trace the ${currentItem.displayName || currentItem.symbol}!`;
+      ? `${currentItem.symbol} ፊደልን በትክክል ጻፍ!`
+      : `Trace the letter ${currentItem.displayName || currentItem.symbol}!`;
     playAudioOrSpeech(currentItem.audioPath, prompt);
   }, [currentItem, isFidel]);
 
-  // Extract character shape checkpoints from an offscreen canvas
-  const initCharacterCheckpoints = useCallback((symbol: string) => {
+  // Render the guide template letter onto the guide canvas and extract checkpoints & spatial zones
+  const initGlyphAndGuide = useCallback((symbol: string) => {
     if (typeof window === 'undefined') return;
 
+    const guideCanvas = guideCanvasRef.current;
+    if (!guideCanvas) return;
+    const gCtx = guideCanvas.getContext('2d', { willReadFrequently: true });
+    if (!gCtx) return;
+
+    // Clear guide canvas
+    gCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+    // Common high-legibility font stack for Ethiopic and Latin
+    const fontStr = '900 230px "Noto Sans Ethiopic", "Nyala", "Kefa", "Segoe UI", system-ui, -apple-system, sans-serif';
+    gCtx.font = fontStr;
+    gCtx.textAlign = 'center';
+    gCtx.textBaseline = 'middle';
+
+    // 1. Draw solid black glyph on offscreen canvas to analyze pixels
     const offscreen = document.createElement('canvas');
-    offscreen.width = 400;
-    offscreen.height = 400;
-    const ctx = offscreen.getContext('2d');
-    if (!ctx) return;
+    offscreen.width = CANVAS_SIZE;
+    offscreen.height = CANVAS_SIZE;
+    const oCtx = offscreen.getContext('2d', { willReadFrequently: true });
+    if (!oCtx) return;
 
-    // Draw the glyph in center of 400x400 space
-    ctx.clearRect(0, 0, 400, 400);
-    ctx.font = 'bold 230px "Noto Sans Ethiopic", "Segoe UI", system-ui, -apple-system, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillStyle = '#000000';
-    ctx.fillText(symbol, 200, 200);
+    oCtx.font = fontStr;
+    oCtx.textAlign = 'center';
+    oCtx.textBaseline = 'middle';
+    oCtx.fillStyle = '#000000';
+    oCtx.fillText(symbol, CANVAS_SIZE / 2, CANVAS_SIZE / 2);
 
-    const imgData = ctx.getImageData(0, 0, 400, 400).data;
+    const imgData = oCtx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE).data;
+
+    // 2. Find bounding box of the glyph
+    let minX = CANVAS_SIZE;
+    let maxX = 0;
+    let minY = CANVAS_SIZE;
+    let maxY = 0;
+
+    for (let y = 10; y < CANVAS_SIZE - 10; y++) {
+      for (let x = 10; x < CANVAS_SIZE - 10; x++) {
+        const a = imgData[(y * CANVAS_SIZE + x) * 4 + 3];
+        if (a > 60) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+
+    if (maxX <= minX || maxY <= minY) {
+      minX = 80; maxX = 320; minY = 80; maxY = 320;
+    }
+
+    const boxW = Math.max(1, maxX - minX);
+    const boxH = Math.max(1, maxY - minY);
+
+    // 3. Sample checkpoints and partition into 3x3 spatial zones (0..8)
     const points: Checkpoint[] = [];
-    const step = 9; // Sample every 9 pixels for clean coverage grid
-
+    const step = 8;
+    const zoneCounts = new Array(9).fill(0);
     let topScore = Infinity;
     let initialStart: { x: number; y: number } | null = null;
 
-    for (let y = 30; y < 370; y += step) {
-      for (let x = 30; x < 370; x += step) {
-        const alpha = imgData[(y * 400 + x) * 4 + 3];
-        if (alpha > 70) {
-          points.push({ x, y, hit: false });
+    for (let y = minY; y <= maxY; y += step) {
+      for (let x = minX; x <= maxX; x += step) {
+        const a = imgData[(y * CANVAS_SIZE + x) * 4 + 3];
+        if (a > 60) {
+          const col = Math.min(2, Math.max(0, Math.floor(((x - minX) / boxW) * 3)));
+          const row = Math.min(2, Math.max(0, Math.floor(((y - minY) / boxH) * 3)));
+          const zone = row * 3 + col;
+          zoneCounts[zone]++;
 
-          // Writing standardly starts near the top-left of the glyph
-          const startWeight = y * 1.5 + x;
-          if (startWeight < topScore) {
-            topScore = startWeight;
+          points.push({ x, y, hit: false, zone });
+
+          // Writing standardly starts near top-left of the glyph
+          const score = y * 1.6 + x;
+          if (score < topScore) {
+            topScore = score;
             initialStart = { x, y };
           }
         }
       }
     }
 
-    checkpointsRef.current = points;
-    setStartPoint(initialStart || { x: 200, y: 100 });
-    setCoveragePercent(0);
+    // Active zones that contain at least 4 checkpoints
+    const activeZones: number[] = [];
+    zoneCounts.forEach((count, idx) => {
+      if (count >= 4) activeZones.push(idx);
+    });
+
+    const start = initialStart || { x: 200, y: 110 };
+    setStartPoint(start);
+
+    glyphDataRef.current = {
+      checkpoints: points,
+      activeZones,
+      startPoint: start,
+      boundingBox: { minX, maxX, minY, maxY },
+    };
+
+    // 4. Draw beautiful child-friendly guide letter on guideCanvas
+    // Draw soft solid fill silhouette
+    gCtx.fillStyle = '#F1F5F9'; // Soft slate-100
+    gCtx.fillText(symbol, CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+
+    // Draw dashed outline
+    gCtx.save();
+    gCtx.strokeStyle = '#CBD5E1'; // Slate-300
+    gCtx.lineWidth = 3;
+    gCtx.setLineDash([8, 8]);
+    gCtx.strokeText(symbol, CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+    gCtx.restore();
+
+    // Draw subtle dotted centerline for handwriting track
+    gCtx.save();
+    gCtx.strokeStyle = '#94A3B8'; // Slate-400
+    gCtx.lineWidth = 2;
+    gCtx.setLineDash([4, 6]);
+    gCtx.strokeText(symbol, CANVAS_SIZE / 2, CANVAS_SIZE / 2);
+    gCtx.restore();
+
+    setMatchAccuracy(0);
   }, []);
 
   const clearCanvas = useCallback(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const canvas = drawCanvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
 
-    // Reset hit status on all checkpoints
-    checkpointsRef.current.forEach(cp => {
-      cp.hit = false;
-    });
-    setCoveragePercent(0);
-    setShowDoneNotice(false);
+    if (glyphDataRef.current) {
+      glyphDataRef.current.checkpoints.forEach(cp => {
+        cp.hit = false;
+      });
+    }
+
+    totalDrawnPointsRef.current = 0;
+    onTargetPointsRef.current = 0;
+    lastPointRef.current = null;
+    setMatchAccuracy(0);
+    setShowNotice(null);
   }, []);
 
-  // Initialize checkpoints & reset canvas on item change
+  // Initialize glyph and reset canvas when item changes
   useEffect(() => {
     completedRef.current = false;
     setCompletedStrokes(false);
     clearCanvas();
+
     if (currentItem) {
-      initCharacterCheckpoints(currentItem.symbol);
+      // Ensure fonts are ready before drawing to canvas
+      if (typeof document !== 'undefined' && 'fonts' in document) {
+        document.fonts.ready.then(() => {
+          initGlyphAndGuide(currentItem.symbol);
+        });
+      } else {
+        initGlyphAndGuide(currentItem.symbol);
+      }
       playPrompt();
     }
-  }, [currentIndex, currentItem, initCharacterCheckpoints, playPrompt, clearCanvas]);
+  }, [currentIndex, currentItem, initGlyphAndGuide, playPrompt, clearCanvas]);
 
   const handleSuccess = useCallback(() => {
     if (completedRef.current) return;
@@ -141,11 +251,11 @@ export default function TraceIt({
       } else {
         onComplete(nextResults);
       }
-    }, 1400);
+    }, 1500);
   }, [currentIndex, currentItem, items.length, onComplete, results]);
 
   const getCanvasCoords = (e: React.PointerEvent<HTMLCanvasElement>) => {
-    const canvas = canvasRef.current;
+    const canvas = drawCanvasRef.current;
     if (!canvas) return { x: 0, y: 0 };
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -156,92 +266,167 @@ export default function TraceIt({
     };
   };
 
+  /**
+   * Evaluates match accuracy for a sample point along the drawn stroke.
+   * - Tests distance to checkpoints to calculate Coverage and Precision.
+   * - Prevents arbitrary straight lines from passing multi-stroke characters.
+   */
+  const processStrokeSample = (x: number, y: number) => {
+    const data = glyphDataRef.current;
+    if (!data || data.checkpoints.length === 0) return;
+
+    totalDrawnPointsRef.current++;
+
+    const onPathRadiusSq = ON_PATH_RADIUS * ON_PATH_RADIUS;
+    const hitRadiusSq = CHECKPOINT_HIT_RADIUS * CHECKPOINT_HIT_RADIUS;
+
+    let minDistSq = Infinity;
+
+    // Check hit status and distance against all checkpoints
+    for (let i = 0; i < data.checkpoints.length; i++) {
+      const cp = data.checkpoints[i];
+      const dx = cp.x - x;
+      const dy = cp.y - y;
+      const dSq = dx * dx + dy * dy;
+
+      if (dSq < minDistSq) minDistSq = dSq;
+
+      if (dSq <= hitRadiusSq && !cp.hit) {
+        cp.hit = true;
+      }
+    }
+
+    // Check if this point is within tolerance of the letter stroke
+    if (minDistSq <= onPathRadiusSq) {
+      onTargetPointsRef.current++;
+    }
+
+    // Calculate metrics
+    const totalCheckpoints = data.checkpoints.length;
+    const hitCount = data.checkpoints.filter(c => c.hit).length;
+    const coverage = hitCount / totalCheckpoints;
+
+    const totalDrawn = Math.max(1, totalDrawnPointsRef.current);
+    const onTarget = onTargetPointsRef.current;
+    const precision = onTarget / totalDrawn;
+
+    // Active zone coverage
+    let coveredZones = 0;
+    const totalActive = Math.max(1, data.activeZones.length);
+    for (const zone of data.activeZones) {
+      const zoneHit = data.checkpoints.some(c => c.zone === zone && c.hit);
+      if (zoneHit) coveredZones++;
+    }
+    const zoneCoverage = coveredZones / totalActive;
+
+    // Composite Match Score
+    let compositeScore = coverage * 0.65 + precision * 0.35;
+
+    // Multi-Zone Guard: A straight line across a multi-zone character touches only 1-2 zones.
+    // If fewer than 60% of active zones are touched, cap accuracy at 40% so it can NEVER pass.
+    if (data.activeZones.length >= 3 && zoneCoverage < 0.60) {
+      compositeScore = Math.min(compositeScore, 0.40);
+    }
+
+    const calculatedPct = Math.min(100, Math.max(0, Math.round(compositeScore * 100)));
+    setMatchAccuracy(calculatedPct);
+  };
+
   const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (completedStrokes) return;
     e.preventDefault();
     setIsDrawing(true);
-    setShowDoneNotice(false);
-    const coords = getCanvasCoords(e);
+    setShowNotice(null);
 
-    const canvas = canvasRef.current;
+    const coords = getCanvasCoords(e);
+    lastPointRef.current = coords;
+
+    const canvas = drawCanvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
     ctx.beginPath();
-    ctx.moveTo(coords.x, coords.y);
+    ctx.arc(coords.x, coords.y, 14, 0, Math.PI * 2);
+    ctx.fillStyle = themeColor;
+    ctx.fill();
 
-    // Check hit on initial touch point
-    checkHitsAt(coords.x, coords.y);
-  };
-
-  // Hit test against character checkpoints with a child-friendly touch radius
-  const checkHitsAt = (x: number, y: number) => {
-    const hitRadiusSq = 36 * 36; // 36px radius
-    let newlyHit = false;
-
-    const checkpoints = checkpointsRef.current;
-    for (let i = 0; i < checkpoints.length; i++) {
-      const cp = checkpoints[i];
-      if (!cp.hit) {
-        const dx = cp.x - x;
-        const dy = cp.y - y;
-        if (dx * dx + dy * dy <= hitRadiusSq) {
-          cp.hit = true;
-          newlyHit = true;
-        }
-      }
-    }
-
-    if (newlyHit && checkpoints.length > 0) {
-      const hits = checkpoints.filter(c => c.hit).length;
-      const ratio = hits / checkpoints.length;
-      const pct = Math.min(100, Math.round(ratio * 100));
-      setCoveragePercent(pct);
-
-      // Child needs to cover at least 60% of the character strokes to complete
-      if (ratio >= 0.60 && !completedRef.current) {
-        handleSuccess();
-      }
-    }
+    processStrokeSample(coords.x, coords.y);
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
     if (!isDrawing || completedStrokes) return;
     e.preventDefault();
-    const coords = getCanvasCoords(e);
 
-    const canvas = canvasRef.current;
+    const coords = getCanvasCoords(e);
+    const lastPoint = lastPointRef.current || coords;
+
+    const canvas = drawCanvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    ctx.lineWidth = 26;
+    // Render smooth finger-paint line
+    ctx.lineWidth = 28;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
-    ctx.strokeStyle = themeColor || '#4CAF50';
+    ctx.strokeStyle = themeColor;
+
+    ctx.beginPath();
+    ctx.moveTo(lastPoint.x, lastPoint.y);
     ctx.lineTo(coords.x, coords.y);
     ctx.stroke();
 
-    checkHitsAt(coords.x, coords.y);
+    // Interpolate points along the line segment for continuous high-accuracy hit testing
+    const dist = Math.hypot(coords.x - lastPoint.x, coords.y - lastPoint.y);
+    const steps = Math.max(1, Math.ceil(dist / 6));
+    for (let s = 1; s <= steps; s++) {
+      const t = s / steps;
+      const ix = lastPoint.x + (coords.x - lastPoint.x) * t;
+      const iy = lastPoint.y + (coords.y - lastPoint.y) * t;
+      processStrokeSample(ix, iy);
+    }
+
+    lastPointRef.current = coords;
   };
 
   const handlePointerUp = () => {
     setIsDrawing(false);
+    lastPointRef.current = null;
+
+    // When child lifts finger: auto-verify if they achieved high match accuracy
+    const data = glyphDataRef.current;
+    if (!data || completedRef.current) return;
+
+    const hitCount = data.checkpoints.filter(c => c.hit).length;
+    const coverage = hitCount / Math.max(1, data.checkpoints.length);
+    const precision = onTargetPointsRef.current / Math.max(1, totalDrawnPointsRef.current);
+
+    // Auto-complete if child accurately traced the letter
+    if (matchAccuracy >= PASSING_ACCURACY_THRESHOLD && coverage >= 0.58 && precision >= 0.50) {
+      handleSuccess();
+    }
   };
 
-  // When child taps Done button: require at least 40% traced; otherwise encourage more tracing
+  // When child taps Done button: verify match accuracy
   const handleDoneClick = () => {
     if (completedStrokes) return;
-    if (coveragePercent >= 40) {
+
+    const data = glyphDataRef.current;
+    const hitCount = data ? data.checkpoints.filter(c => c.hit).length : 0;
+    const coverage = data ? hitCount / Math.max(1, data.checkpoints.length) : 0;
+    const precision = onTargetPointsRef.current / Math.max(1, totalDrawnPointsRef.current);
+
+    if (matchAccuracy >= PASSING_ACCURACY_THRESHOLD && coverage >= 0.58 && precision >= 0.50) {
       handleSuccess();
     } else {
-      setShowDoneNotice(true);
       playFeedbackTone('wrong');
       const reminder = isFidel
-        ? 'ፊደሉን ይበልጥ ጻፍ!'
-        : 'Keep tracing along the letter!';
-      playAudioOrSpeech(undefined, reminder);
-      setTimeout(() => setShowDoneNotice(false), 2200);
+        ? `ትክክለኛነቱ ${matchAccuracy}% ነው — 65% እንዲደርስ ሙሉውን ፊደል ተከታትለህ ጻፍ! ✨`
+        : `Match is ${matchAccuracy}% — trace the whole letter to reach 65%! ✨`;
+      setShowNotice(reminder);
+      playAudioOrSpeech(undefined, isFidel ? 'ሙሉውን ፊደል ተከታትለህ ጻፍ' : 'Trace along the whole letter shape');
+      setTimeout(() => setShowNotice(null), 2800);
     }
   };
 
@@ -254,11 +439,11 @@ export default function TraceIt({
         <div className="flex items-center gap-3">
           <SpeakerButton
             audioPath={currentItem.audioPath}
-            fallbackSpeech={isFidel ? `${currentItem.symbol} ፊደልን ጻፍ!` : `Trace the ${currentItem.displayName || currentItem.symbol}`}
+            fallbackSpeech={isFidel ? `${currentItem.symbol} ፊደልን በትክክል ጻፍ!` : `Trace the letter ${currentItem.displayName || currentItem.symbol}`}
             size="md"
           />
-          <span className="text-2xl font-extrabold text-gray-700">
-            {isFidel ? `${currentItem.symbol} ፊደልን ጻፍ! ✍️` : `Trace the letter! ✍️`}
+          <span className="text-2xl font-extrabold text-gray-800">
+            {isFidel ? `${currentItem.symbol} ፊደልን በትክክል ጻፍ! ✍️` : `Trace the letter ${currentItem.displayName || currentItem.symbol}! ✍️`}
           </span>
         </div>
         <div className="text-xl font-bold text-gray-400">
@@ -266,60 +451,73 @@ export default function TraceIt({
         </div>
       </div>
 
-      {/* Tracing Progress Meter */}
-      <div className="w-full max-w-[340px] md:max-w-[400px] mb-2">
-        <div className="flex items-center justify-between text-xs font-black text-gray-500 mb-1">
-          <span>{isFidel ? 'የተጻፈ' : 'Traced'}</span>
-          <span className="text-sm font-black" style={{ color: themeColor }}>
-            {coveragePercent}% {coveragePercent >= 60 ? '⭐' : ''}
+      {/* Match Accuracy Meter Bar */}
+      <div className="w-full max-w-[360px] md:max-w-[400px] mb-2 bg-white rounded-2xl p-2.5 shadow-sm border border-gray-100">
+        <div className="flex items-center justify-between text-xs font-black text-gray-600 mb-1.5">
+          <span className="flex items-center gap-1">
+            🎯 {isFidel ? 'የትክክለኛነት መጠን' : 'Match Accuracy'}:
           </span>
+          <div className="flex items-center gap-1.5">
+            <span
+              className="text-base font-black transition-colors"
+              style={{
+                color: matchAccuracy >= PASSING_ACCURACY_THRESHOLD ? '#10B981' : matchAccuracy >= 40 ? '#3B82F6' : '#F59E0B',
+              }}
+            >
+              {matchAccuracy}% {matchAccuracy >= PASSING_ACCURACY_THRESHOLD ? '⭐' : ''}
+            </span>
+            <span className="text-[11px] font-bold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-md">
+              {isFidel ? 'ዒላማ: 65%' : 'Goal: 65%'}
+            </span>
+          </div>
         </div>
-        <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
+        <div className="w-full h-3.5 bg-gray-100 rounded-full overflow-hidden p-0.5 border border-gray-200">
           <motion.div
             className="h-full rounded-full transition-all duration-150"
             style={{
-              width: `${Math.min(100, Math.max(0, (coveragePercent / 60) * 100))}%`,
-              backgroundColor: coveragePercent >= 60 ? '#10B981' : themeColor,
+              width: `${Math.min(100, Math.max(0, matchAccuracy))}%`,
+              backgroundColor:
+                matchAccuracy >= PASSING_ACCURACY_THRESHOLD
+                  ? '#10B981'
+                  : matchAccuracy >= 40
+                  ? '#3B82F6'
+                  : '#F59E0B',
             }}
           />
         </div>
       </div>
 
       {/* Tracing Canvas Area */}
-      <div className="relative w-full aspect-square max-w-[340px] md:max-w-[400px] bg-white rounded-3xl shadow-xl border-4 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
-        {/* Background Guide Letter */}
-        <div
-          className={`absolute inset-0 flex items-center justify-center text-[190px] md:text-[230px] font-extrabold select-none pointer-events-none transition-all duration-500 ${
-            completedStrokes ? 'scale-105 drop-shadow-md' : 'text-gray-200'
-          }`}
-          style={{
-            color: completedStrokes ? themeColor : undefined,
-          }}
-        >
-          {currentItem.symbol}
-        </div>
+      <div className="relative w-full aspect-square max-w-[360px] md:max-w-[400px] bg-white rounded-3xl shadow-xl border-4 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
+        {/* Layer 1: Guide Letter Canvas (Pixel-perfect 1:1 match with hit-testing) */}
+        <canvas
+          ref={guideCanvasRef}
+          width={CANVAS_SIZE}
+          height={CANVAS_SIZE}
+          className="absolute inset-0 w-full h-full pointer-events-none z-0"
+        />
 
-        {/* Dynamic Green Start Indicator 🟢 (located at natural stroke start of the glyph) */}
-        {!completedStrokes && startPoint && coveragePercent < 15 && (
+        {/* Dynamic Green Start Indicator 🟢 (Shows where to start tracing) */}
+        {!completedStrokes && startPoint && matchAccuracy < 18 && (
           <motion.div
-            animate={{ scale: [1, 1.3, 1] }}
-            transition={{ repeat: Infinity, duration: 1.4 }}
-            className="absolute w-8 h-8 rounded-full bg-emerald-500 border-3 border-white shadow-lg pointer-events-none z-10 flex items-center justify-center text-white text-xs font-bold"
+            animate={{ scale: [1, 1.25, 1] }}
+            transition={{ repeat: Infinity, duration: 1.3 }}
+            className="absolute w-10 h-10 rounded-full bg-emerald-500 border-3 border-white shadow-xl pointer-events-none z-10 flex items-center justify-center text-white text-xs font-black"
             style={{
-              left: `${(startPoint.x / 400) * 100}%`,
-              top: `${(startPoint.y / 400) * 100}%`,
+              left: `${(startPoint.x / CANVAS_SIZE) * 100}%`,
+              top: `${(startPoint.y / CANVAS_SIZE) * 100}%`,
               transform: 'translate(-50%, -50%)',
             }}
           >
-            🟢
+            {isFidel ? 'ጀምር' : 'Start'}
           </motion.div>
         )}
 
-        {/* Interactive Tracing Canvas */}
+        {/* Layer 2: Interactive Drawing Canvas */}
         <canvas
-          ref={canvasRef}
-          width={400}
-          height={400}
+          ref={drawCanvasRef}
+          width={CANVAS_SIZE}
+          height={CANVAS_SIZE}
           className="absolute inset-0 w-full h-full cursor-crosshair touch-none z-20"
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
@@ -327,16 +525,16 @@ export default function TraceIt({
           onPointerLeave={handlePointerUp}
         />
 
-        {/* Gentle Notice if tapped Done too early */}
+        {/* Gentle Notice Banner when tapped Done too early or with low accuracy */}
         <AnimatePresence>
-          {showDoneNotice && (
+          {showNotice && (
             <motion.div
               initial={{ scale: 0.8, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className="absolute bottom-4 bg-amber-400 text-amber-950 font-black px-4 py-2 rounded-2xl shadow-lg z-30 text-center text-sm"
+              className="absolute bottom-4 left-4 right-4 bg-amber-400 text-amber-950 font-black px-4 py-2.5 rounded-2xl shadow-xl z-30 text-center text-sm border-2 border-amber-300"
             >
-              {isFidel ? '👆 ፊደሉን ይበልጥ ጻፍ!' : '👆 Keep tracing along the shape!'}
+              {showNotice}
             </motion.div>
           )}
         </AnimatePresence>
@@ -358,7 +556,10 @@ export default function TraceIt({
                 ⭐
               </motion.div>
               <span className="text-3xl font-extrabold text-emerald-800 mt-2 drop-shadow-sm">
-                {isFidel ? 'ጎበዝ! ድንቅ ነው!' : 'Great job!'}
+                {isFidel ? 'ጎበዝ! በትክክል ጽፈሃል!' : 'Great job! Traced perfectly!'}
+              </span>
+              <span className="text-lg font-black text-emerald-700 mt-1">
+                {matchAccuracy}% {isFidel ? 'ትክክለኛነት' : 'Accuracy'}
               </span>
             </motion.div>
           )}
