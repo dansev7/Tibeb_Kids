@@ -204,11 +204,16 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
         </div>
       </div>
 
-      {/* Matching Columns: Compact Left Column for Single Letters & Spacious Right Column for Words */}
-      <main className="w-full max-w-2xl flex-1 flex items-center justify-center py-2 sm:py-4">
-        <div className="w-full flex gap-3 sm:gap-6 items-stretch justify-center">
-          {/* Left Column (Items to match, e.g. uppercase symbols with minimized padding) */}
-          <div className={`flex flex-col gap-3 sm:gap-4 ${hasRightVisuals ? 'w-20 sm:w-28 shrink-0' : 'flex-1'}`}>
+      {/* Matching Columns Grid: Balanced Left & Right Proportions */}
+      <main className="w-full max-w-xl flex-1 flex items-center justify-center py-2 sm:py-4">
+        <div
+          className="w-full grid gap-3 sm:gap-6 items-stretch justify-center"
+          style={{
+            gridTemplateColumns: hasRightVisuals ? '2fr 3fr' : '1fr 1fr',
+          }}
+        >
+          {/* Left Column (Items to match, e.g. uppercase symbols) */}
+          <div className="flex flex-col gap-3 sm:gap-4 min-w-0">
             {leftItems.map((item) => {
               const isMatched = isMatchedLeft(item.id);
               const isSelected = selectedLeft === item.id;
@@ -227,9 +232,7 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
                   whileTap={!isMatched ? { scale: 0.95 } : undefined}
                   onClick={() => handleLeftClick(item)}
                   aria-label={`Left card ${item.symbol}`}
-                  className={`relative min-h-[88px] sm:min-h-[110px] rounded-3xl ${
-                    hasRightVisuals ? 'p-1.5 sm:p-2' : 'p-3'
-                  } flex items-center justify-center border-4 shadow-lg transition-colors cursor-pointer w-full ${
+                  className={`relative min-h-[84px] sm:min-h-[105px] rounded-3xl p-2 sm:p-3 flex items-center justify-center border-4 shadow-lg transition-colors cursor-pointer w-full ${
                     isMatched
                       ? 'border-emerald-500 bg-emerald-50/80 cursor-default'
                       : isSelected
@@ -237,7 +240,7 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
                       : 'border-white bg-white hover:border-slate-200 shadow-md'
                   }`}
                   style={{
-                    minWidth: hasRightVisuals ? '56px' : '64px',
+                    minWidth: '56px',
                   }}
                 >
                   <span className="text-4xl sm:text-6xl font-black text-slate-800 tracking-tight select-none">
@@ -259,8 +262,8 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
             })}
           </div>
 
-          {/* Right Column (Targets, e.g. lowercase symbols or picture cards with ample room for full text) */}
-          <div className="flex-1 min-w-0 flex flex-col gap-3 sm:gap-4">
+          {/* Right Column (Targets, balanced width so icons align and full text is never truncated) */}
+          <div className="flex flex-col gap-3 sm:gap-4 min-w-0">
             {rightItems.map((item) => {
               const isMatched = isMatchedRight(item.id);
               const isSelected = selectedRight === item.id;
@@ -280,7 +283,7 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
                   whileTap={!isMatched ? { scale: 0.95 } : undefined}
                   onClick={() => handleRightClick(item)}
                   aria-label={`Right card ${item.displayName || item.pictureWord}`}
-                  className={`relative min-h-[88px] sm:min-h-[110px] rounded-3xl border-4 shadow-lg transition-colors cursor-pointer flex items-center w-full ${
+                  className={`relative min-h-[84px] sm:min-h-[105px] rounded-3xl border-4 shadow-lg transition-colors cursor-pointer flex items-center w-full ${
                     hasVisual ? 'justify-start px-2.5 sm:px-4' : 'justify-center p-3'
                   } ${
                     isMatched
@@ -295,18 +298,18 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
                 >
                   {/* If item has picture or pictureWord, show visual badge with word; else show symbol */}
                   {hasVisual ? (
-                    <div className="flex items-center gap-2 sm:gap-3.5 w-full min-w-0">
+                    <div className="flex items-center gap-2 sm:gap-3 w-full min-w-0">
                       <ItemVisualBadge
                         item={item}
-                        className="w-12 h-12 sm:w-16 sm:h-16 shrink-0"
-                        emojiSize="text-3xl sm:text-4xl"
+                        className="w-11 h-11 sm:w-14 sm:h-14 shrink-0"
+                        emojiSize="text-2xl sm:text-3xl"
                       />
-                      <span className="text-lg sm:text-2xl font-bold text-slate-700 capitalize whitespace-nowrap">
+                      <span className="text-base sm:text-2xl font-bold text-slate-700 capitalize whitespace-nowrap">
                         {item.pictureWord || item.symbol}
                       </span>
                     </div>
                   ) : (
-                    <span className="text-5xl sm:text-6xl md:text-7xl font-black text-slate-800 tracking-tight">
+                    <span className="text-4xl sm:text-6xl font-black text-slate-800 tracking-tight">
                       {item.symbol}
                     </span>
                   )}
