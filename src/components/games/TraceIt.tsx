@@ -523,27 +523,27 @@ export default function TraceIt({
   if (!currentItem) return null;
 
   return (
-    <div className="flex flex-col items-center justify-between h-full p-4 max-w-xl mx-auto select-none touch-none">
+    <div className="flex flex-col items-center justify-between h-full p-2 sm:p-3 max-w-xl mx-auto select-none touch-none overflow-hidden">
       {/* Top Prompt & Speaker Bar */}
-      <div className="flex items-center justify-between w-full mb-2">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between w-full mb-1 shrink-0">
+        <div className="flex items-center gap-2.5">
           <SpeakerButton
             audioPath={currentItem.audioPath}
             fallbackSpeech={isFidel ? `${currentItem.symbol} ፊደልን በትክክል ጻፍ!` : `Trace the letter ${currentItem.displayName || currentItem.symbol}`}
             size="md"
           />
-          <span className="text-2xl font-extrabold text-gray-800">
+          <span className="text-xl sm:text-2xl font-extrabold text-gray-800">
             {isFidel ? `${currentItem.symbol} ፊደልን በትክክል ጻፍ! ✍️` : `Trace the letter ${currentItem.displayName || currentItem.symbol}! ✍️`}
           </span>
         </div>
-        <div className="text-xl font-bold text-gray-400">
+        <div className="text-lg sm:text-xl font-bold text-gray-400">
           {currentIndex + 1} / {items.length}
         </div>
       </div>
 
       {/* Match Accuracy Meter Bar (Target: 90%) */}
-      <div className="w-full max-w-[360px] md:max-w-[400px] mb-2 bg-white rounded-2xl p-2.5 shadow-sm border border-gray-100">
-        <div className="flex items-center justify-between text-xs font-black text-gray-600 mb-1.5">
+      <div className="w-full max-w-[340px] md:max-w-[380px] mb-1.5 bg-white rounded-2xl p-2 shadow-xs border border-gray-100 shrink-0">
+        <div className="flex items-center justify-between text-xs font-black text-gray-600 mb-1">
           <span className="flex items-center gap-1">
             🎯 {isFidel ? 'የትክክለኛነት መጠን' : 'Match Accuracy'}:
           </span>
@@ -561,7 +561,7 @@ export default function TraceIt({
             </span>
           </div>
         </div>
-        <div className="w-full h-3.5 bg-gray-100 rounded-full overflow-hidden p-0.5 border border-gray-200">
+        <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden p-0.5 border border-gray-200">
           <motion.div
             className="h-full rounded-full transition-all duration-150"
             style={{
@@ -578,7 +578,7 @@ export default function TraceIt({
       </div>
 
       {/* Tracing Canvas Area */}
-      <div className="relative w-full aspect-square max-w-[360px] md:max-w-[400px] bg-white rounded-3xl shadow-xl border-4 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
+      <div className="relative w-full aspect-square max-w-[320px] md:max-w-[370px] max-h-[48vh] bg-white rounded-3xl shadow-xl border-4 border-dashed border-gray-300 flex items-center justify-center overflow-hidden">
         {/* Layer 1: Guide Letter Canvas (Pixel-perfect 1:1 match with hit-testing) */}
         <canvas
           ref={guideCanvasRef}
@@ -592,7 +592,7 @@ export default function TraceIt({
           <motion.div
             animate={{ scale: [1, 1.25, 1] }}
             transition={{ repeat: Infinity, duration: 1.3 }}
-            className="absolute w-10 h-10 rounded-full bg-emerald-500 border-3 border-white shadow-xl pointer-events-none z-10 flex items-center justify-center text-white text-xs font-black"
+            className="absolute w-9 h-9 rounded-full bg-emerald-500 border-3 border-white shadow-xl pointer-events-none z-10 flex items-center justify-center text-white text-xs font-black"
             style={{
               left: `${(startPoint.x / CANVAS_SIZE) * 100}%`,
               top: `${(startPoint.y / CANVAS_SIZE) * 100}%`,
@@ -622,7 +622,7 @@ export default function TraceIt({
               initial={{ scale: 0.8, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className="absolute bottom-4 left-4 right-4 bg-amber-400 text-amber-950 font-black px-4 py-2.5 rounded-2xl shadow-xl z-30 text-center text-sm border-2 border-amber-300"
+              className="absolute bottom-3 left-3 right-3 bg-amber-400 text-amber-950 font-black px-3 py-2 rounded-2xl shadow-xl z-30 text-center text-xs sm:text-sm border-2 border-amber-300"
             >
               {showNotice}
             </motion.div>
@@ -641,14 +641,14 @@ export default function TraceIt({
               <motion.div
                 animate={{ rotate: [0, 10, -10, 0], scale: [1, 1.25, 1] }}
                 transition={{ duration: 0.8 }}
-                className="text-8xl drop-shadow-lg"
+                className="text-7xl drop-shadow-lg"
               >
                 ⭐
               </motion.div>
-              <span className="text-3xl font-extrabold text-emerald-800 mt-2 drop-shadow-sm text-center">
+              <span className="text-2xl sm:text-3xl font-extrabold text-emerald-800 mt-2 drop-shadow-sm text-center">
                 {isFidel ? 'ጎበዝ! ፊደሉን በትክክል ጽፈሃል!' : 'Great job! Traced perfectly!'}
               </span>
-              <span className="text-lg font-black text-emerald-700 mt-1">
+              <span className="text-base sm:text-lg font-black text-emerald-700 mt-1">
                 {matchAccuracy}% {isFidel ? 'ትክክለኛነት' : 'Accuracy'} ⭐
               </span>
             </motion.div>
@@ -657,10 +657,10 @@ export default function TraceIt({
       </div>
 
       {/* Action Buttons: Clear & Done */}
-      <div className="flex items-center justify-between w-full mt-4">
+      <div className="flex items-center justify-between w-full mt-2 shrink-0">
         <button
           onClick={clearCanvas}
-          className="px-5 py-3 rounded-2xl bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-700 font-bold text-lg shadow-sm transition-colors cursor-pointer"
+          className="px-4 py-2.5 rounded-2xl bg-gray-100 hover:bg-gray-200 active:bg-gray-300 text-gray-700 font-bold text-base shadow-xs transition-colors cursor-pointer"
         >
           {isFidel ? '🔄 አጥፋ' : '🔄 Clear'}
         </button>

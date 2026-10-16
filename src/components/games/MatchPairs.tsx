@@ -147,7 +147,7 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
 
   return (
     <div
-      className={`min-h-screen w-full flex flex-col items-center justify-between p-4 sm:p-6 select-none bg-gradient-to-b ${theme.lightBg}`}
+      className={`h-full w-full flex flex-col items-center justify-between p-3 sm:p-5 select-none bg-gradient-to-b ${theme.lightBg} overflow-hidden`}
       style={{
         backgroundColor: themeColor && themeColor.startsWith('#') ? `${themeColor}15` : undefined,
       }}

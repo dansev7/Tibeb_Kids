@@ -143,19 +143,19 @@ function PlayContent() {
   const progress = ((currentStageIndex) / levelData.stages.length) * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-200 to-sky-50 relative flex flex-col">
+    <div className="h-screen max-h-screen overflow-hidden bg-gradient-to-b from-sky-200 to-sky-50 relative flex flex-col">
       {/* Top bar */}
-      <div className="flex items-center gap-3 px-4 py-3 bg-white/60 backdrop-blur-sm shadow-sm z-20">
+      <div className="shrink-0 flex items-center gap-3 px-4 py-2 bg-white/70 backdrop-blur-sm shadow-xs z-20">
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={() => router.push(`/world/${levelData.worldSlug}`)}
-          className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-xl cursor-pointer"
+          className="w-11 h-11 rounded-full bg-white shadow-md flex items-center justify-center text-xl cursor-pointer shrink-0"
         >
           ⬅️
         </motion.button>
 
         {/* Progress bar */}
-        <div className="flex-1 h-4 bg-gray-200 rounded-full overflow-hidden">
+        <div className="flex-1 h-3.5 bg-gray-200 rounded-full overflow-hidden">
           <motion.div
             className="h-full rounded-full"
             style={{ backgroundColor: levelData.themeColor || '#4CAF50' }}
@@ -168,14 +168,14 @@ function PlayContent() {
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={() => router.push('/')}
-          className="w-12 h-12 rounded-full bg-white shadow-md flex items-center justify-center text-xl cursor-pointer"
+          className="w-11 h-11 rounded-full bg-white shadow-md flex items-center justify-center text-xl cursor-pointer shrink-0"
         >
           🏠
         </motion.button>
       </div>
 
       {/* Stage content */}
-      <div className="flex-1 relative">
+      <div className="flex-1 min-h-0 relative overflow-hidden">
         <AnimatePresence mode="wait">
           {isCelebration ? (
             <motion.div

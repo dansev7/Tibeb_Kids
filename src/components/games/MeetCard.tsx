@@ -108,13 +108,13 @@ export function MeetCard({ items, onComplete, themeColor }: MeetCardProps) {
 
   return (
     <div
-      className={`min-h-screen w-full flex flex-col items-center justify-between p-4 sm:p-6 select-none bg-gradient-to-b ${theme.lightBg}`}
+      className={`h-full w-full flex flex-col items-center justify-between p-2 sm:p-4 select-none bg-gradient-to-b ${theme.lightBg} overflow-hidden`}
       style={{
         backgroundColor: themeColor && themeColor.startsWith('#') ? `${themeColor}15` : undefined,
       }}
     >
       {/* Top Header / Visual Progress dots for non-readers */}
-      <header className="w-full max-w-lg flex items-center justify-between pt-2 pb-4">
+      <header className="w-full max-w-lg flex items-center justify-between pt-1 pb-2 shrink-0">
         <div className="flex items-center gap-2">
           {items.map((_, idx) => (
             <motion.div
@@ -124,9 +124,9 @@ export function MeetCard({ items, onComplete, themeColor }: MeetCardProps) {
                 scale: idx === currentIndex ? 1.3 : 1,
                 opacity: idx <= currentIndex ? 1 : 0.4,
               }}
-              className={`h-4 w-4 rounded-full transition-colors ${
+              className={`h-3.5 w-3.5 rounded-full transition-colors ${
                 idx === currentIndex
-                  ? 'bg-amber-400 ring-4 ring-amber-200'
+                  ? 'bg-amber-400 ring-3 ring-amber-200'
                   : idx < currentIndex
                   ? 'bg-emerald-500'
                   : 'bg-slate-300'
@@ -144,7 +144,7 @@ export function MeetCard({ items, onComplete, themeColor }: MeetCardProps) {
             handleCardTap();
           }}
           aria-label="Play sound"
-          className="relative min-w-[64px] min-h-[64px] w-16 h-16 rounded-full bg-white shadow-lg border-4 border-amber-300 flex items-center justify-center text-3xl active:bg-amber-50 cursor-pointer"
+          className="relative min-w-[56px] min-h-[56px] w-14 h-14 rounded-full bg-white shadow-lg border-3 border-amber-300 flex items-center justify-center text-2xl active:bg-amber-50 cursor-pointer"
         >
           <motion.span
             animate={
@@ -157,16 +157,16 @@ export function MeetCard({ items, onComplete, themeColor }: MeetCardProps) {
             🔊
           </motion.span>
           {isPlayingAudio && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4">
+            <span className="absolute -top-1 -right-1 flex h-3.5 w-3.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-amber-500"></span>
+              <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-amber-500"></span>
             </span>
           )}
         </motion.button>
       </header>
 
       {/* Main Flashcard with scale up bounce animation */}
-      <main className="w-full max-w-md flex-1 flex items-center justify-center py-2">
+      <main className="w-full max-w-md flex-1 min-h-0 flex items-center justify-center py-1 overflow-hidden">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentItem.id || currentIndex}
@@ -181,18 +181,17 @@ export function MeetCard({ items, onComplete, themeColor }: MeetCardProps) {
             }}
             whileTap={{ scale: 0.97 }}
             onClick={handleCardTap}
-            className="w-full bg-white rounded-3xl shadow-2xl border-4 p-6 sm:p-8 flex flex-col items-center justify-center cursor-pointer transition-shadow hover:shadow-cyan-200/50"
+            className="w-full h-full max-h-[56vh] bg-white rounded-3xl shadow-xl border-4 p-4 sm:p-6 flex flex-col items-center justify-between cursor-pointer transition-shadow hover:shadow-cyan-200/50 overflow-hidden"
             style={{
               borderColor: theme.primary,
-              minHeight: '420px',
             }}
           >
             {/* Symbol - Very large and centered */}
-            <div className="flex-1 flex items-center justify-center w-full py-4">
+            <div className="flex-1 flex items-center justify-center w-full py-1">
               <motion.span
                 animate={isPlayingAudio ? { scale: [1, 1.12, 1] } : { scale: 1 }}
                 transition={{ duration: 0.4 }}
-                className="text-8xl sm:text-9xl font-black tracking-tight select-none drop-shadow-md text-slate-800"
+                className="text-7xl sm:text-8xl font-black tracking-tight select-none drop-shadow-md text-slate-800 leading-none"
                 style={{ color: theme.primary }}
               >
                 {currentItem.symbol}
@@ -200,27 +199,26 @@ export function MeetCard({ items, onComplete, themeColor }: MeetCardProps) {
             </div>
 
             {/* Picture & Word Area */}
-            <div className="w-full flex flex-col items-center justify-center pt-4 border-t-2 border-slate-100 mt-2">
-              <div className="w-32 h-32 sm:w-40 sm:h-40 rounded-2xl bg-amber-50/80 flex items-center justify-center overflow-hidden border-2 border-amber-200 shadow-inner mb-3">
+            <div className="w-full flex flex-col items-center justify-center pt-2 border-t-2 border-slate-100 mt-1 shrink-0">
+              <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-amber-50/80 flex items-center justify-center overflow-hidden border-2 border-amber-200 shadow-inner mb-1.5">
                 {currentItem.picturePath && !imgError ? (
                   <img
                     src={currentItem.picturePath}
                     alt={currentItem.pictureWord}
                     onError={() => setImgError(true)}
-                    className="w-full h-full object-contain p-2"
+                    className="w-full h-full object-contain p-1.5"
                   />
                 ) : (
-                  <span className="text-6xl sm:text-7xl select-none" role="img" aria-label={currentItem.pictureWord}>
-                    {/* Visual fallback icon representation */}
+                  <span className="text-5xl sm:text-6xl select-none" role="img" aria-label={currentItem.pictureWord}>
                     🎨
                   </span>
                 )}
               </div>
 
               {/* Picture Word - Large, friendly font */}
-              <div className="text-3xl sm:text-4xl font-extrabold text-slate-700 tracking-wide text-center">
+              <div className="text-2xl sm:text-3xl font-extrabold text-slate-700 tracking-wide text-center">
                 {currentItem.kind === 'fidel' ? (
-                  <span className="text-4xl sm:text-5xl text-purple-700 font-black">
+                  <span className="text-3xl sm:text-4xl text-purple-700 font-black">
                     {currentItem.pictureWordAmharic || currentItem.pictureWord?.replace(/\([^)]*\)/g, '').trim()}
                   </span>
                 ) : (
@@ -229,8 +227,8 @@ export function MeetCard({ items, onComplete, themeColor }: MeetCardProps) {
               </div>
 
               {/* Tap hint for 5yo child */}
-              <div className="mt-3 flex items-center gap-1.5 text-slate-400 text-sm font-semibold">
-                <span className="text-lg">👆</span>
+              <div className="mt-1 flex items-center gap-1 text-slate-400 text-xs font-semibold">
+                <span className="text-base">👆</span>
                 <span>{currentItem.kind === 'fidel' ? 'ንካ እና አዳምጥ' : 'Tap to hear'}</span>
               </div>
             </div>
@@ -239,21 +237,21 @@ export function MeetCard({ items, onComplete, themeColor }: MeetCardProps) {
       </main>
 
       {/* Footer Navigation: Large Next Arrow Button */}
-      <footer className="w-full max-w-md h-24 flex items-center justify-center pb-4">
+      <footer className="w-full max-w-md h-20 flex items-center justify-center pb-2 shrink-0">
         <AnimatePresence>
           {hasViewedOrTapped && (
             <motion.button
-              initial={{ scale: 0, opacity: 0, y: 20 }}
+              initial={{ scale: 0, opacity: 0, y: 15 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0, opacity: 0 }}
-              whileHover={{ scale: 1.1 }}
+              whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.92 }}
               onClick={handleNext}
               aria-label="Next item"
-              className="min-w-[80px] min-h-[80px] w-20 h-20 rounded-full shadow-2xl flex items-center justify-center text-white text-4xl font-black cursor-pointer border-4 border-white active:brightness-95 transition-transform"
+              className="min-w-[68px] min-h-[68px] w-18 h-18 rounded-full shadow-xl flex items-center justify-center text-white text-3xl font-black cursor-pointer border-3 border-white active:brightness-95 transition-transform"
               style={{
                 backgroundColor: theme.primary,
-                boxShadow: `0 12px 28px -6px ${theme.primary}88`,
+                boxShadow: `0 10px 24px -4px ${theme.primary}88`,
               }}
             >
               <motion.span

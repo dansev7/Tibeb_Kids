@@ -74,7 +74,7 @@ export function CelebrationScreen({
 
   return (
     <div
-      className={`min-h-screen w-full flex flex-col items-center justify-between p-4 sm:p-6 select-none bg-gradient-to-b ${theme.lightBg} relative overflow-hidden`}
+      className={`h-full w-full flex flex-col items-center justify-between p-3 sm:p-5 select-none bg-gradient-to-b ${theme.lightBg} relative overflow-hidden`}
       style={{
         backgroundColor: themeColor && themeColor.startsWith('#') ? `${themeColor}15` : undefined,
       }}
@@ -83,23 +83,22 @@ export function CelebrationScreen({
       <ConfettiBurst active={true} count={75} />
 
       {/* Top Floating Cheers */}
-      <header className="w-full max-w-md pt-4 flex flex-col items-center">
+      <header className="w-full max-w-md pt-2 flex flex-col items-center shrink-0">
         <motion.div
           initial={{ scale: 0.2, opacity: 0, y: -40 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           transition={{ type: 'spring', stiffness: 260, damping: 15 }}
           className="text-center"
         >
-          <span className="text-4xl sm:text-5xl font-black text-amber-500 tracking-tight drop-shadow-sm flex items-center justify-center gap-2">
+          <span className="text-3xl sm:text-4xl font-black text-amber-500 tracking-tight drop-shadow-sm flex items-center justify-center gap-2">
             <span>🎉</span>
             <span>{isAmharic ? 'ጎበዝ! ድንቅ ሥራ!' : 'You did it!'}</span>
             <span>✨</span>
           </span>
         </motion.div>
 
-
         {/* Stars Animation: 1 to 3 stars animating in sequentially */}
-        <div className="flex items-center justify-center gap-3 sm:gap-4 mt-4">
+        <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 mt-2">
           {[1, 2, 3].map((starIdx) => {
             const isEarned = starIdx <= starCount;
             return (
@@ -131,14 +130,14 @@ export function CelebrationScreen({
                       delay: starIdx * 0.3,
                       ease: 'easeInOut',
                     }}
-                    className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center drop-shadow-lg"
+                    className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center drop-shadow-lg"
                   >
                     <svg viewBox="0 0 24 24" className="w-full h-full fill-amber-400 stroke-amber-500 stroke-1">
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
                   </motion.div>
                 ) : (
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center opacity-30">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center opacity-30">
                     <svg viewBox="0 0 24 24" className="w-full h-full fill-slate-300 stroke-slate-400 stroke-1">
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
@@ -151,7 +150,7 @@ export function CelebrationScreen({
       </header>
 
       {/* Mascot Celebration Dance Stage */}
-      <main className="w-full max-w-md flex-1 flex flex-col items-center justify-center py-2">
+      <main className="w-full max-w-md flex-1 min-h-0 flex flex-col items-center justify-center py-1 overflow-hidden">
         <motion.div
           initial={{ scale: 0.6, y: 50 }}
           animate={{ scale: 1, y: 0 }}
@@ -161,16 +160,16 @@ export function CelebrationScreen({
           {/* Mascot animated dance */}
           <motion.div
             animate={{
-              y: [0, -22, 0],
-              rotate: [-5, 6, -5],
-              scale: [1, 1.06, 1],
+              y: [0, -16, 0],
+              rotate: [-4, 5, -4],
+              scale: [1, 1.05, 1],
             }}
             transition={{
               repeat: Infinity,
               duration: 1.1,
               ease: 'easeInOut',
             }}
-            className="w-48 h-48 sm:w-56 sm:h-56 filter drop-shadow-2xl cursor-pointer"
+            className="w-36 h-36 sm:w-44 sm:h-44 max-h-[28vh] filter drop-shadow-2xl cursor-pointer"
             onClick={() => {
               playPop();
               playAudioOrSpeech(undefined, 'Hooray! Great job!');
@@ -180,8 +179,7 @@ export function CelebrationScreen({
             {mascot === 'cow' && <CowMascot />}
             {mascot === 'lion' && <LionMascot />}
             {!['bird', 'cow', 'lion'].includes(mascot) && (
-              /* Emoji fallback so mascots without bespoke SVG art (e.g. sheep) still dance */
-              <div className="w-full h-full flex items-center justify-center text-[110px] sm:text-[130px] leading-none drop-shadow-2xl">
+              <div className="w-full h-full flex items-center justify-center text-[90px] sm:text-[110px] leading-none drop-shadow-2xl">
                 {mascotEmoji(mascot)}
               </div>
             )}
@@ -198,7 +196,7 @@ export function CelebrationScreen({
               duration: 1.1,
               ease: 'easeInOut',
             }}
-            className="w-36 h-6 rounded-full bg-slate-900/20 blur-xs mt-1"
+            className="w-28 h-4 rounded-full bg-slate-900/20 blur-xs mt-1"
           />
 
           {/* Sticker Earned Badge */}
@@ -207,14 +205,14 @@ export function CelebrationScreen({
               initial={{ scale: 0, opacity: 0, rotate: 15 }}
               animate={{ scale: 1, opacity: 1, rotate: 0 }}
               transition={{ delay: 1.1, type: 'spring', stiffness: 260, damping: 14 }}
-              className="mt-4 bg-white/95 backdrop-blur-sm px-5 py-3 rounded-3xl border-4 border-amber-300 shadow-xl flex items-center gap-3"
+              className="mt-2 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-2xl border-3 border-amber-300 shadow-lg flex items-center gap-2.5"
             >
-              <span className="text-4xl animate-bounce">{earnedSticker.emoji}</span>
+              <span className="text-3xl animate-bounce">{earnedSticker.emoji}</span>
               <div className="flex flex-col text-left">
-                <span className="text-xs uppercase font-black text-amber-500 tracking-wider">
+                <span className="text-[11px] uppercase font-black text-amber-500 tracking-wider">
                   {isAmharic ? 'አዲስ ስቲከር!' : 'New Sticker!'}
                 </span>
-                <span className="text-lg font-extrabold text-slate-800">
+                <span className="text-base font-extrabold text-slate-800">
                   {isAmharic
                     ? (AMHARIC_STICKER_LABELS[earnedSticker.emoji] || earnedSticker.label)
                     : earnedSticker.label}
@@ -226,7 +224,7 @@ export function CelebrationScreen({
       </main>
 
       {/* Footer Navigation: Large Next / Map Button */}
-      <footer className="w-full max-w-md pb-6 flex items-center justify-center">
+      <footer className="w-full max-w-md pb-4 pt-1 flex items-center justify-center shrink-0">
         <motion.button
           whileHover={{ scale: 1.06 }}
           whileTap={{ scale: 0.94 }}
@@ -235,10 +233,10 @@ export function CelebrationScreen({
             onNext();
           }}
           aria-label={isAmharic ? 'ወደ መንደሩ ተመለስ' : 'Continue to world map'}
-          className="min-w-[72px] min-h-[72px] px-10 py-4 rounded-full shadow-2xl flex items-center justify-center gap-3 text-white text-3xl font-black cursor-pointer border-4 border-white transition-transform active:brightness-95"
+          className="min-w-[64px] min-h-[64px] px-9 py-3 rounded-full shadow-xl flex items-center justify-center gap-3 text-white text-2xl font-black cursor-pointer border-4 border-white transition-transform active:brightness-95"
           style={{
             backgroundColor: theme.primary,
-            boxShadow: `0 14px 30px -4px ${theme.primary}99`,
+            boxShadow: `0 10px 24px -3px ${theme.primary}99`,
           }}
         >
           <motion.span
