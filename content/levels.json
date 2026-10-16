@@ -22,7 +22,13 @@
             "upper_D",
             "upper_E"
           ],
-          "newItemIds": [],
+          "newItemIds": [
+            "upper_A",
+            "upper_B",
+            "upper_C",
+            "upper_D",
+            "upper_E"
+          ],
           "stages": [
             "meet",
             "find",

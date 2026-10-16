@@ -214,13 +214,21 @@ export default function SessionTimer({ hidden = false }: { hidden?: boolean }) {
     };
   }, [sessionLimitMin, isTimeUp]);
 
+  const handleKeepPlaying = () => {
+    setIsTimeUp(false);
+    saidGoodbyeRef.current = true;
+    const base = sessionRef.current ?? freshSession();
+    // Grant 60 extra minutes and unmark ended so the child can keep learning freely
+    updateSession({ ...base, extraMin: base.extraMin + 60, ended: false, segStartMs: Date.now() });
+  };
+
   const handleUnlockMoreTime = () => {
     setShowParentUnlock(false);
     setIsTimeUp(false);
     saidGoodbyeRef.current = true;
     const base = sessionRef.current ?? freshSession();
     // Reopen the session for the extra minutes and start a fresh segment
-    updateSession({ ...base, extraMin: base.extraMin + 10, ended: false, segStartMs: Date.now() });
+    updateSession({ ...base, extraMin: base.extraMin + 30, ended: false, segStartMs: Date.now() });
   };
 
   return (
@@ -239,22 +247,39 @@ export default function SessionTimer({ hidden = false }: { hidden?: boolean }) {
               transition={{ type: 'spring', bounce: 0.4 }}
               className="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl border-4 border-amber-300 relative"
             >
+              {/* Close Button (Taking rest is optional) */}
+              <button
+                onClick={handleKeepPlaying}
+                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 active:scale-90 text-gray-500 font-black flex items-center justify-center text-xl transition-all cursor-pointer"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+
               <div className="text-7xl mb-4 animate-bounce">
                 🌟 🦁 🐦
               </div>
               <h2 className="text-3xl font-black text-gray-800 mb-2">
                 Great Job Today!
               </h2>
-              <p className="text-xl text-gray-600 mb-6 font-semibold">
-                Time to rest your eyes! See you tomorrow! 👋
+              <p className="text-lg text-gray-600 mb-6 font-semibold">
+                Time to rest your eyes! Taking a rest is optional — you can keep playing whenever you want! 👋
               </p>
 
-              {/* Grown-up extend button */}
+              {/* Child-friendly Keep Playing button */}
+              <button
+                onClick={handleKeepPlaying}
+                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 active:scale-95 text-white font-black text-xl shadow-lg shadow-green-200 transition-all cursor-pointer mb-3"
+              >
+                🚀 Keep Playing!
+              </button>
+
+              {/* Grown-up settings option */}
               <button
                 onClick={() => setShowParentUnlock(true)}
-                className="text-xs text-gray-400 hover:text-gray-600 mt-4 transition-colors"
+                className="text-xs text-gray-400 hover:text-gray-600 transition-colors cursor-pointer"
               >
-                Grown-ups: Add 10 more minutes
+                Grown-ups: Change limits in Settings
               </button>
             </motion.div>
           </motion.div>

@@ -182,13 +182,21 @@ export default function SettingsPage() {
 
           {/* Session Time Limit */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
-            <label className="block text-sm font-semibold text-gray-600 mb-2">
-              Session Time Limit: <span className="text-blue-600 font-bold">{settings.sessionLimitMin ?? 15} minutes</span>
-            </label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="text-sm font-semibold text-gray-600">
+                Session Time Limit: <span className="text-blue-600 font-bold">{settings.sessionLimitMin ?? 15} minutes</span>
+              </label>
+              <span className="text-xs text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md font-bold">
+                Optional Reminder
+              </span>
+            </div>
+            <p className="text-xs text-gray-400 mb-3">
+              Gentle reminder to rest eyes. Taking a break is optional — children can choose to keep playing!
+            </p>
             <input
               type="range"
               min="5"
-              max="30"
+              max="60"
               step="5"
               value={settings.sessionLimitMin ?? 15}
               onChange={(e) => setSettings(prev => ({ ...prev, sessionLimitMin: parseInt(e.target.value) || 15 }))}
@@ -198,6 +206,7 @@ export default function SettingsPage() {
               <span>5 min</span>
               <span>15 min</span>
               <span>30 min</span>
+              <span>60 min</span>
             </div>
           </div>
 

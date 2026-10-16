@@ -390,28 +390,29 @@ export function buildGameStages<T extends ItemLike>(opts: GameStageOptions<T>): 
   const itemsToIntroduce =
     newItemIds.length > 0
       ? items.filter((i) => newItemIds.includes(i.id))
-      : items.slice(0, 4);
+      : items;
 
   const stages: GameStage<T>[] = [];
 
   for (const st of authored) {
     switch (st) {
       case 'meet':
-        stages.push({ type: 'meet', items: itemsToIntroduce });
+        stages.push({ type: 'meet', items: itemsToIntroduce.length > 0 ? itemsToIntroduce : items });
         break;
       case 'find':
         stages.push({
           type: 'find',
-          items: items.slice(0, Math.min(items.length, 5)),
+          items: itemsToIntroduce.length > 0 ? itemsToIntroduce : items,
           distractors: distractorPool.slice(0, 6),
         });
         break;
       case 'count':
-        stages.push({ type: 'count', items: items.slice(0, 4) });
+        stages.push({ type: 'count', items: itemsToIntroduce.length > 0 ? itemsToIntroduce : items });
         break;
       case 'match': {
         if (items.length < 2) break;
-        const pairs = items.slice(0, Math.min(items.length, 4)).map((item) => ({
+        const matchItems = itemsToIntroduce.length > 0 ? itemsToIntroduce : items;
+        const pairs = matchItems.map((item) => ({
           left: item,
           right: {
             ...item,
@@ -419,11 +420,11 @@ export function buildGameStages<T extends ItemLike>(opts: GameStageOptions<T>): 
             displayName: item.pictureWord ?? item.displayName,
           } as T,
         }));
-        stages.push({ type: 'match', items, pairs });
+        stages.push({ type: 'match', items: matchItems, pairs });
         break;
       }
       case 'trace':
-        stages.push({ type: 'trace', items: itemsToIntroduce.slice(0, 3) });
+        stages.push({ type: 'trace', items: itemsToIntroduce.length > 0 ? itemsToIntroduce : items });
         break;
       case 'spotDifference': {
         if (levelType !== 'tricky' || !items[0]) break;
