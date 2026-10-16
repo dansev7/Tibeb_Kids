@@ -27,8 +27,16 @@ interface GlyphData {
   boundingBox: { minX: number; maxX: number; minY: number; maxY: number };
 }
 
+interface ShapeMatchResult {
+  matched: boolean;
+  coverage: number;
+  precision: number;
+  iou: number;
+  missingZones: number[];
+}
+
 const CANVAS_SIZE = 400;
-const PASSING_ACCURACY_THRESHOLD = 65; // Must achieve at least 65% match accuracy to pass
+const PASSING_ACCURACY_THRESHOLD = 90; // User requested 90% match accuracy threshold
 const ON_PATH_RADIUS = 26; // Tolerance radius around stroke for precision calculation
 const CHECKPOINT_HIT_RADIUS = 22; // Checkpoint collection radius
 
@@ -76,7 +84,7 @@ export default function TraceIt({
     // Clear guide canvas
     gCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    // Common high-legibility font stack for Ethiopic and Latin
+    // High-legibility font stack for Ethiopic and Latin
     const fontStr = '900 230px "Noto Sans Ethiopic", "Nyala", "Kefa", "Segoe UI", system-ui, -apple-system, sans-serif';
     gCtx.font = fontStr;
     gCtx.textAlign = 'center';
@@ -217,7 +225,6 @@ export default function TraceIt({
     clearCanvas();
 
     if (currentItem) {
-      // Ensure fonts are ready before drawing to canvas
       if (typeof document !== 'undefined' && 'fonts' in document) {
         document.fonts.ready.then(() => {
           initGlyphAndGuide(currentItem.symbol);
@@ -267,9 +274,94 @@ export default function TraceIt({
   };
 
   /**
+   * Performs deep character shape verification comparing the drawn ink mask against
+   * the required character template (downsampled 100x100 raster comparison).
+   * Verifies that the child drew the actual required character and not another shape.
+   */
+  const verifyCharacterShape = useCallback((): ShapeMatchResult => {
+    const drawCanvas = drawCanvasRef.current;
+    const data = glyphDataRef.current;
+    if (!drawCanvas || !data || data.checkpoints.length === 0 || !currentItem) {
+      return { matched: false, coverage: 0, precision: 0, iou: 0, missingZones: [] };
+    }
+
+    const cmpSize = 100;
+
+    // 1. Render target template glyph on 100x100 canvas with stroke dilation
+    const targetCmp = document.createElement('canvas');
+    targetCmp.width = cmpSize;
+    targetCmp.height = cmpSize;
+    const tCtx = targetCmp.getContext('2d', { willReadFrequently: true });
+    if (!tCtx) return { matched: false, coverage: 0, precision: 0, iou: 0, missingZones: [] };
+
+    const fontStr = '900 58px "Noto Sans Ethiopic", "Nyala", "Kefa", "Segoe UI", system-ui, -apple-system, sans-serif';
+    tCtx.font = fontStr;
+    tCtx.textAlign = 'center';
+    tCtx.textBaseline = 'middle';
+    tCtx.lineWidth = 7;
+    tCtx.lineCap = 'round';
+    tCtx.lineJoin = 'round';
+    tCtx.fillStyle = '#000000';
+    tCtx.strokeStyle = '#000000';
+    tCtx.fillText(currentItem.symbol, cmpSize / 2, cmpSize / 2);
+    tCtx.strokeText(currentItem.symbol, cmpSize / 2, cmpSize / 2);
+
+    const targetImg = tCtx.getImageData(0, 0, cmpSize, cmpSize).data;
+
+    // 2. Downsample drawn canvas onto 100x100 canvas
+    const drawnCmp = document.createElement('canvas');
+    drawnCmp.width = cmpSize;
+    drawnCmp.height = cmpSize;
+    const dCtx = drawnCmp.getContext('2d', { willReadFrequently: true });
+    if (!dCtx) return { matched: false, coverage: 0, precision: 0, iou: 0, missingZones: [] };
+
+    dCtx.drawImage(drawCanvas, 0, 0, cmpSize, cmpSize);
+    const drawnImg = dCtx.getImageData(0, 0, cmpSize, cmpSize).data;
+
+    let intersection = 0;
+    let targetCount = 0;
+    let drawnCount = 0;
+
+    for (let i = 0; i < cmpSize * cmpSize; i++) {
+      const tAlpha = targetImg[i * 4 + 3] > 40;
+      const dAlpha = drawnImg[i * 4 + 3] > 40;
+
+      if (tAlpha) targetCount++;
+      if (dAlpha) drawnCount++;
+      if (tAlpha && dAlpha) intersection++;
+    }
+
+    const union = targetCount + drawnCount - intersection;
+    const iou = union > 0 ? intersection / union : 0;
+    const coverage = targetCount > 0 ? intersection / targetCount : 0;
+    const precision = drawnCount > 0 ? intersection / drawnCount : 0;
+
+    // 3. Zone completeness
+    const missingZones: number[] = [];
+    for (const zone of data.activeZones) {
+      const hit = data.checkpoints.some(c => c.zone === zone && c.hit);
+      if (!hit) missingZones.push(zone);
+    }
+    const zoneRatio = (data.activeZones.length - missingZones.length) / Math.max(1, data.activeZones.length);
+
+    // Strict criteria:
+    // - High coverage of target character strokes (>= 88%)
+    // - High on-stroke precision (>= 60%)
+    // - High shape overlap IoU (>= 50%)
+    // - All major active zones covered (>= 85%)
+    const matched = coverage >= 0.88 && precision >= 0.60 && iou >= 0.50 && zoneRatio >= 0.85;
+
+    return {
+      matched,
+      coverage,
+      precision,
+      iou,
+      missingZones,
+    };
+  }, [currentItem]);
+
+  /**
    * Evaluates match accuracy for a sample point along the drawn stroke.
-   * - Tests distance to checkpoints to calculate Coverage and Precision.
-   * - Prevents arbitrary straight lines from passing multi-stroke characters.
    */
   const processStrokeSample = (x: number, y: number) => {
     const data = glyphDataRef.current;
@@ -282,7 +374,6 @@ export default function TraceIt({
 
     let minDistSq = Infinity;
 
-    // Check hit status and distance against all checkpoints
     for (let i = 0; i < data.checkpoints.length; i++) {
       const cp = data.checkpoints[i];
       const dx = cp.x - x;
@@ -296,12 +387,10 @@ export default function TraceIt({
       }
     }
 
-    // Check if this point is within tolerance of the letter stroke
     if (minDistSq <= onPathRadiusSq) {
       onTargetPointsRef.current++;
     }
 
-    // Calculate metrics
     const totalCheckpoints = data.checkpoints.length;
     const hitCount = data.checkpoints.filter(c => c.hit).length;
     const coverage = hitCount / totalCheckpoints;
@@ -310,7 +399,6 @@ export default function TraceIt({
     const onTarget = onTargetPointsRef.current;
     const precision = onTarget / totalDrawn;
 
-    // Active zone coverage
     let coveredZones = 0;
     const totalActive = Math.max(1, data.activeZones.length);
     for (const zone of data.activeZones) {
@@ -319,13 +407,12 @@ export default function TraceIt({
     }
     const zoneCoverage = coveredZones / totalActive;
 
-    // Composite Match Score
-    let compositeScore = coverage * 0.65 + precision * 0.35;
+    // Weight 60% coverage + 40% on-target precision
+    let compositeScore = coverage * 0.60 + precision * 0.40;
 
-    // Multi-Zone Guard: A straight line across a multi-zone character touches only 1-2 zones.
-    // If fewer than 60% of active zones are touched, cap accuracy at 40% so it can NEVER pass.
-    if (data.activeZones.length >= 3 && zoneCoverage < 0.60) {
-      compositeScore = Math.min(compositeScore, 0.40);
+    // Multi-Zone Guard: if fewer than 80% of active zones are touched, cap accuracy at 45%
+    if (data.activeZones.length >= 3 && zoneCoverage < 0.80) {
+      compositeScore = Math.min(compositeScore, 0.45);
     }
 
     const calculatedPct = Math.min(100, Math.max(0, Math.round(compositeScore * 100)));
@@ -394,39 +481,47 @@ export default function TraceIt({
     setIsDrawing(false);
     lastPointRef.current = null;
 
-    // When child lifts finger: auto-verify if they achieved high match accuracy
-    const data = glyphDataRef.current;
-    if (!data || completedRef.current) return;
+    if (completedRef.current) return;
 
-    const hitCount = data.checkpoints.filter(c => c.hit).length;
-    const coverage = hitCount / Math.max(1, data.checkpoints.length);
-    const precision = onTargetPointsRef.current / Math.max(1, totalDrawnPointsRef.current);
-
-    // Auto-complete if child accurately traced the letter
-    if (matchAccuracy >= PASSING_ACCURACY_THRESHOLD && coverage >= 0.58 && precision >= 0.50) {
-      handleSuccess();
+    // Auto-verify if match accuracy reaches threshold and character shape matches
+    if (matchAccuracy >= PASSING_ACCURACY_THRESHOLD) {
+      const shapeResult = verifyCharacterShape();
+      if (shapeResult.matched) {
+        handleSuccess();
+      }
     }
   };
 
-  // When child taps Done button: verify match accuracy
+  // When child taps Done button: verify both match accuracy (>= 90%) and character shape match
   const handleDoneClick = () => {
     if (completedStrokes) return;
 
-    const data = glyphDataRef.current;
-    const hitCount = data ? data.checkpoints.filter(c => c.hit).length : 0;
-    const coverage = data ? hitCount / Math.max(1, data.checkpoints.length) : 0;
-    const precision = onTargetPointsRef.current / Math.max(1, totalDrawnPointsRef.current);
+    const isAccuracyPassed = matchAccuracy >= PASSING_ACCURACY_THRESHOLD;
+    const shapeResult = verifyCharacterShape();
 
-    if (matchAccuracy >= PASSING_ACCURACY_THRESHOLD && coverage >= 0.58 && precision >= 0.50) {
+    if (isAccuracyPassed && shapeResult.matched) {
       handleSuccess();
     } else {
       playFeedbackTone('wrong');
-      const reminder = isFidel
-        ? `ትክክለኛነቱ ${matchAccuracy}% ነው — 65% እንዲደርስ ሙሉውን ፊደል ተከታትለህ ጻፍ! ✨`
-        : `Match is ${matchAccuracy}% — trace the whole letter to reach 65%! ✨`;
+
+      let reminder = '';
+      if (!isAccuracyPassed) {
+        reminder = isFidel
+          ? `ትክክለኛነቱ ${matchAccuracy}% ነው — ለመጨረስ 90% ድረስ! ⭐`
+          : `Match is ${matchAccuracy}% — reach 90% to finish! ⭐`;
+      } else {
+        // Accuracy reached 90% but shape check detected missing parts
+        reminder = isFidel
+          ? `ጥቂት ቀርቶሃል! የ${currentItem.symbol} ፊደልን ሁሉንም መስመሮች አሟልተህ ጻፍ! ✍️`
+          : `Almost there! Trace all strokes of the letter ${currentItem.displayName || currentItem.symbol}! ✍️`;
+      }
+
       setShowNotice(reminder);
-      playAudioOrSpeech(undefined, isFidel ? 'ሙሉውን ፊደል ተከታትለህ ጻፍ' : 'Trace along the whole letter shape');
-      setTimeout(() => setShowNotice(null), 2800);
+      playAudioOrSpeech(
+        undefined,
+        isFidel ? 'ፊደሉን ሁሉንም መስመሮች አሟልተህ ጻፍ' : 'Trace along all parts of the letter shape'
+      );
+      setTimeout(() => setShowNotice(null), 3000);
     }
   };
 
@@ -451,7 +546,7 @@ export default function TraceIt({
         </div>
       </div>
 
-      {/* Match Accuracy Meter Bar */}
+      {/* Match Accuracy Meter Bar (Target: 90%) */}
       <div className="w-full max-w-[360px] md:max-w-[400px] mb-2 bg-white rounded-2xl p-2.5 shadow-sm border border-gray-100">
         <div className="flex items-center justify-between text-xs font-black text-gray-600 mb-1.5">
           <span className="flex items-center gap-1">
@@ -461,13 +556,13 @@ export default function TraceIt({
             <span
               className="text-base font-black transition-colors"
               style={{
-                color: matchAccuracy >= PASSING_ACCURACY_THRESHOLD ? '#10B981' : matchAccuracy >= 40 ? '#3B82F6' : '#F59E0B',
+                color: matchAccuracy >= PASSING_ACCURACY_THRESHOLD ? '#10B981' : matchAccuracy >= 60 ? '#3B82F6' : '#F59E0B',
               }}
             >
               {matchAccuracy}% {matchAccuracy >= PASSING_ACCURACY_THRESHOLD ? '⭐' : ''}
             </span>
-            <span className="text-[11px] font-bold text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded-md">
-              {isFidel ? 'ዒላማ: 65%' : 'Goal: 65%'}
+            <span className="text-[11px] font-bold text-white bg-indigo-600 px-2 py-0.5 rounded-full shadow-xs">
+              {isFidel ? 'ዒላማ: 90%' : 'Goal: 90%'}
             </span>
           </div>
         </div>
@@ -475,11 +570,11 @@ export default function TraceIt({
           <motion.div
             className="h-full rounded-full transition-all duration-150"
             style={{
-              width: `${Math.min(100, Math.max(0, matchAccuracy))}%`,
+              width: `${Math.min(100, Math.max(0, (matchAccuracy / PASSING_ACCURACY_THRESHOLD) * 100))}%`,
               backgroundColor:
                 matchAccuracy >= PASSING_ACCURACY_THRESHOLD
                   ? '#10B981'
-                  : matchAccuracy >= 40
+                  : matchAccuracy >= 60
                   ? '#3B82F6'
                   : '#F59E0B',
             }}
@@ -555,11 +650,11 @@ export default function TraceIt({
               >
                 ⭐
               </motion.div>
-              <span className="text-3xl font-extrabold text-emerald-800 mt-2 drop-shadow-sm">
-                {isFidel ? 'ጎበዝ! በትክክል ጽፈሃል!' : 'Great job! Traced perfectly!'}
+              <span className="text-3xl font-extrabold text-emerald-800 mt-2 drop-shadow-sm text-center">
+                {isFidel ? 'ጎበዝ! ፊደሉን በትክክል ጽፈሃል!' : 'Great job! Traced perfectly!'}
               </span>
               <span className="text-lg font-black text-emerald-700 mt-1">
-                {matchAccuracy}% {isFidel ? 'ትክክለኛነት' : 'Accuracy'}
+                {matchAccuracy}% {isFidel ? 'ትክክለኛነት' : 'Accuracy'} ⭐
               </span>
             </motion.div>
           )}
