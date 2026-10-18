@@ -604,10 +604,10 @@ export default function TraceIt({
             className="absolute inset-0 w-full h-full pointer-events-none z-10"
           >
             <defs>
-              {strokes.map((stroke) => (
+              {strokes.map((stroke, sIdx) => (
                 <marker
-                  key={`arrow-${stroke.order}`}
-                  id={`arrowhead-${stroke.order}`}
+                  key={`arrow-${stroke.order}-${sIdx}`}
+                  id={`arrowhead-${stroke.order}-${sIdx}`}
                   viewBox="0 0 10 10"
                   refX="7"
                   refY="5"
@@ -620,7 +620,7 @@ export default function TraceIt({
               ))}
             </defs>
 
-            {strokes.map((stroke) => {
+            {strokes.map((stroke, sIdx) => {
               const pathD = stroke.mid
                 ? `M ${stroke.from.x} ${stroke.from.y} Q ${stroke.mid.x} ${stroke.mid.y} ${stroke.to.x} ${stroke.to.y}`
                 : `M ${stroke.from.x} ${stroke.from.y} L ${stroke.to.x} ${stroke.to.y}`;
@@ -628,7 +628,7 @@ export default function TraceIt({
               const isFirstStroke = stroke.order === 1;
 
               return (
-                <g key={`stroke-group-${stroke.order}`} opacity={matchAccuracy > 65 ? 0.35 : 0.88}>
+                <g key={`stroke-group-${stroke.order}-${sIdx}`} opacity={matchAccuracy > 65 ? 0.35 : 0.88}>
                   {/* Directional Path Line */}
                   <path
                     d={pathD}
@@ -637,7 +637,7 @@ export default function TraceIt({
                     strokeWidth="3.5"
                     strokeDasharray="6 5"
                     strokeLinecap="round"
-                    markerEnd={`url(#arrowhead-${stroke.order})`}
+                    markerEnd={`url(#arrowhead-${stroke.order}-${sIdx})`}
                   />
 
                   {/* Numbered Stroke Origin Badge (①, ②, ③) */}

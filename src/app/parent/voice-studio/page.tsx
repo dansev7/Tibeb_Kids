@@ -118,12 +118,29 @@ export default function VoiceStudioPage() {
   }
 
   const allUnits: RecordableUnit[] = useMemo(() => {
-    const list: RecordableUnit[] = [];
+    const unitMap = new Map<string, RecordableUnit>();
+
+    const addOrMergeUnit = (unit: RecordableUnit) => {
+      if (!unit.audioPath) return;
+      const existing = unitMap.get(unit.audioPath);
+      if (existing) {
+        // If this audio target already exists (e.g. word_apple for lowercase after uppercase),
+        // merge symbols so parent sees it covers both (e.g. "A / a")
+        if (unit.symbol && existing.symbol && !existing.symbol.includes(unit.symbol)) {
+          existing.symbol = `${existing.symbol} / ${unit.symbol}`;
+          if (existing.type === 'word') {
+            existing.subtitle = `Vocabulary for letters ${existing.symbol}`;
+          }
+        }
+        return;
+      }
+      unitMap.set(unit.audioPath, unit);
+    };
 
     // System prompts
     prompts.forEach((p) => {
-      list.push({
-        uniqueKey: p.audioPath,
+      addOrMergeUnit({
+        uniqueKey: `prompt-${p.audioPath}`,
         audioPath: p.audioPath,
         title: p.title,
         subtitle: p.subtitle,
@@ -136,8 +153,8 @@ export default function VoiceStudioPage() {
 
     // Amharic fidels
     amharic.forEach((a) => {
-      list.push({
-        uniqueKey: a.audioPath,
+      addOrMergeUnit({
+        uniqueKey: `amharic-symbol-${a.audioPath}`,
         audioPath: a.audioPath,
         title: a.title,
         subtitle: a.subtitle,
@@ -147,8 +164,8 @@ export default function VoiceStudioPage() {
         type: 'symbol',
       });
       if (a.word && a.wordAudioPath) {
-        list.push({
-          uniqueKey: a.wordAudioPath,
+        addOrMergeUnit({
+          uniqueKey: `amharic-word-${a.wordAudioPath}`,
           audioPath: a.wordAudioPath,
           title: `ቃል: ${a.word}`,
           subtitle: `የ ${a.symbol} ቃል`,
@@ -162,8 +179,8 @@ export default function VoiceStudioPage() {
 
     // English letters
     english.forEach((e) => {
-      list.push({
-        uniqueKey: e.audioPath,
+      addOrMergeUnit({
+        uniqueKey: `english-symbol-${e.audioPath}`,
         audioPath: e.audioPath,
         title: e.title,
         subtitle: e.subtitle,
@@ -173,8 +190,8 @@ export default function VoiceStudioPage() {
         type: 'symbol',
       });
       if (e.word && e.wordAudioPath) {
-        list.push({
-          uniqueKey: e.wordAudioPath,
+        addOrMergeUnit({
+          uniqueKey: `english-word-${e.wordAudioPath}`,
           audioPath: e.wordAudioPath,
           title: `Word: ${e.word}`,
           subtitle: `Vocabulary for letter ${e.symbol}`,
@@ -188,8 +205,8 @@ export default function VoiceStudioPage() {
 
     // Numbers
     numbers.forEach((n) => {
-      list.push({
-        uniqueKey: n.audioPath,
+      addOrMergeUnit({
+        uniqueKey: `numbers-symbol-${n.audioPath}`,
         audioPath: n.audioPath,
         title: n.title,
         subtitle: n.subtitle,
@@ -199,8 +216,8 @@ export default function VoiceStudioPage() {
         type: 'symbol',
       });
       if (n.word && n.wordAudioPath) {
-        list.push({
-          uniqueKey: n.wordAudioPath,
+        addOrMergeUnit({
+          uniqueKey: `numbers-word-${n.wordAudioPath}`,
           audioPath: n.wordAudioPath,
           title: `Item: ${n.word}`,
           subtitle: `Count word for ${n.symbol}`,
@@ -212,7 +229,7 @@ export default function VoiceStudioPage() {
       }
     });
 
-    return list;
+    return Array.from(unitMap.values());
   }, [prompts, amharic, english, numbers]);
 
   // Filtered units
