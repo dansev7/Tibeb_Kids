@@ -110,10 +110,13 @@ export default function SpeakerButton({
     // Try HTML5 Audio if audioPath provided
     if (audioPath) {
       try {
+        const { resolveAudioPath } = require('@/lib/audioStorage');
+        const resolvedPath = resolveAudioPath(audioPath) || audioPath;
+
         if (!audioRef.current) {
-          audioRef.current = new Audio(audioPath);
+          audioRef.current = new Audio(resolvedPath);
         } else {
-          audioRef.current.src = audioPath;
+          audioRef.current.src = resolvedPath;
         }
 
         setIsPlaying(true);

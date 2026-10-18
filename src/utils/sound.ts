@@ -303,8 +303,12 @@ export function speakText(text: string, lang = 'en-US') {
 }
 
 
+import { resolveAudioPath, hasCustomVoice } from '@/lib/audioStorage';
+export { resolveAudioPath, hasCustomVoice };
+
 /**
- * Play audio from file path, falling back to speech synthesis if file cannot load or is empty
+ * Play audio from file path, falling back to speech synthesis if file cannot load or is empty.
+ * Seamlessly checks for parent-recorded voice in IndexedDB first.
  */
 export function playAudioOrSpeech(
   audioPath?: string,
@@ -313,9 +317,11 @@ export function playAudioOrSpeech(
 ): HTMLAudioElement | null {
   if (typeof window === 'undefined') return null;
 
-  if (audioPath && audioPath.trim().length > 0) {
+  const resolvedPath = audioPath ? resolveAudioPath(audioPath) : undefined;
+
+  if (resolvedPath && resolvedPath.trim().length > 0) {
     try {
-      const audio = new Audio(audioPath);
+      const audio = new Audio(resolvedPath);
       audio.volume = getVolume();
       let fallbackTriggered = false;
 

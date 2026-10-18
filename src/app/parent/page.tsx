@@ -53,6 +53,36 @@ export default function ParentPage() {
         <div className="text-center text-gray-400 py-12">Loading...</div>
       ) : (
         <div className="max-w-4xl mx-auto space-y-6">
+          {/* Parent Audio Voice Studio Feature Banner */}
+          <motion.div
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            className="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 rounded-3xl p-6 text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4 cursor-pointer hover:shadow-2xl transition-all"
+            onClick={() => router.push('/parent/voice-studio')}
+          >
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🎙️</span>
+                <h2 className="text-xl font-black">Parent Audio Voice Studio</h2>
+                <span className="bg-amber-400 text-slate-900 text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                  Recommended
+                </span>
+              </div>
+              <p className="text-sm text-white/90 max-w-lg">
+                Record your real family voice in 2 seconds per letter & fidel. Children learn best when hearing someone they love!
+              </p>
+            </div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push('/parent/voice-studio');
+              }}
+              className="px-5 py-3 bg-white text-indigo-700 font-extrabold rounded-2xl shadow-md hover:bg-slate-50 transition-colors whitespace-nowrap text-sm cursor-pointer"
+            >
+              Open Voice Studio →
+            </button>
+          </motion.div>
+
           {/* World Progress */}
           {dashboardData.worlds?.map((world: any) => (
             <motion.div
@@ -143,13 +173,21 @@ export default function ParentPage() {
             </motion.div>
           )}
 
-          {/* Settings link */}
-          <div className="text-center">
+          {/* Navigation links */}
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
+            <button
+              onClick={() => router.push('/parent/voice-studio')}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-2xl font-bold shadow-md shadow-indigo-100 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <span>🎙️</span>
+              <span>Voice Studio</span>
+            </button>
             <button
               onClick={() => router.push('/parent/settings')}
-              className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-2xl font-semibold transition-colors"
+              className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-3 rounded-2xl font-semibold transition-colors flex items-center gap-2 cursor-pointer"
             >
-              ⚙️ Settings
+              <span>⚙️</span>
+              <span>Settings</span>
             </button>
           </div>
         </div>

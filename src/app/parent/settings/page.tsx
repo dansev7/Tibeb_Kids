@@ -180,6 +180,27 @@ export default function SettingsPage() {
             </div>
           </div>
 
+          {/* Parent Audio Voice Studio Card */}
+          <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl shadow-lg p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-2xl">🎙️</span>
+                <h3 className="font-bold text-lg">Human Voice Studio</h3>
+                <span className="bg-amber-400 text-slate-900 text-xs px-2 py-0.5 rounded-full font-bold">Recommended</span>
+              </div>
+              <p className="text-xs text-white/90 max-w-md">
+                Amharic TTS is robotic. Record your own voice for letters, fidels, and prompts in 2 seconds per item.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push('/parent/voice-studio')}
+              className="px-4 py-2.5 bg-white text-indigo-700 font-bold rounded-xl text-xs hover:bg-slate-50 transition-colors whitespace-nowrap cursor-pointer shadow"
+            >
+              Open Voice Studio →
+            </button>
+          </div>
+
           {/* Session Time Limit */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between mb-1">

@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import SessionTimer from '@/components/ui/SessionTimer';
 import { syncOfflineQueue } from '@/lib/offlineQueue';
 import { fetchSettings, applySettings } from '@/lib/settings';
+import { initVoiceStudioStorage } from '@/lib/audioStorage';
 
 // usePathname defers to client during prerendering, so keep it in a small
 // component behind a Suspense boundary.
@@ -15,6 +16,9 @@ function SessionTimerArea() {
 
 export default function ClientProviders({ children }: { children: React.ReactNode }) {
   useEffect(() => {
+    // Warm up parent voice recording blob URLs
+    initVoiceStudioStorage();
+
     // Apply parent settings (volume, voice) on every page, not just settings
     fetchSettings().then(applySettings);
 
