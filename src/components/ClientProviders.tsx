@@ -3,6 +3,7 @@
 import { Suspense, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import SessionTimer from '@/components/ui/SessionTimer';
+import PwaInstallPrompt from '@/components/ui/PwaInstallPrompt';
 import { syncOfflineQueue } from '@/lib/offlineQueue';
 import { fetchSettings, applySettings } from '@/lib/settings';
 import { initVoiceStudioStorage } from '@/lib/audioStorage';
@@ -43,6 +44,7 @@ export default function ClientProviders({ children }: { children: React.ReactNod
       <Suspense fallback={null}>
         <SessionTimerArea />
       </Suspense>
+      <PwaInstallPrompt />
     </>
   );
 }

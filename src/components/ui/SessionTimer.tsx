@@ -96,16 +96,22 @@ function endSessionNow(s: PersistentSession): PersistentSession {
   const folded = foldSegment(s);
   const next = { ...folded, ended: true };
   if (next.sessionId !== null) {
+    const payload = {
+      sessionId: next.sessionId,
+      endedAt: new Date().toISOString(),
+      minutes: Math.round(elapsedMinutes(next) * 10) / 10,
+    };
     fetch('/api/session', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        sessionId: next.sessionId,
-        endedAt: new Date().toISOString(),
-        minutes: Math.round(elapsedMinutes(next) * 10) / 10,
-      }),
+      body: JSON.stringify(payload),
       keepalive: true,
-    }).catch(() => {});
+    }).catch(() => {
+      try {
+        const { queueOfflineProgress } = require('@/lib/offlineQueue');
+        queueOfflineProgress('/api/session', payload);
+      } catch {}
+    });
   }
   saveSession(next);
   return next;

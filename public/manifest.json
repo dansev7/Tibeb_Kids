@@ -1,13 +1,28 @@
 {
-  "name": "Little Learner",
+  "name": "Little Learner - ኪንደርጋርተን",
   "short_name": "LittleLearner",
-  "description": "Letters, Numbers & Fidel for young learners",
+  "description": "Letters, Numbers & Fidel Village for young learners",
   "start_url": "/",
+  "id": "/",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait-primary",
   "background_color": "#e0f2fe",
   "theme_color": "#0284c7",
-  "orientation": "any",
+  "categories": ["education", "kids", "games"],
   "icons": [
+    {
+      "src": "/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
     {
       "src": "/favicon.ico",
       "sizes": "64x64 32x32 24x24 16x16",
