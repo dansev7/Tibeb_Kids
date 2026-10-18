@@ -6,6 +6,7 @@ import { GameItem, StageResult } from '@/types';
 import { playFeedbackTone, playAudioOrSpeech } from '@/utils/sound';
 import SpeakerButton from '@/components/ui/SpeakerButton';
 import BigButton from '@/components/ui/BigButton';
+import { getRenderedStrokes, RenderedStroke } from '@/utils/strokeGuides';
 
 interface TraceItProps {
   items: GameItem[];
@@ -52,6 +53,7 @@ export default function TraceIt({
   const [completedStrokes, setCompletedStrokes] = useState(false);
   const [matchAccuracy, setMatchAccuracy] = useState(0);
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
+  const [strokes, setStrokes] = useState<RenderedStroke[]>([]);
   const [showNotice, setShowNotice] = useState<string | null>(null);
 
   const guideCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -171,6 +173,14 @@ export default function TraceIt({
 
     const start = initialStart || { x: 200, y: 110 };
     setStartPoint(start);
+
+    // Compute stroke order with numbered direction arrows
+    const renderedStrokes = getRenderedStrokes(
+      symbol,
+      { minX, maxX, minY, maxY },
+      start
+    );
+    setStrokes(renderedStrokes);
 
     glyphDataRef.current = {
       checkpoints: points,
@@ -587,19 +597,98 @@ export default function TraceIt({
           className="absolute inset-0 w-full h-full pointer-events-none z-0"
         />
 
+        {/* Layer 1.5: Directional Stroke Guide Arrows (① → ② → ③) with Numbered Order */}
+        {!completedStrokes && strokes.length > 0 && matchAccuracy < 88 && (
+          <svg
+            viewBox={`0 0 ${CANVAS_SIZE} ${CANVAS_SIZE}`}
+            className="absolute inset-0 w-full h-full pointer-events-none z-10"
+          >
+            <defs>
+              {strokes.map((stroke) => (
+                <marker
+                  key={`arrow-${stroke.order}`}
+                  id={`arrowhead-${stroke.order}`}
+                  viewBox="0 0 10 10"
+                  refX="7"
+                  refY="5"
+                  markerWidth="7"
+                  markerHeight="7"
+                  orient="auto-start-reverse"
+                >
+                  <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill={stroke.color} />
+                </marker>
+              ))}
+            </defs>
+
+            {strokes.map((stroke) => {
+              const pathD = stroke.mid
+                ? `M ${stroke.from.x} ${stroke.from.y} Q ${stroke.mid.x} ${stroke.mid.y} ${stroke.to.x} ${stroke.to.y}`
+                : `M ${stroke.from.x} ${stroke.from.y} L ${stroke.to.x} ${stroke.to.y}`;
+
+              const isFirstStroke = stroke.order === 1;
+
+              return (
+                <g key={`stroke-group-${stroke.order}`} opacity={matchAccuracy > 65 ? 0.35 : 0.88}>
+                  {/* Directional Path Line */}
+                  <path
+                    d={pathD}
+                    fill="none"
+                    stroke={stroke.color}
+                    strokeWidth="3.5"
+                    strokeDasharray="6 5"
+                    strokeLinecap="round"
+                    markerEnd={`url(#arrowhead-${stroke.order})`}
+                  />
+
+                  {/* Numbered Stroke Origin Badge (①, ②, ③) */}
+                  <g transform={`translate(${stroke.from.x}, ${stroke.from.y})`}>
+                    {isFirstStroke && (
+                      <circle
+                        r="18"
+                        fill="none"
+                        stroke="#10B981"
+                        strokeWidth="3"
+                        className="animate-ping"
+                        opacity="0.6"
+                      />
+                    )}
+                    <circle
+                      r="13"
+                      fill={isFirstStroke ? '#10B981' : stroke.color}
+                      stroke="#FFFFFF"
+                      strokeWidth="2.5"
+                      filter="drop-shadow(0px 2px 4px rgba(0,0,0,0.25))"
+                    />
+                    <text
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      fill="#FFFFFF"
+                      fontSize="12"
+                      fontWeight="900"
+                    >
+                      {stroke.order}
+                    </text>
+                  </g>
+                </g>
+              );
+            })}
+          </svg>
+        )}
+
         {/* Dynamic Green Start Indicator 🟢 (Shows where to start tracing) */}
         {!completedStrokes && startPoint && matchAccuracy < 18 && (
           <motion.div
-            animate={{ scale: [1, 1.25, 1] }}
-            transition={{ repeat: Infinity, duration: 1.3 }}
-            className="absolute w-9 h-9 rounded-full bg-emerald-500 border-3 border-white shadow-xl pointer-events-none z-10 flex items-center justify-center text-white text-xs font-black"
+            animate={{ scale: [1, 1.15, 1] }}
+            transition={{ repeat: Infinity, duration: 1.4 }}
+            className="absolute rounded-full bg-emerald-500 border-2 border-white shadow-xl pointer-events-none z-15 flex items-center justify-center text-white px-2.5 py-1 text-xs font-black gap-1"
             style={{
               left: `${(startPoint.x / CANVAS_SIZE) * 100}%`,
-              top: `${(startPoint.y / CANVAS_SIZE) * 100}%`,
+              top: `${Math.max(10, ((startPoint.y - 28) / CANVAS_SIZE) * 100)}%`,
               transform: 'translate(-50%, -50%)',
             }}
           >
-            {isFidel ? 'ጀምር' : 'Start'}
+            <span>🟢</span>
+            <span>{isFidel ? 'ጀምር ①' : 'Start ①'}</span>
           </motion.div>
         )}
 
