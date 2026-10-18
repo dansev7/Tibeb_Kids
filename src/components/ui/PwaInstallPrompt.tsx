@@ -12,7 +12,7 @@ export default function PwaInstallPrompt() {
     // Check if already in standalone mode
     if (
       (typeof window !== 'undefined' && window.matchMedia('(display-mode: standalone)').matches) ||
-      (window.navigator as any).standalone === true
+      (typeof window !== 'undefined' && (window.navigator as any).standalone === true)
     ) {
       setIsInstalled(true);
       return;
@@ -21,27 +21,47 @@ export default function PwaInstallPrompt() {
     const handleBeforeInstall = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e);
-      // Show install prompt if not dismissed previously in this session
-      const dismissed = sessionStorage.getItem('pwa_prompt_dismissed');
-      if (!dismissed) {
-        setIsVisible(true);
-      }
+      (window as any).__pwaInstallPrompt = e;
+      setIsVisible(true);
     };
 
     const handleAppInstalled = () => {
       setIsInstalled(true);
       setIsVisible(false);
       setDeferredPrompt(null);
+      (window as any).__pwaInstallPrompt = null;
+    };
+
+    const handleManualShow = () => {
+      setIsVisible(true);
     };
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstall);
     window.addEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener('show-pwa-install', handleManualShow);
+
+    // Global helper for manual trigger from Parent Settings or header
+    (window as any).triggerPwaInstall = async () => {
+      const promptEvent = (window as any).__pwaInstallPrompt || deferredPrompt;
+      if (promptEvent) {
+        promptEvent.prompt();
+        const { outcome } = await promptEvent.userChoice;
+        if (outcome === 'accepted') {
+          setIsVisible(false);
+        }
+        setDeferredPrompt(null);
+        (window as any).__pwaInstallPrompt = null;
+        return true;
+      }
+      return false;
+    };
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handleBeforeInstall);
       window.removeEventListener('appinstalled', handleAppInstalled);
+      window.removeEventListener('show-pwa-install', handleManualShow);
     };
-  }, []);
+  }, [deferredPrompt]);
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
@@ -51,11 +71,11 @@ export default function PwaInstallPrompt() {
       setIsVisible(false);
     }
     setDeferredPrompt(null);
+    (window as any).__pwaInstallPrompt = null;
   };
 
   const handleDismiss = () => {
     setIsVisible(false);
-    sessionStorage.setItem('pwa_prompt_dismissed', 'true');
   };
 
   if (!isVisible || isInstalled) return null;

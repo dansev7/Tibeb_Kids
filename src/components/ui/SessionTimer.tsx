@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { playAudioOrSpeech } from '@/utils/sound';
 import ParentGate from '@/components/ui/ParentGate';
 import { fetchSettings } from '@/lib/settings';
+import { queueOfflineProgress } from '@/lib/offlineQueue';
 
 const STORAGE_KEY = 'little_learner_session';
 
@@ -108,7 +109,6 @@ function endSessionNow(s: PersistentSession): PersistentSession {
       keepalive: true,
     }).catch(() => {
       try {
-        const { queueOfflineProgress } = require('@/lib/offlineQueue');
         queueOfflineProgress('/api/session', payload);
       } catch {}
     });

@@ -16,8 +16,21 @@ export default function SettingsPage() {
   });
   const [saved, setSaved] = useState(false);
   const [isTestingVoice, setIsTestingVoice] = useState(false);
+  const [isPwaInstalled, setIsPwaInstalled] = useState(false);
+  const [swActive, setSwActive] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const isStandalone =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone === true;
+      setIsPwaInstalled(isStandalone);
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(() => setSwActive(true)).catch(() => {});
+      }
+    }
+
     fetch('/api/parent/settings')
       .then(res => res.json())
       .then(data => {
@@ -277,6 +290,64 @@ export default function SettingsPage() {
                 );
               })}
             </div>
+          </div>
+
+          {/* PWA & Offline Installation Card */}
+          <div className="bg-white rounded-2xl shadow-lg p-6 border border-slate-100">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">📲</span>
+                <div>
+                  <h3 className="font-bold text-gray-800 text-base">PWA Home Screen & Offline Play</h3>
+                  <p className="text-xs text-gray-500">Install app on phone, tablet or desktop for offline play without Wi-Fi</p>
+                </div>
+              </div>
+              <span
+                className={`text-xs font-bold px-3 py-1 rounded-full ${
+                  isPwaInstalled
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-indigo-100 text-indigo-700'
+                }`}
+              >
+                {isPwaInstalled ? '✓ App Installed' : 'Ready to Install'}
+              </span>
+            </div>
+
+            <div className="bg-slate-50 rounded-xl p-3 text-xs text-slate-600 flex flex-col gap-2 mt-2">
+              <div className="flex items-center justify-between">
+                <span>Offline Service Worker:</span>
+                <span className="font-semibold text-emerald-600 flex items-center gap-1">
+                  ● {swActive ? 'Active & Ready' : 'Enabled'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span>App Mode:</span>
+                <span className="font-semibold text-slate-700">
+                  {isPwaInstalled ? 'Standalone Window' : 'Browser View'}
+                </span>
+              </div>
+            </div>
+
+            {!isPwaInstalled && (
+              <button
+                type="button"
+                onClick={async () => {
+                  const trigger = (window as any).triggerPwaInstall;
+                  if (trigger) {
+                    const ok = await trigger();
+                    if (!ok) {
+                      window.dispatchEvent(new CustomEvent('show-pwa-install'));
+                    }
+                  } else {
+                    alert('To install Little Learner: On Chrome/Edge, click the install icon (⊕) in the browser address bar. On iPhone/iPad Safari, tap Share ⎋ and choose "Add to Home Screen".');
+                  }
+                }}
+                className="mt-3 w-full py-2.5 px-4 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold rounded-xl text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <span>📥</span>
+                <span>Install Little Learner as App</span>
+              </button>
+            )}
           </div>
 
           {/* Save button */}
