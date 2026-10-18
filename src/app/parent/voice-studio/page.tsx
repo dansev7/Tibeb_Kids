@@ -621,13 +621,13 @@ export default function VoiceStudioPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            {filteredUnits.map((unit) => {
+            {filteredUnits.map((unit, unitIdx) => {
               const hasVoice = recordedKeys.has(unit.audioPath);
               const isPlaying = isPlayingPath === unit.audioPath;
 
               return (
                 <div
-                  key={unit.uniqueKey}
+                  key={`${unit.uniqueKey}-${unitIdx}`}
                   id={`unit-card-${unit.audioPath}`}
                   className={`bg-white rounded-2xl p-4 border transition-all ${
                     hasVoice

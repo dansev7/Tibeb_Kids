@@ -23,18 +23,34 @@ export default function ClientProviders({ children }: { children: React.ReactNod
     // Apply parent settings (volume, voice) on every page, not just settings
     fetchSettings().then(applySettings);
 
-    // Register PWA Service Worker (production only — its cache-first rule
-    // for /_next/static/ serves stale chunks during `next dev`)
-    if (process.env.NODE_ENV === 'production' && typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      navigator.serviceWorker
-        .register('/sw.js')
-        .then(() => {
-          // Sync any pending offline actions upon register
-          syncOfflineQueue();
-        })
-        .catch((err) => {
-          console.warn('Service worker registration failed:', err);
+    // PWA Service Worker management
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      if (process.env.NODE_ENV === 'production') {
+        navigator.serviceWorker
+          .register('/sw.js')
+          .then((registration) => {
+            registration.update();
+            syncOfflineQueue();
+          })
+          .catch((err) => {
+            console.warn('Service worker registration failed:', err);
+          });
+      } else {
+        // In development, unregister any existing service worker and purge caches
+        // so Turbopack/Next.js hot reload bundles are never shadowed by stale worker caches
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          for (const registration of registrations) {
+            registration.unregister();
+          }
         });
+        if ('caches' in window) {
+          caches.keys().then((keys) => {
+            for (const key of keys) {
+              caches.delete(key);
+            }
+          });
+        }
+      }
     }
   }, []);
 

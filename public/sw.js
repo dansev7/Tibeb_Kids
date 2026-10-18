@@ -1,4 +1,4 @@
-const CACHE_NAME = 'little-learner-v2';
+const CACHE_NAME = 'little-learner-v3';
 
 const ASSETS_TO_PRECACHE = [
   '/',
@@ -38,13 +38,12 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
-  // 1. Cache-first strategy for static assets, audio, images, fonts, and icons
+  // 1. Cache-first strategy for media and static assets (audio, images, fonts, icons)
   if (
     url.pathname.startsWith('/audio/') ||
     url.pathname.startsWith('/images/') ||
     url.pathname.startsWith('/fonts/') ||
-    url.pathname.startsWith('/icon-') ||
-    url.pathname.includes('/_next/static/')
+    url.pathname.startsWith('/icon-')
   ) {
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {
@@ -61,9 +60,14 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Network-first with cache fallback for level & world data APIs
-  // Allows children to keep playing levels even if Wi-Fi drops mid-session
-  if (url.pathname.startsWith('/api/levels/') || url.pathname.startsWith('/api/worlds')) {
+  // 2. Network-first with cache fallback for Next.js scripts and APIs
+  // Always serves the latest code when online while preserving full offline capability
+  if (
+    url.pathname.includes('/_next/') ||
+    url.pathname.startsWith('/api/levels/') ||
+    url.pathname.startsWith('/api/worlds') ||
+    url.pathname.startsWith('/api/parent/')
+  ) {
     event.respondWith(
       fetch(event.request)
         .then((networkResponse) => {
