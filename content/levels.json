@@ -1081,6 +1081,326 @@
             "quiz",
             "celebrate"
           ]
+        },
+        {
+          "id": "fidel-8",
+          "order": 8,
+          "title": "የ ለ ቤተሰብ (ለ ሉ ሊ ላ ሌ ል ሎ)",
+          "type": "learn",
+          "description": "የ 'ለ' ቤተሰብ 7ቱን ቅርጾች በስርዓት እንማር",
+          "itemIds": [
+            "fidel_le",
+            "fidel_le_2",
+            "fidel_le_3",
+            "fidel_le_4",
+            "fidel_le_5",
+            "fidel_le_6",
+            "fidel_le_7"
+          ],
+          "newItemIds": [
+            "fidel_le_2",
+            "fidel_le_3",
+            "fidel_le_4",
+            "fidel_le_5",
+            "fidel_le_6",
+            "fidel_le_7"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "fidel-9",
+          "order": 9,
+          "title": "የ መ ቤተሰብ (መ ሙ ሚ ማ ሜ ም ሞ)",
+          "type": "learn",
+          "description": "የ 'መ' ቤተሰብ 7ቱን ቅርጾች በስርዓት እንማር",
+          "itemIds": [
+            "fidel_me",
+            "fidel_me_2",
+            "fidel_me_3",
+            "fidel_me_4",
+            "fidel_me_5",
+            "fidel_me_6",
+            "fidel_me_7"
+          ],
+          "newItemIds": [
+            "fidel_me_2",
+            "fidel_me_3",
+            "fidel_me_4",
+            "fidel_me_5",
+            "fidel_me_6",
+            "fidel_me_7"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "fidel-10",
+          "order": 10,
+          "title": "የ ሰ ቤተሰብ (ሰ ሱ ሲ ሳ ሴ ስ ሶ)",
+          "type": "learn",
+          "description": "የ 'ሰ' ቤተሰብ 7ቱን ቅርጾች በስርዓት እንማር",
+          "itemIds": [
+            "fidel_se",
+            "fidel_se_2",
+            "fidel_se_3",
+            "fidel_se_4",
+            "fidel_se_5",
+            "fidel_se_6",
+            "fidel_se_7"
+          ],
+          "newItemIds": [
+            "fidel_se_2",
+            "fidel_se_3",
+            "fidel_se_4",
+            "fidel_se_5",
+            "fidel_se_6",
+            "fidel_se_7"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "fidel-11",
+          "order": 11,
+          "title": "የ በ ቤተሰብ (በ ቡ ቢ ባ ቤ ብ ቦ)",
+          "type": "learn",
+          "description": "የ 'በ' ቤተሰብ 7ቱን ቅርጾች በስርዓት እንማር",
+          "itemIds": [
+            "fidel_be",
+            "fidel_be_2",
+            "fidel_be_3",
+            "fidel_be_4",
+            "fidel_be_5",
+            "fidel_be_6",
+            "fidel_be_7"
+          ],
+          "newItemIds": [
+            "fidel_be_2",
+            "fidel_be_3",
+            "fidel_be_4",
+            "fidel_be_5",
+            "fidel_be_6",
+            "fidel_be_7"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "fidel-12",
+          "order": 12,
+          "title": "የ ተ ቤተሰብ (ተ ቱ ቲ ታ ቴ ት ቶ)",
+          "type": "learn",
+          "description": "የ 'ተ' ቤተሰብ 7ቱን ቅርጾች በስርዓት እንማር",
+          "itemIds": [
+            "fidel_te",
+            "fidel_te_2",
+            "fidel_te_3",
+            "fidel_te_4",
+            "fidel_te_5",
+            "fidel_te_6",
+            "fidel_te_7"
+          ],
+          "newItemIds": [
+            "fidel_te_2",
+            "fidel_te_3",
+            "fidel_te_4",
+            "fidel_te_5",
+            "fidel_te_6",
+            "fidel_te_7"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "fidel-13",
+          "order": 13,
+          "title": "የ ነ ቤተሰብ (ነ ኑ ኒ ና ኔ ን ኖ)",
+          "type": "learn",
+          "description": "የ 'ነ' ቤተሰብ 7ቱን ቅርጾች በስርዓት እንማር",
+          "itemIds": [
+            "fidel_ne",
+            "fidel_ne_2",
+            "fidel_ne_3",
+            "fidel_ne_4",
+            "fidel_ne_5",
+            "fidel_ne_6",
+            "fidel_ne_7"
+          ],
+          "newItemIds": [
+            "fidel_ne_2",
+            "fidel_ne_3",
+            "fidel_ne_4",
+            "fidel_ne_5",
+            "fidel_ne_6",
+            "fidel_ne_7"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "fidel-14",
+          "order": 14,
+          "title": "የ ከ ቤተሰብ (ከ ኩ ኪ ካ ኬ ክ ኮ)",
+          "type": "learn",
+          "description": "የ 'ከ' ቤተሰብ 7ቱን ቅርጾች በስርዓት እንማር",
+          "itemIds": [
+            "fidel_ke",
+            "fidel_ke_2",
+            "fidel_ke_3",
+            "fidel_ke_4",
+            "fidel_ke_5",
+            "fidel_ke_6",
+            "fidel_ke_7"
+          ],
+          "newItemIds": [
+            "fidel_ke_2",
+            "fidel_ke_3",
+            "fidel_ke_4",
+            "fidel_ke_5",
+            "fidel_ke_6",
+            "fidel_ke_7"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "fidel-15",
+          "order": 15,
+          "title": "የ ወ ቤተሰብ (ወ ዉ ዊ ዋ ዌ ው ዎ)",
+          "type": "learn",
+          "description": "የ 'ወ' ቤተሰብ 7ቱን ቅርጾች በስርዓት እንማር",
+          "itemIds": [
+            "fidel_we",
+            "fidel_we_2",
+            "fidel_we_3",
+            "fidel_we_4",
+            "fidel_we_5",
+            "fidel_we_6",
+            "fidel_we_7"
+          ],
+          "newItemIds": [
+            "fidel_we_2",
+            "fidel_we_3",
+            "fidel_we_4",
+            "fidel_we_5",
+            "fidel_we_6",
+            "fidel_we_7"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "fidel-16",
+          "order": 16,
+          "title": "የ ደ ቤተሰብ (ደ ዱ ዲ ዳ ዴ ድ ዶ)",
+          "type": "learn",
+          "description": "የ 'ደ' ቤተሰብ 7ቱን ቅርጾች በስርዓት እንማር",
+          "itemIds": [
+            "fidel_de",
+            "fidel_de_2",
+            "fidel_de_3",
+            "fidel_de_4",
+            "fidel_de_5",
+            "fidel_de_6",
+            "fidel_de_7"
+          ],
+          "newItemIds": [
+            "fidel_de_2",
+            "fidel_de_3",
+            "fidel_de_4",
+            "fidel_de_5",
+            "fidel_de_6",
+            "fidel_de_7"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "fidel-17",
+          "order": 17,
+          "title": "የ ገ ቤተሰብ (ገ ጉ ጊ ጋ ጌ ግ ጎ)",
+          "type": "learn",
+          "description": "የ 'ገ' ቤተሰብ 7ቱን ቅርጾች በስርዓት እንማር",
+          "itemIds": [
+            "fidel_ge",
+            "fidel_ge_2",
+            "fidel_ge_3",
+            "fidel_ge_4",
+            "fidel_ge_5",
+            "fidel_ge_6",
+            "fidel_ge_7"
+          ],
+          "newItemIds": [
+            "fidel_ge_2",
+            "fidel_ge_3",
+            "fidel_ge_4",
+            "fidel_ge_5",
+            "fidel_ge_6",
+            "fidel_ge_7"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "trace",
+            "quiz",
+            "celebrate"
+          ]
         }
       ]
     }

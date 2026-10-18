@@ -42,7 +42,16 @@ export function seed() {
   // Run all inserts inside an idempotent transaction
   const seedTransaction = sqlite.transaction(() => {
 
-    // 2. Clear existing data
+    // 2. Query existing child profile if present to preserve name across re-seeds
+    let preservedChildName = 'Hemen Anbes';
+    let preservedAvatar = 'star';
+    try {
+      const existing = sqlite.prepare('SELECT name, avatar FROM child WHERE id = 1').get() as any;
+      if (existing?.name) preservedChildName = existing.name;
+      if (existing?.avatar) preservedAvatar = existing.avatar;
+    } catch {}
+
+    // Clear existing data
     sqlite.prepare('DELETE FROM level_item').run();
     sqlite.prepare('DELETE FROM level_progress').run();
     sqlite.prepare('DELETE FROM item_mastery').run();
@@ -61,12 +70,12 @@ export function seed() {
       // ignore if sqlite_sequence doesn't exist yet
     }
 
-    // 3. Insert default child
+    // 3. Insert child profile
     const insertChild = sqlite.prepare(`
       INSERT INTO child (id, name, avatar, created_at)
-      VALUES (1, 'Learner', 'star', datetime('now'))
+      VALUES (1, @name, @avatar, datetime('now'))
     `);
-    insertChild.run();
+    insertChild.run({ name: preservedChildName, avatar: preservedAvatar });
 
     // 4. Insert default settings
     const insertSettings = sqlite.prepare(`
