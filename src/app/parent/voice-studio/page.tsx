@@ -15,7 +15,7 @@ import {
   setItemVoiceChoice,
   getCustomVoiceBlobUrl,
 } from '@/lib/audioStorage';
-import { speakText, playAudioOrSpeech, playChime } from '@/utils/sound';
+import { speakText, playAudioOrSpeech, playChime, setVoiceSettings, getVoiceSettings } from '@/utils/sound';
 
 interface SystemPrompt {
   id: string;
@@ -473,6 +473,8 @@ export default function VoiceStudioPage() {
   const handleToggleGlobalPref = (pref: 'parent' | 'computer') => {
     setGlobalVoicePreference(pref);
     setGlobalVoicePref(pref);
+    const { speed } = getVoiceSettings();
+    setVoiceSettings(pref === 'parent' ? 'parent' : 'female', speed);
   };
 
   // Play custom voice from card

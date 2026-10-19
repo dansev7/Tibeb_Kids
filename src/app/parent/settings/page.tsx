@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { setVoiceSettings, speakText, setVolume } from '@/utils/sound';
+import { setVoiceSettings, speakText, setVolume, type VoiceGender } from '@/utils/sound';
 import {
   getCustomVoiceCount,
   getGlobalVoicePreference,
   setGlobalVoicePreference,
   initVoiceStudioStorage,
+  getAllCustomVoiceKeys,
+  getCustomVoiceBlobUrl,
 } from '@/lib/audioStorage';
 
 export default function SettingsPage() {
@@ -16,7 +18,7 @@ export default function SettingsPage() {
     childName: 'Learner',
     sessionLimitMin: 15,
     volume: 0.8,
-    voiceGender: 'female' as 'female' | 'male',
+    voiceGender: 'parent' as VoiceGender,
     voiceSpeed: 0.9,
     enabledWorlds: ['abc-garden', 'number-farm', 'fidel-village'],
   });
@@ -48,16 +50,27 @@ export default function SettingsPage() {
       .then(res => res.json())
       .then(data => {
         if (data && !data.error) {
+          const loadedGender: VoiceGender = (data.voiceGender === 'male' || data.voiceGender === 'female' || data.voiceGender === 'parent')
+            ? data.voiceGender
+            : 'parent';
+
           setSettings(prev => ({
             childName: data.childName || prev.childName,
             sessionLimitMin: typeof data.sessionLimitMin === 'number' ? data.sessionLimitMin : prev.sessionLimitMin,
             volume: typeof data.volume === 'number' ? data.volume : prev.volume,
-            voiceGender: (data.voiceGender === 'male' || data.voiceGender === 'female') ? data.voiceGender : prev.voiceGender,
+            voiceGender: loadedGender,
             voiceSpeed: typeof data.voiceSpeed === 'number' ? data.voiceSpeed : prev.voiceSpeed,
             enabledWorlds: Array.isArray(data.enabledWorlds) ? data.enabledWorlds : prev.enabledWorlds,
           }));
-          setVoiceSettings(data.voiceGender || 'female', data.voiceSpeed ?? 0.9);
+          setVoiceSettings(loadedGender, data.voiceSpeed ?? 0.9);
           setVolume(typeof data.volume === 'number' ? data.volume : 0.8);
+          if (loadedGender === 'parent') {
+            setGlobalVoicePreference('parent');
+            setGlobalVoicePref('parent');
+          } else {
+            setGlobalVoicePreference('computer');
+            setGlobalVoicePref('computer');
+          }
         }
       })
       .catch(console.error);
@@ -66,6 +79,13 @@ export default function SettingsPage() {
   const handleSave = () => {
     setVoiceSettings(settings.voiceGender, settings.voiceSpeed);
     setVolume(settings.volume);
+    if (settings.voiceGender === 'parent') {
+      setGlobalVoicePreference('parent');
+      setGlobalVoicePref('parent');
+    } else {
+      setGlobalVoicePreference('computer');
+      setGlobalVoicePref('computer');
+    }
 
     fetch('/api/parent/settings', {
       method: 'POST',
@@ -79,11 +99,34 @@ export default function SettingsPage() {
       .catch(console.error);
   };
 
-  const handleTestVoice = (gender = settings.voiceGender, speed = settings.voiceSpeed) => {
+  const handleTestVoice = (gender: VoiceGender = settings.voiceGender, speed = settings.voiceSpeed) => {
     setIsTestingVoice(true);
     setVoiceSettings(gender, speed);
-    speakText(`Hello ${settings.childName}! Welcome to Little Learner. Let's play and learn together!`);
-    setTimeout(() => setIsTestingVoice(false), 2500);
+
+    if (gender === 'parent') {
+      const allKeys = Array.from(getAllCustomVoiceKeys());
+      if (allKeys.length > 0) {
+        const sampleKey = allKeys[0];
+        const blobUrl = getCustomVoiceBlobUrl(sampleKey);
+        if (blobUrl) {
+          try {
+            const audio = new Audio(blobUrl);
+            audio.volume = settings.volume;
+            audio.onended = () => setIsTestingVoice(false);
+            audio.play().catch(() => {
+              speakText(`Parent voice is active for ${settings.childName}!`);
+              setTimeout(() => setIsTestingVoice(false), 2000);
+            });
+            return;
+          } catch {}
+        }
+      }
+      speakText(`Hello ${settings.childName}! Parent Voiceover is active. Any letters you record in Voice Studio play in your natural voice, and unrecorded ones automatically use computer voice!`);
+      setTimeout(() => setIsTestingVoice(false), 3000);
+    } else {
+      speakText(`Hello ${settings.childName}! Welcome to Little Learner. Let's play and learn together!`);
+      setTimeout(() => setIsTestingVoice(false), 2500);
+    }
   };
 
   const toggleWorld = (worldId: string) => {
@@ -125,46 +168,126 @@ export default function SettingsPage() {
             />
           </div>
 
-          {/* Voiceover Gender Toggle */}
+          {/* Voiceover Style Selector (Female, Male, Parent) */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
-            <label className="block text-sm font-semibold text-gray-600 mb-3">
-              Teacher Voiceover Style
-            </label>
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <label className="text-sm font-semibold text-gray-700">
+                Teacher Voiceover Style
+              </label>
+              <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
+                3 Options
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+              {/* 1. Female Voice */}
               <button
                 type="button"
                 onClick={() => {
                   setSettings(prev => ({ ...prev, voiceGender: 'female' }));
+                  setGlobalVoicePreference('computer');
+                  setGlobalVoicePref('computer');
                   handleTestVoice('female', settings.voiceSpeed);
                 }}
-                className={`flex flex-col items-center justify-center p-4 rounded-2xl border-4 transition-all cursor-pointer ${
+                className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border-3 transition-all cursor-pointer ${
                   settings.voiceGender === 'female'
-                    ? 'border-purple-500 bg-purple-50 shadow-md scale-102'
+                    ? 'border-purple-500 bg-purple-50/80 shadow-md scale-102 ring-2 ring-purple-200'
                     : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
               >
-                <span className="text-4xl mb-1">👩‍🏫</span>
-                <span className="font-bold text-gray-800">Female Voice</span>
-                <span className="text-xs text-gray-500 mt-1">Warm & Cheerful</span>
+                <span className="text-3xl mb-1">👩‍🏫</span>
+                <span className="font-bold text-gray-800 text-sm">Female Voice</span>
+                <span className="text-[11px] text-purple-600 font-semibold mt-0.5">Warm & Cheerful</span>
+                <span className="text-[10px] text-gray-400">Computer TTS</span>
               </button>
 
+              {/* 2. Male Voice */}
               <button
                 type="button"
                 onClick={() => {
                   setSettings(prev => ({ ...prev, voiceGender: 'male' }));
+                  setGlobalVoicePreference('computer');
+                  setGlobalVoicePref('computer');
                   handleTestVoice('male', settings.voiceSpeed);
                 }}
-                className={`flex flex-col items-center justify-center p-4 rounded-2xl border-4 transition-all cursor-pointer ${
+                className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border-3 transition-all cursor-pointer ${
                   settings.voiceGender === 'male'
-                    ? 'border-blue-500 bg-blue-50 shadow-md scale-102'
+                    ? 'border-blue-500 bg-blue-50/80 shadow-md scale-102 ring-2 ring-blue-200'
                     : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
               >
-                <span className="text-4xl mb-1">👨‍🏫</span>
-                <span className="font-bold text-gray-800">Male Voice</span>
-                <span className="text-xs text-gray-500 mt-1">Encouraging & Clear</span>
+                <span className="text-3xl mb-1">👨‍🏫</span>
+                <span className="font-bold text-gray-800 text-sm">Male Voice</span>
+                <span className="text-[11px] text-blue-600 font-semibold mt-0.5">Encouraging & Clear</span>
+                <span className="text-[10px] text-gray-400">Computer TTS</span>
+              </button>
+
+              {/* 3. Parent Voice (Recommended) */}
+              <button
+                type="button"
+                onClick={() => {
+                  setSettings(prev => ({ ...prev, voiceGender: 'parent' }));
+                  setGlobalVoicePreference('parent');
+                  setGlobalVoicePref('parent');
+                  handleTestVoice('parent', settings.voiceSpeed);
+                }}
+                className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border-3 transition-all cursor-pointer relative ${
+                  settings.voiceGender === 'parent'
+                    ? 'border-emerald-500 bg-emerald-50/80 shadow-md scale-102 ring-2 ring-emerald-200'
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                }`}
+              >
+                <span className="text-3xl mb-1">🎙️</span>
+                <span className="font-bold text-gray-800 text-sm">Parent Voice</span>
+                <span className="text-[11px] text-emerald-600 font-semibold mt-0.5">Family Voice First</span>
+                <span className="text-[10px] text-gray-400">
+                  {voiceCount > 0 ? `${voiceCount} Saved • Auto Fallback` : 'Auto Fallback'}
+                </span>
+                {voiceCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold shadow-sm">
+                    {voiceCount} Active
+                  </span>
+                )}
               </button>
             </div>
+
+            {/* Contextual Status / Helper Banner */}
+            {settings.voiceGender === 'parent' ? (
+              <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-3.5 text-xs text-emerald-950 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div className="flex items-start gap-2.5">
+                  <span className="text-xl shrink-0 mt-0.5">🎙️</span>
+                  <div>
+                    <div className="font-bold text-emerald-800">
+                      Parent Voice Active (Cross-Check Enabled)
+                    </div>
+                    <p className="text-emerald-700 text-[11px] mt-0.5 leading-relaxed">
+                      Little Learner cross-checks every letter, word, and fidel for your recorded voice.
+                      If an item hasn&apos;t been recorded yet, the clear computer voice seamlessly steps in!
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => router.push('/parent/voice-studio')}
+                  className="shrink-0 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer shadow-sm"
+                >
+                  Voice Studio ({voiceCount}) →
+                </button>
+              </div>
+            ) : (
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 flex items-center justify-between">
+                <span>
+                  Active Voice: <strong>{settings.voiceGender === 'female' ? '👩‍🏫 Female Teacher (Warm & Cheerful)' : '👨‍🏫 Male Teacher (Encouraging & Clear)'}</strong>
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleTestVoice(settings.voiceGender, settings.voiceSpeed)}
+                  className="text-blue-600 font-bold hover:underline cursor-pointer"
+                >
+                  Test Voice 🔊
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Voiceover Speed Adjustment */}
@@ -238,11 +361,13 @@ export default function SettingsPage() {
                   <button
                     type="button"
                     onClick={() => {
+                      setSettings(prev => ({ ...prev, voiceGender: 'parent' }));
+                      setVoiceSettings('parent', settings.voiceSpeed);
                       setGlobalVoicePreference('parent');
                       setGlobalVoicePref('parent');
                     }}
                     className={`px-3 py-1 rounded-md font-bold transition-all cursor-pointer ${
-                      globalVoicePref === 'parent'
+                      globalVoicePref === 'parent' && settings.voiceGender === 'parent'
                         ? 'bg-white text-purple-700 shadow-sm'
                         : 'text-white/80 hover:text-white'
                     }`}
@@ -252,11 +377,13 @@ export default function SettingsPage() {
                   <button
                     type="button"
                     onClick={() => {
+                      setSettings(prev => ({ ...prev, voiceGender: prev.voiceGender === 'parent' ? 'female' : prev.voiceGender }));
+                      setVoiceSettings(settings.voiceGender === 'parent' ? 'female' : settings.voiceGender, settings.voiceSpeed);
                       setGlobalVoicePreference('computer');
                       setGlobalVoicePref('computer');
                     }}
                     className={`px-3 py-1 rounded-md font-bold transition-all cursor-pointer ${
-                      globalVoicePref === 'computer'
+                      globalVoicePref === 'computer' || settings.voiceGender !== 'parent'
                         ? 'bg-white text-indigo-700 shadow-sm'
                         : 'text-white/80 hover:text-white'
                     }`}
