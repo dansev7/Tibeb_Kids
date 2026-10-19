@@ -31,7 +31,7 @@ export async function fetchSettings(): Promise<AppSettings> {
       childName: typeof data.childName === 'string' ? data.childName : DEFAULT_SETTINGS.childName,
       sessionLimitMin: typeof data.sessionLimitMin === 'number' ? data.sessionLimitMin : DEFAULT_SETTINGS.sessionLimitMin,
       volume: typeof data.volume === 'number' ? data.volume : DEFAULT_SETTINGS.volume,
-      voiceGender: data.voiceGender === 'male' ? 'male' : 'female',
+      voiceGender: (data.voiceGender === 'male' || data.voiceGender === 'parent') ? data.voiceGender : 'female',
       voiceSpeed: typeof data.voiceSpeed === 'number' ? data.voiceSpeed : DEFAULT_SETTINGS.voiceSpeed,
       enabledWorlds: Array.isArray(data.enabledWorlds) && data.enabledWorlds.length > 0
         ? data.enabledWorlds

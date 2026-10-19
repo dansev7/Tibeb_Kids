@@ -185,9 +185,9 @@ export function playFanfare() {
 }
 
 /**
- * Voice settings (male vs female, speed multiplier)
+ * Voice settings (male vs female vs parent, speed multiplier)
  */
-export type VoiceGender = 'female' | 'male';
+export type VoiceGender = 'female' | 'male' | 'parent';
 
 let currentVoiceGender: VoiceGender = 'female';
 let currentVoiceSpeed: number = 0.9;
@@ -209,7 +209,7 @@ export function getVoiceSettings(): { gender: VoiceGender; speed: number } {
     try {
       const storedGender = localStorage.getItem('little_learner_voice_gender');
       const storedSpeed = localStorage.getItem('little_learner_voice_speed');
-      if (storedGender === 'female' || storedGender === 'male') {
+      if (storedGender === 'female' || storedGender === 'male' || storedGender === 'parent') {
         currentVoiceGender = storedGender;
       }
       if (storedSpeed) {
@@ -238,18 +238,18 @@ export function selectVoiceForGender(
   const femaleKeywords = ['female', 'samantha', 'zira', 'karen', 'victoria', 'moira', 'catherine', 'eva', 'fiona', 'jenny', 'aria'];
   const maleKeywords = ['male', 'david', 'alex', 'daniel', 'george', 'fred', 'oliver', 'rishi', 'guy', 'christopher'];
 
-  const targetKeywords = gender === 'female' ? femaleKeywords : maleKeywords;
+  // If gender is 'male', look for male voice; if 'female' or computer fallback for 'parent', look for warm female voice
+  const targetKeywords = gender === 'male' ? maleKeywords : femaleKeywords;
 
   const bestMatch = pool.find(v => targetKeywords.some(kw => v.name.toLowerCase().includes(kw)));
   return bestMatch || pool[0] || null;
 }
 
 import { isEthiopicText, getAmharicPhonetic } from './amharicSpeech';
+import { resolveAudioPath, hasCustomVoice, findCustomVoiceForTextOrItem } from '@/lib/audioStorage';
+export { resolveAudioPath, hasCustomVoice, findCustomVoiceForTextOrItem };
 
-/**
- * Spoken speech fallback with configured gender, speed, and Amharic support
- */
-export function speakText(text: string, lang = 'en-US') {
+function synthesizeSpeech(text: string, lang = 'en-US', gender: VoiceGender = 'female', speed = 0.9) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
   try {
     window.speechSynthesis.cancel(); // Stop prior speech
@@ -278,8 +278,6 @@ export function speakText(text: string, lang = 'en-US') {
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.lang = targetLang;
 
-    const { gender, speed } = getVoiceSettings();
-
     if (hasAmharic && nativeAmharicVoice) {
       utterance.voice = nativeAmharicVoice;
     } else {
@@ -293,8 +291,8 @@ export function speakText(text: string, lang = 'en-US') {
     utterance.rate = Math.max(0.5, Math.min(1.6, speed));
     utterance.volume = getVolume();
 
-    // Pitch: higher warm pitch for female (~1.2), deeper resonant pitch for male (~0.85)
-    utterance.pitch = gender === 'female' ? 1.2 : 0.85;
+    // Pitch: higher warm pitch for female (~1.2), deeper resonant pitch for male (~0.85), friendly neutral for parent computer fallback (~1.15)
+    utterance.pitch = gender === 'male' ? 0.85 : (gender === 'parent' ? 1.15 : 1.2);
 
     window.speechSynthesis.speak(utterance);
   } catch (err) {
@@ -302,13 +300,45 @@ export function speakText(text: string, lang = 'en-US') {
   }
 }
 
+/**
+ * Spoken speech fallback with configured gender, speed, and Amharic support.
+ * If Parent Voiceover style is active, ALWAYS cross-checks if a parent recording exists
+ * for this word or letter first, seamlessly falling back to computer speech if not.
+ */
+export function speakText(text: string, lang = 'en-US') {
+  if (typeof window === 'undefined') return;
 
-import { resolveAudioPath, hasCustomVoice } from '@/lib/audioStorage';
-export { resolveAudioPath, hasCustomVoice };
+  const { gender, speed } = getVoiceSettings();
+
+  // If Parent Voiceover style is active, cross-check if there is a parent voice for this word or letter!
+  if (gender === 'parent') {
+    const parentBlobUrl = findCustomVoiceForTextOrItem(undefined, text);
+    if (parentBlobUrl) {
+      try {
+        const audio = new Audio(parentBlobUrl);
+        audio.volume = getVolume();
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            // Fall back to computer voice synthesis if audio play fails
+            synthesizeSpeech(text, lang, gender, speed);
+          });
+        }
+        return;
+      } catch {
+        // Fall back to synthesis
+      }
+    }
+  }
+
+  // Choose computer voiceover
+  synthesizeSpeech(text, lang, gender, speed);
+}
 
 /**
- * Play audio from file path, falling back to speech synthesis if file cannot load or is empty.
- * Seamlessly checks for parent-recorded voice in IndexedDB first.
+ * Play audio from file path or custom parent recording.
+ * When Teacher Voiceover style is 'parent', ALWAYS cross-checks if a parent recording exists
+ * for the letter, word, or teaching prompt. If none exists, automatically chooses computer voiceover!
  */
 export function playAudioOrSpeech(
   audioPath?: string,
@@ -317,9 +347,53 @@ export function playAudioOrSpeech(
 ): HTMLAudioElement | null {
   if (typeof window === 'undefined') return null;
 
-  const resolvedPath = audioPath ? resolveAudioPath(audioPath) : undefined;
+  const { gender } = getVoiceSettings();
 
-  if (resolvedPath && resolvedPath.trim().length > 0) {
+  // In Parent Voiceover style, ALWAYS cross-check if a parent recording exists for this item or word/letter!
+  if (gender === 'parent') {
+    const parentBlobUrl = findCustomVoiceForTextOrItem(audioPath, fallbackText);
+    if (parentBlobUrl) {
+      try {
+        const audio = new Audio(parentBlobUrl);
+        audio.volume = getVolume();
+        let fallbackTriggered = false;
+
+        const triggerFallback = () => {
+          if (!fallbackTriggered && fallbackText) {
+            fallbackTriggered = true;
+            speakText(fallbackText);
+            if (onEnded) setTimeout(onEnded, 1000);
+          }
+        };
+
+        audio.onerror = () => triggerFallback();
+        if (onEnded) audio.onended = onEnded;
+
+        const playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => triggerFallback());
+        }
+        return audio;
+      } catch {
+        if (fallbackText) {
+          speakText(fallbackText);
+          if (onEnded) setTimeout(onEnded, 1000);
+        }
+        return null;
+      }
+    }
+
+    // No parent voice exists for this specific letter, word, or prompt -> Choose computer voiceover!
+    if (fallbackText) {
+      speakText(fallbackText);
+      if (onEnded) setTimeout(onEnded, 1000);
+    }
+    return null;
+  }
+
+  // Standard computer voice style (female or male)
+  const resolvedPath = audioPath ? resolveAudioPath(audioPath) : undefined;
+  if (resolvedPath && resolvedPath.startsWith('blob:')) {
     try {
       const audio = new Audio(resolvedPath);
       audio.volume = getVolume();
@@ -329,25 +403,16 @@ export function playAudioOrSpeech(
         if (!fallbackTriggered && fallbackText) {
           fallbackTriggered = true;
           speakText(fallbackText);
-          if (onEnded) {
-            setTimeout(onEnded, 1000);
-          }
+          if (onEnded) setTimeout(onEnded, 1000);
         }
       };
 
-      audio.onerror = () => {
-        triggerFallback();
-      };
-
-      if (onEnded) {
-        audio.onended = onEnded;
-      }
+      audio.onerror = () => triggerFallback();
+      if (onEnded) audio.onended = onEnded;
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          triggerFallback();
-        });
+        playPromise.catch(() => triggerFallback());
       }
       return audio;
     } catch {
@@ -357,7 +422,10 @@ export function playAudioOrSpeech(
       }
       return null;
     }
-  } else if (fallbackText) {
+  }
+
+  // Choose computer voiceover
+  if (fallbackText) {
     speakText(fallbackText);
     if (onEnded) setTimeout(onEnded, 1000);
   }
