@@ -28,35 +28,21 @@ export function seedDatabase(sqlite: Database.Database): void {
         if (existing?.avatar) preservedAvatar = existing.avatar;
       } catch {}
 
-      // Clear existing records
+      // Non-destructive seeding: Only refresh level_item curriculum associations
       try {
         sqlite.prepare('DELETE FROM level_item').run();
-        sqlite.prepare('DELETE FROM level_progress').run();
-        sqlite.prepare('DELETE FROM item_mastery').run();
-        sqlite.prepare('DELETE FROM attempt').run();
-        sqlite.prepare('DELETE FROM session').run();
-        sqlite.prepare('DELETE FROM settings').run();
-        sqlite.prepare('DELETE FROM level').run();
-        sqlite.prepare('DELETE FROM item').run();
-        sqlite.prepare('DELETE FROM world').run();
-        sqlite.prepare('DELETE FROM child').run();
       } catch {}
 
-      // Reset autoincrement sequence
-      try {
-        sqlite.prepare("DELETE FROM sqlite_sequence WHERE name IN ('child','attempt','session')").run();
-      } catch {}
-
-      // Insert child profile
+      // Insert default child profile if not exists
       sqlite.prepare(`
-        INSERT INTO child (id, name, avatar, created_at)
+        INSERT OR IGNORE INTO child (id, name, avatar, created_at)
         VALUES (1, @name, @avatar, datetime('now'))
       `).run({ name: preservedChildName, avatar: preservedAvatar });
 
-      // Insert default settings
+      // Insert default settings if not exists
       sqlite.prepare(`
-        INSERT INTO settings (child_id, session_limit_min, volume, enabled_worlds_json, voice_gender, voice_speed)
-        VALUES (1, 15, 0.8, '["abc-garden","number-farm","fidel-village"]', 'female', 0.9)
+        INSERT OR IGNORE INTO settings (child_id, session_limit_min, volume, enabled_worlds_json, voice_gender, voice_speed)
+        VALUES (1, 15, 0.8, '["abc-garden","number-farm","fidel-village"]', 'parent', 0.9)
       `).run();
 
       // Read JSON content files
@@ -70,19 +56,19 @@ export function seedDatabase(sqlite: Database.Database): void {
       const numbersData = JSON.parse(numbersRaw);
       const amharicData = JSON.parse(amharicRaw);
 
-      // Insert Worlds and Levels
+      // Insert or update Worlds and Levels
       const insertWorld = sqlite.prepare(`
-        INSERT INTO world (id, slug, title, emoji, theme_color, mascot, order_num)
+        INSERT OR REPLACE INTO world (id, slug, title, emoji, theme_color, mascot, order_num)
         VALUES (@id, @slug, @title, @emoji, @theme_color, @mascot, @order_num)
       `);
 
       const insertLevel = sqlite.prepare(`
-        INSERT INTO level (id, world_id, order_num, title, description, type, stages_json)
+        INSERT OR REPLACE INTO level (id, world_id, order_num, title, description, type, stages_json)
         VALUES (@id, @world_id, @order_num, @title, @description, @type, @stages_json)
       `);
 
       const insertLevelProgress = sqlite.prepare(`
-        INSERT INTO level_progress (child_id, level_id, stars, best_score, completed_at, unlocked)
+        INSERT OR IGNORE INTO level_progress (child_id, level_id, stars, best_score, completed_at, unlocked)
         VALUES (1, @level_id, 0, 0, NULL, @unlocked)
       `);
 
@@ -112,7 +98,7 @@ export function seedDatabase(sqlite: Database.Database): void {
             stages_json: Array.isArray(lvl.stages) ? JSON.stringify(lvl.stages) : null,
           });
 
-          // Unlock first level in each world
+          // Unlock first level in each world without overriding existing progress
           insertLevelProgress.run({
             level_id: lvl.id,
             unlocked: i === 0 ? 1 : 0,
@@ -120,9 +106,9 @@ export function seedDatabase(sqlite: Database.Database): void {
         }
       }
 
-      // Insert Items
+      // Insert or update Items
       const insertItem = sqlite.prepare(`
-        INSERT INTO item (
+        INSERT OR REPLACE INTO item (
           id, world_id, kind, symbol, display_name, audio_path, picture_path,
           picture_word, picture_word_amharic, picture_word_english,
           picture_word_audio_path, stroke_paths_json, confusable_with_json
@@ -159,7 +145,7 @@ export function seedDatabase(sqlite: Database.Database): void {
 
       // Insert Level Items
       const insertLevelItem = sqlite.prepare(`
-        INSERT INTO level_item (level_id, item_id, order_num, is_new)
+        INSERT OR REPLACE INTO level_item (level_id, item_id, order_num, is_new)
         VALUES (@level_id, @item_id, @order_num, @is_new)
       `);
 

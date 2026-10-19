@@ -8,9 +8,12 @@
     "start": "next start",
     "lint": "eslint",
     "seed": "tsx scripts/seed.ts",
-    "db:seed": "tsx scripts/seed.ts"
+    "db:seed": "tsx scripts/seed.ts",
+    "db:migrate:turso": "tsx scripts/migrate-to-turso.ts",
+    "test": "tsx scripts/test-app.ts"
   },
   "dependencies": {
+    "@libsql/client": "^0.18.0",
     "better-sqlite3": "^13.0.3",
     "drizzle-orm": "^0.45.4",
     "framer-motion": "^14.2.0",
