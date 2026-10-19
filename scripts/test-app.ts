@@ -7,26 +7,26 @@ async function runTests() {
   console.log('🧪 Starting Little Learner System Verification...\n');
 
   // Test 1: Worlds check
-  const allWorlds = db.select().from(worlds).all();
+  const allWorlds = await db.select().from(worlds).all();
   console.log(`✓ Found ${allWorlds.length} worlds in database (ABC Garden, Number Farm, Fidel Village)`);
   assert.strictEqual(allWorlds.length, 3, 'Must have 3 worlds');
 
   // Test 2: Levels check
-  const allLevels = db.select().from(levels).all();
+  const allLevels = await db.select().from(levels).all();
   console.log(`✓ Found ${allLevels.length} levels loaded`);
   assert(allLevels.length >= 36, 'Must have at least 36 levels across 3 worlds');
 
   // Test 3: Items check
-  const allItems = db.select().from(items).all();
+  const allItems = await db.select().from(items).all();
   console.log(`✓ Found ${allItems.length} educational items (capitals, smalls, numbers, fidels)`);
   assert(allItems.length >= 100, 'Must have at least 100 items');
 
   // Test 4: Check default child & settings
-  const learner = db.select().from(children).where(eq(children.id, 1)).get();
+  const learner = await db.select().from(children).where(eq(children.id, 1)).get();
   assert(learner, 'Default child must exist');
   console.log(`✓ Default child profile verified: ${learner.name}`);
 
-  const childSettings = db.select().from(settings).where(eq(settings.childId, 1)).get();
+  const childSettings = await db.select().from(settings).where(eq(settings.childId, 1)).get();
   assert(childSettings, 'Default settings must exist');
   assert(['female', 'male', 'parent'].includes(childSettings.voiceGender || ''), 'Voice gender must be female, male, or parent');
   assert(typeof childSettings.voiceSpeed === 'number' && childSettings.voiceSpeed >= 0.5 && childSettings.voiceSpeed <= 1.5, 'Voice speed must be between 0.5 and 1.5');
@@ -35,13 +35,13 @@ async function runTests() {
 
   // Test 5: Verify unlocked level 1 for each world
   for (const w of allWorlds) {
-    const firstLevel = db.select().from(levels)
+    const firstLevel = await db.select().from(levels)
       .where(eq(levels.worldId, w.id))
       .orderBy(levels.orderNum)
       .get();
     assert(firstLevel, `World ${w.id} must have a first level`);
 
-    const progress = db.select().from(levelProgress)
+    const progress = await db.select().from(levelProgress)
       .where(eq(levelProgress.levelId, firstLevel.id))
       .get();
     assert(progress?.unlocked === 1, `First level ${firstLevel.id} of world ${w.id} must be unlocked`);
