@@ -1,3 +1,28 @@
+import fs from 'fs';
+import path from 'path';
+
+function loadEnv() {
+  for (const file of ['.env.local', '.env']) {
+    const envPath = path.join(process.cwd(), file);
+    if (fs.existsSync(envPath)) {
+      try {
+        const lines = fs.readFileSync(envPath, 'utf-8').split('\n');
+        for (const line of lines) {
+          const match = line.trim().match(/^([A-Za-z0-9_]+)=(.*)$/);
+          if (match) {
+            const key = match[1].trim();
+            const value = match[2].trim().replace(/^['"]|['"]$/g, '');
+            if (!process.env[key]) {
+              process.env[key] = value;
+            }
+          }
+        }
+      } catch {}
+    }
+  }
+}
+loadEnv();
+
 import { db } from '../src/lib/db';
 import { worlds, levels, items, levelItems, levelProgress, itemMastery, children, settings } from '../src/lib/schema';
 import { eq } from 'drizzle-orm';
