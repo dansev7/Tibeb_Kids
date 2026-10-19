@@ -3,6 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { setVoiceSettings, speakText, setVolume } from '@/utils/sound';
+import {
+  getCustomVoiceCount,
+  getGlobalVoicePreference,
+  setGlobalVoicePreference,
+  initVoiceStudioStorage,
+} from '@/lib/audioStorage';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -18,6 +24,8 @@ export default function SettingsPage() {
   const [isTestingVoice, setIsTestingVoice] = useState(false);
   const [isPwaInstalled, setIsPwaInstalled] = useState(false);
   const [swActive, setSwActive] = useState(false);
+  const [voiceCount, setVoiceCount] = useState(0);
+  const [globalVoicePref, setGlobalVoicePref] = useState<'parent' | 'computer'>('parent');
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -29,6 +37,11 @@ export default function SettingsPage() {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(() => setSwActive(true)).catch(() => {});
       }
+
+      initVoiceStudioStorage().then(() => {
+        setVoiceCount(getCustomVoiceCount());
+        setGlobalVoicePref(getGlobalVoicePreference());
+      });
     }
 
     fetch('/api/parent/settings')
@@ -194,24 +207,65 @@ export default function SettingsPage() {
           </div>
 
           {/* Parent Audio Voice Studio Card */}
-          <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl shadow-lg p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-2xl">🎙️</span>
-                <h3 className="font-bold text-lg">Human Voice Studio</h3>
-                <span className="bg-amber-400 text-slate-900 text-xs px-2 py-0.5 rounded-full font-bold">Recommended</span>
+          <div className="bg-gradient-to-r from-purple-500 to-indigo-600 rounded-2xl shadow-lg p-6 text-white space-y-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-2xl">🎙️</span>
+                  <h3 className="font-bold text-lg">Human Voice Studio</h3>
+                  <span className="bg-amber-400 text-slate-900 text-xs px-2.5 py-0.5 rounded-full font-bold">
+                    {voiceCount > 0 ? `${voiceCount} Saved` : 'Recommended'}
+                  </span>
+                </div>
+                <p className="text-xs text-white/90 max-w-md">
+                  Record your own natural voice for letters, fidels, and prompts in 2 seconds per item.
+                </p>
               </div>
-              <p className="text-xs text-white/90 max-w-md">
-                Amharic TTS is robotic. Record your own voice for letters, fidels, and prompts in 2 seconds per item.
-              </p>
+              <button
+                type="button"
+                onClick={() => router.push('/parent/voice-studio')}
+                className="px-4 py-2.5 bg-white text-indigo-700 font-bold rounded-xl text-xs hover:bg-slate-50 transition-colors whitespace-nowrap cursor-pointer shadow"
+              >
+                Open Voice Studio →
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={() => router.push('/parent/voice-studio')}
-              className="px-4 py-2.5 bg-white text-indigo-700 font-bold rounded-xl text-xs hover:bg-slate-50 transition-colors whitespace-nowrap cursor-pointer shadow"
-            >
-              Open Voice Studio →
-            </button>
+
+            {/* Voice Source Switch: Parent vs Computer */}
+            {voiceCount > 0 && (
+              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 border border-white/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <span>Active Voice in Games:</span>
+                <div className="inline-flex rounded-lg bg-black/20 p-1 gap-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGlobalVoicePreference('parent');
+                      setGlobalVoicePref('parent');
+                    }}
+                    className={`px-3 py-1 rounded-md font-bold transition-all cursor-pointer ${
+                      globalVoicePref === 'parent'
+                        ? 'bg-white text-purple-700 shadow-sm'
+                        : 'text-white/80 hover:text-white'
+                    }`}
+                  >
+                    🎙️ Parent Voice
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGlobalVoicePreference('computer');
+                      setGlobalVoicePref('computer');
+                    }}
+                    className={`px-3 py-1 rounded-md font-bold transition-all cursor-pointer ${
+                      globalVoicePref === 'computer'
+                        ? 'bg-white text-indigo-700 shadow-sm'
+                        : 'text-white/80 hover:text-white'
+                    }`}
+                  >
+                    🤖 Computer Voice
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Session Time Limit */}
