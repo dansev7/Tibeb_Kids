@@ -8,7 +8,7 @@ export async function GET() {
     const childId = 1;
 
     // Worlds with progress in one aggregate query (no per-world/per-level loop)
-    const worldRows = db
+    const worldRows = await db
       .select({
         id: worlds.id,
         emoji: worlds.emoji,
@@ -39,7 +39,7 @@ export async function GET() {
     }));
 
     // All items with mastery in one left join (no per-item query)
-    const itemRows = db
+    const itemRows = await db
       .select({
         id: items.id,
         symbol: items.symbol,

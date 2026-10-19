@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     // progress; only the final save may complete the level and unlock stars.
     if (!partial) {
       // Update level progress
-      const existing = db.select().from(levelProgress)
+      const existing = await db.select().from(levelProgress)
         .where(sql`${levelProgress.childId} = ${childId} AND ${levelProgress.levelId} = ${levelId}`)
         .get();
 
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
       if (existing) {
         // Update only if better stars
         const newStars = Math.max(existing.stars || 0, stars);
-        db.update(levelProgress)
+        await db.update(levelProgress)
           .set({
             stars: newStars,
             bestScore: Math.max(existing.bestScore || 0, stars),
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
           .where(sql`${levelProgress.childId} = ${childId} AND ${levelProgress.levelId} = ${levelId}`)
           .run();
       } else {
-        db.insert(levelProgress).values({
+        await db.insert(levelProgress).values({
           childId,
           levelId,
           stars,
@@ -43,19 +43,19 @@ export async function POST(request: Request) {
       }
 
       // Unlock the next level
-      const level = db.select().from(levels).where(eq(levels.id, levelId)).get();
+      const level = await db.select().from(levels).where(eq(levels.id, levelId)).get();
       if (level) {
-        const nextLevel = db.select().from(levels)
+        const nextLevel = await db.select().from(levels)
           .where(sql`${levels.worldId} = ${level.worldId} AND ${levels.orderNum} = ${level.orderNum + 1}`)
           .get();
 
         if (nextLevel) {
-          const nextProgress = db.select().from(levelProgress)
+          const nextProgress = await db.select().from(levelProgress)
             .where(sql`${levelProgress.childId} = ${childId} AND ${levelProgress.levelId} = ${nextLevel.id}`)
             .get();
 
           if (!nextProgress) {
-            db.insert(levelProgress).values({
+            await db.insert(levelProgress).values({
               childId,
               levelId: nextLevel.id,
               stars: 0,
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
               unlocked: 1,
             }).run();
           } else if (!nextProgress.unlocked) {
-            db.update(levelProgress)
+            await db.update(levelProgress)
               .set({ unlocked: 1 })
               .where(sql`${levelProgress.childId} = ${childId} AND ${levelProgress.levelId} = ${nextLevel.id}`)
               .run();
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     if (results && Array.isArray(results)) {
       for (const result of results) {
         // Record attempt (gameType comes from the stage that produced the result)
-        db.insert(attempts).values({
+        await db.insert(attempts).values({
           childId,
           itemId: result.itemId,
           levelId,
@@ -89,7 +89,7 @@ export async function POST(request: Request) {
         }).run();
 
         // Update item mastery using the shared Leitner SRS library
-        const mastery = db.select().from(itemMastery)
+        const mastery = await db.select().from(itemMastery)
           .where(sql`${itemMastery.childId} = ${childId} AND ${itemMastery.itemId} = ${result.itemId}`)
           .get();
 
@@ -108,7 +108,7 @@ export async function POST(request: Request) {
             ? (mastery.correctDays || 0)
             : updated.correctDays;
 
-          db.update(itemMastery)
+          await db.update(itemMastery)
             .set({
               leitnerBox: updated.nextBox,
               correctDays,
@@ -122,7 +122,7 @@ export async function POST(request: Request) {
         } else {
           const updated = updateMastery(Boolean(result.correct), 1, 0);
 
-          db.insert(itemMastery).values({
+          await db.insert(itemMastery).values({
             childId,
             itemId: result.itemId,
             leitnerBox: updated.nextBox,

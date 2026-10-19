@@ -12,12 +12,12 @@ export async function POST(request: Request) {
     const { sessionId, startedAt, endedAt, minutes } = body;
 
     if (typeof sessionId === 'number' && Number.isInteger(sessionId) && sessionId > 0) {
-      const existing = db.select({ id: sessions.id }).from(sessions)
+      const existing = await db.select({ id: sessions.id }).from(sessions)
         .where(eq(sessions.id, sessionId)).get();
       if (!existing) {
         return NextResponse.json({ error: 'Session not found' }, { status: 404 });
       }
-      db.update(sessions)
+      await db.update(sessions)
         .set({
           endedAt: typeof endedAt === 'string' ? endedAt : new Date().toISOString(),
           minutes: typeof minutes === 'number' && minutes >= 0 ? minutes : null,
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
     }
 
     if (typeof startedAt === 'string' && !isNaN(Date.parse(startedAt))) {
-      const row = db.insert(sessions)
+      const row = await db.insert(sessions)
         .values({ childId, startedAt })
         .returning({ id: sessions.id })
         .get();

@@ -8,21 +8,21 @@ export async function POST() {
     const childId = 1;
 
     // Clear history and mastery
-    db.delete(attempts).where(eq(attempts.childId, childId)).run();
-    db.delete(sessions).where(eq(sessions.childId, childId)).run();
-    db.delete(itemMastery).where(eq(itemMastery.childId, childId)).run();
-    db.delete(levelProgress).where(eq(levelProgress.childId, childId)).run();
+    await db.delete(attempts).where(eq(attempts.childId, childId)).run();
+    await db.delete(sessions).where(eq(sessions.childId, childId)).run();
+    await db.delete(itemMastery).where(eq(itemMastery.childId, childId)).run();
+    await db.delete(levelProgress).where(eq(levelProgress.childId, childId)).run();
 
     // Re-unlock the first level of each world
-    const allWorlds = db.select().from(worlds).all();
+    const allWorlds = await db.select().from(worlds).all();
     for (const w of allWorlds) {
-      const firstLevel = db.select().from(levels)
+      const firstLevel = await db.select().from(levels)
         .where(eq(levels.worldId, w.id))
         .orderBy(levels.orderNum)
         .get();
 
       if (firstLevel) {
-        db.insert(levelProgress).values({
+        await db.insert(levelProgress).values({
           childId,
           levelId: firstLevel.id,
           stars: 0,

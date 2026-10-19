@@ -6,8 +6,8 @@ import { eq } from 'drizzle-orm';
 export async function GET() {
   try {
     const childId = 1;
-    const currentChild = db.select().from(children).where(eq(children.id, childId)).get();
-    const currentSettings = db.select().from(settings).where(eq(settings.childId, childId)).get();
+    const currentChild = await db.select().from(children).where(eq(children.id, childId)).get();
+    const currentSettings = await db.select().from(settings).where(eq(settings.childId, childId)).get();
 
     let enabledWorlds = ['abc-garden', 'number-farm', 'fidel-village'];
     if (currentSettings?.enabledWorldsJson) {
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     const { childName, sessionLimitMin, volume, enabledWorlds, voiceGender, voiceSpeed } = body;
 
     if (childName && typeof childName === 'string') {
-      db.update(children)
+      await db.update(children)
         .set({ name: childName.trim() })
         .where(eq(children.id, childId))
         .run();
@@ -62,13 +62,13 @@ export async function POST(request: Request) {
 
     const enabledWorldsJson = JSON.stringify(worldsToSave);
 
-    const existingSettings = db.select().from(settings).where(eq(settings.childId, childId)).get();
+    const existingSettings = await db.select().from(settings).where(eq(settings.childId, childId)).get();
     if (existingSettings) {
       const sanitizedVoiceGender = (voiceGender === 'male' || voiceGender === 'parent' || voiceGender === 'female')
         ? voiceGender
         : 'female';
 
-      db.update(settings)
+      await db.update(settings)
         .set({
           sessionLimitMin: typeof sessionLimitMin === 'number' ? sessionLimitMin : 15,
           volume: typeof volume === 'number' ? volume : 0.8,
@@ -83,7 +83,7 @@ export async function POST(request: Request) {
         ? voiceGender
         : 'female';
 
-      db.insert(settings)
+      await db.insert(settings)
         .values({
           childId,
           sessionLimitMin: typeof sessionLimitMin === 'number' ? sessionLimitMin : 15,

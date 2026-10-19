@@ -93,7 +93,7 @@ const SYSTEM_PROMPTS: VoiceItemTarget[] = [
 
 export async function GET() {
   try {
-    const allItems = db
+    const allItems = await db
       .select({
         id: items.id,
         kind: items.kind,

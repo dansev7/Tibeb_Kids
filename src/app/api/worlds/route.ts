@@ -9,10 +9,10 @@ import fs from 'fs';
 export async function GET() {
   try {
     const childId = 1;
-    const enabled = new Set(getEnabledWorlds(childId));
+    const enabled = new Set(await getEnabledWorlds(childId));
 
     // One aggregate query instead of a per-world/per-level N+1 loop
-    const worldRows = db
+    const worldRows = await db
       .select({
         id: worlds.id,
         slug: worlds.slug,
@@ -34,7 +34,7 @@ export async function GET() {
       .orderBy(worlds.orderNum)
       .all();
 
-    const childResult = db.select().from(children).where(eq(children.id, childId)).get();
+    const childResult = await db.select().from(children).where(eq(children.id, childId)).get();
 
     return NextResponse.json({
       worlds: worldRows

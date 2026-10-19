@@ -15,18 +15,19 @@ export async function GET(
     const childId = 1;
 
     // Respect the parent's enabled-worlds setting
-    if (!getEnabledWorlds(childId).includes(slug)) {
+    const enabledWorlds = await getEnabledWorlds(childId);
+    if (!enabledWorlds.includes(slug)) {
       return NextResponse.json({ error: 'World not found' }, { status: 404 });
     }
 
     // Get world
-    const world = db.select().from(worlds).where(eq(worlds.slug, slug)).get();
+    const world = await db.select().from(worlds).where(eq(worlds.slug, slug)).get();
     if (!world) {
       return NextResponse.json({ error: 'World not found' }, { status: 404 });
     }
 
     // Get levels for this world with progress in one join (no per-level query)
-    const levelRows = db
+    const levelRows = await db
       .select({
         id: levels.id,
         order: levels.orderNum,

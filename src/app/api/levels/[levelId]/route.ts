@@ -13,36 +13,35 @@ export async function GET(
     const { levelId } = await params;
 
     // Get level
-    const level = db.select().from(levels).where(eq(levels.id, levelId)).get();
+    const level = await db.select().from(levels).where(eq(levels.id, levelId)).get();
     if (!level) {
       return NextResponse.json({ error: 'Level not found' }, { status: 404 });
     }
 
     // Get world
-    const world = db.select().from(worlds).where(eq(worlds.id, level.worldId)).get();
+    const world = await db.select().from(worlds).where(eq(worlds.id, level.worldId)).get();
     if (!world) {
       return NextResponse.json({ error: 'World not found' }, { status: 404 });
     }
 
     // Get items for this level
-    const levelItemRows = db.select().from(levelItems)
+    const levelItemRows = await db.select().from(levelItems)
       .where(eq(levelItems.levelId, levelId))
       .orderBy(levelItems.orderNum)
       .all();
 
     const itemIds = levelItemRows.map(li => li.itemId);
     // One batched query, then preserve the level_item ordering in memory
-    const itemsById = new Map(
-      itemIds.length > 0
-        ? db.select().from(items).where(inArray(items.id, itemIds)).all().map(i => [i.id, i])
-        : [],
-    );
+    const itemsFetched = itemIds.length > 0
+      ? await db.select().from(items).where(inArray(items.id, itemIds)).all()
+      : [];
+    const itemsById = new Map(itemsFetched.map(i => [i.id, i]));
     const levelItemData = itemIds
       .map(itemId => itemsById.get(itemId))
       .filter((i): i is Item => Boolean(i));
 
     // Get all items in this world for distractors
-    const allWorldItems = db.select().from(items)
+    const allWorldItems = await db.select().from(items)
       .where(eq(items.worldId, world.id))
       .all();
 
