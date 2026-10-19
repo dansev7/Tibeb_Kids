@@ -12,7 +12,27 @@ import { ensureSchemaLibSql } from '../src/lib/ddl';
  *   $env:TURSO_AUTH_TOKEN="your-token"
  *   npx tsx scripts/migrate-to-turso.ts
  */
+function loadEnv() {
+  for (const file of ['.env.local', '.env']) {
+    const envPath = path.join(process.cwd(), file);
+    if (fs.existsSync(envPath)) {
+      const lines = fs.readFileSync(envPath, 'utf-8').split('\n');
+      for (const line of lines) {
+        const match = line.trim().match(/^([A-Za-z0-9_]+)=(.*)$/);
+        if (match) {
+          const key = match[1].trim();
+          const value = match[2].trim().replace(/^['"]|['"]$/g, '');
+          if (!process.env[key]) {
+            process.env[key] = value;
+          }
+        }
+      }
+    }
+  }
+}
+
 async function migrateToTurso() {
+  loadEnv();
   const tursoUrl = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL;
   const authToken = process.env.TURSO_AUTH_TOKEN || process.env.DATABASE_AUTH_TOKEN;
 
