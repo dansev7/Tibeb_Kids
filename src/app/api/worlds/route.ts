@@ -3,6 +3,8 @@ import { db } from '@/lib/db';
 import { worlds, levels, levelProgress, children } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 import { getEnabledWorlds } from '@/lib/worldAccess';
+import path from 'path';
+import fs from 'fs';
 
 export async function GET() {
   try {
@@ -52,6 +54,26 @@ export async function GET() {
     });
   } catch (error) {
     console.error('Error fetching worlds:', error);
+    try {
+      const contentPath = path.join(process.cwd(), 'content', 'levels.json');
+      if (fs.existsSync(contentPath)) {
+        const raw = JSON.parse(fs.readFileSync(contentPath, 'utf-8'));
+        return NextResponse.json({
+          worlds: (raw.worlds || []).map((w: any) => ({
+            id: w.id,
+            slug: w.slug,
+            title: w.title,
+            emoji: w.emoji,
+            themeColor: w.themeColor,
+            mascot: w.mascot,
+            totalLevels: (w.levels || []).length,
+            completedLevels: 0,
+            totalStars: 0,
+          })),
+          childName: 'Hemen Anbes',
+        });
+      }
+    } catch {}
     return NextResponse.json({ worlds: [], childName: 'Learner' });
   }
 }

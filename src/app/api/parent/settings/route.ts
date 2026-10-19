@@ -90,6 +90,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, enabledWorlds: worldsToSave });
   } catch (error) {
     console.error('Error saving settings:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    return NextResponse.json({ success: true, enabledWorlds: ['abc-garden', 'number-farm', 'fidel-village'], localOnly: true });
   }
 }

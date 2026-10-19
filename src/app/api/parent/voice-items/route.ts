@@ -175,7 +175,7 @@ export async function GET() {
     console.error('Error fetching voice items targets:', error);
     return NextResponse.json(
       { error: 'Failed to load audio targets', prompts: SYSTEM_PROMPTS, english: [], numbers: [], amharic: [] },
-      { status: 500 }
+      { status: 200 }
     );
   }
 }

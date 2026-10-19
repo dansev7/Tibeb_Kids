@@ -3,6 +3,8 @@ import { db } from '@/lib/db';
 import { worlds, levels, levelProgress } from '@/lib/schema';
 import { eq, sql } from 'drizzle-orm';
 import { getEnabledWorlds } from '@/lib/worldAccess';
+import path from 'path';
+import fs from 'fs';
 
 export async function GET(
   request: Request,
@@ -64,6 +66,33 @@ export async function GET(
     });
   } catch (error) {
     console.error('Error fetching world:', error);
+    try {
+      const { slug } = await params;
+      const contentPath = path.join(process.cwd(), 'content', 'levels.json');
+      if (fs.existsSync(contentPath)) {
+        const raw = JSON.parse(fs.readFileSync(contentPath, 'utf-8'));
+        const found = raw.worlds.find((w: any) => w.slug === slug);
+        if (found) {
+          return NextResponse.json({
+            id: found.id,
+            slug: found.slug,
+            title: found.title,
+            emoji: found.emoji,
+            themeColor: found.themeColor,
+            mascot: found.mascot,
+            levels: (found.levels || []).map((lvl: any, idx: number) => ({
+              id: lvl.id,
+              order: lvl.order,
+              title: lvl.title,
+              type: lvl.type,
+              stars: 0,
+              unlocked: idx === 0,
+              completed: false,
+            })),
+          });
+        }
+      }
+    } catch {}
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
   }
 }
