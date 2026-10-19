@@ -4,13 +4,85 @@ import { levels, levelItems, items, worlds } from '@/lib/schema';
 import type { Item } from '@/lib/schema';
 import { eq, inArray } from 'drizzle-orm';
 import { buildGameStages } from '@/lib/levelEngine';
+import fs from 'fs';
+import path from 'path';
+
+function getLevelFromContent(levelId: string) {
+  try {
+    const contentDir = path.join(process.cwd(), 'content');
+    const levelsFilePath = path.join(contentDir, 'levels.json');
+    if (!fs.existsSync(levelsFilePath)) return null;
+
+    const levelsRaw = JSON.parse(fs.readFileSync(levelsFilePath, 'utf-8'));
+    let targetWorld: any = null;
+    let targetLevel: any = null;
+
+    for (const w of levelsRaw.worlds || []) {
+      const found = (w.levels || []).find((l: any) => l.id === levelId);
+      if (found) {
+        targetWorld = w;
+        targetLevel = found;
+        break;
+      }
+    }
+
+    if (!targetWorld || !targetLevel) return null;
+
+    const englishData = fs.existsSync(path.join(contentDir, 'english.json'))
+      ? JSON.parse(fs.readFileSync(path.join(contentDir, 'english.json'), 'utf-8'))
+      : { items: [] };
+    const numbersData = fs.existsSync(path.join(contentDir, 'numbers.json'))
+      ? JSON.parse(fs.readFileSync(path.join(contentDir, 'numbers.json'), 'utf-8'))
+      : { items: [] };
+    const amharicData = fs.existsSync(path.join(contentDir, 'amharic.json'))
+      ? JSON.parse(fs.readFileSync(path.join(contentDir, 'amharic.json'), 'utf-8'))
+      : { items: [] };
+
+    const allItems = [
+      ...(englishData.items || []).map((it: any) => ({ ...it, worldId: 'abc-garden' })),
+      ...(numbersData.items || []).map((it: any) => ({ ...it, worldId: 'number-farm' })),
+      ...(amharicData.items || []).map((it: any) => ({ ...it, worldId: 'fidel-village' })),
+    ];
+
+    const itemsMap = new Map(allItems.map((it: any) => [it.id, it]));
+    const itemIds: string[] = targetLevel.itemIds || [];
+    const levelItemData = itemIds.map(id => itemsMap.get(id)).filter(Boolean);
+    const allWorldItems = allItems.filter(it => it.worldId === targetWorld.id);
+    const distractorItems = allWorldItems.filter(it => !itemIds.includes(it.id));
+
+    const stages = buildGameStages({
+      stages: targetLevel.stages,
+      levelType: targetLevel.type,
+      worldSlug: targetWorld.slug,
+      items: levelItemData,
+      distractorPool: distractorItems,
+      newItemIds: targetLevel.newItemIds || [],
+    });
+
+    return {
+      id: targetLevel.id,
+      title: targetLevel.title,
+      type: targetLevel.type,
+      worldSlug: targetWorld.slug,
+      worldTitle: targetWorld.title,
+      themeColor: targetWorld.themeColor,
+      mascot: targetWorld.mascot,
+      stages,
+    };
+  } catch (err) {
+    console.error('Error in getLevelFromContent fallback:', err);
+    return null;
+  }
+}
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ levelId: string }> }
 ) {
+  let resolvedLevelId = '';
   try {
     const { levelId } = await params;
+    resolvedLevelId = levelId;
 
     // Get level
     const level = await db.select().from(levels).where(eq(levels.id, levelId)).get();
@@ -104,7 +176,18 @@ export async function GET(
       stages,
     });
   } catch (error) {
-    console.error('Error fetching level:', error);
-    return NextResponse.json({ error: 'Internal error' }, { status: 500 });
+    console.error(`Error fetching level ${resolvedLevelId}:`, error);
+
+    // Fallback: If DB query fails for any reason, load directly from content JSON files
+    if (resolvedLevelId) {
+      const fallback = getLevelFromContent(resolvedLevelId);
+      if (fallback) {
+        console.log(`[Level Fallback] Served ${resolvedLevelId} from content bundle`);
+        return NextResponse.json(fallback);
+      }
+    }
+
+    const message = error instanceof Error ? error.message : String(error);
+    return NextResponse.json({ error: 'Internal error', message }, { status: 500 });
   }
 }

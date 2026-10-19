@@ -60,12 +60,22 @@ function PlayContent() {
   useEffect(() => {
     if (!levelId) return;
     fetch(`/api/levels/${levelId}`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(data => {
+        if (!data || !Array.isArray(data.stages)) {
+          throw new Error('Invalid level data received');
+        }
         setLevelData(data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        console.error('Failed to load level:', err);
+        setLevelData(null);
+        setLoading(false);
+      });
   }, [levelId]);
 
   const calculateStars = useCallback((results: StageResult[]): number => {
@@ -130,10 +140,18 @@ function PlayContent() {
     return <LoadingScreen bgClass="bg-sky-100" />;
   }
 
-  if (!levelData) {
+  if (!levelData || !Array.isArray(levelData.stages) || levelData.stages.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-sky-100">
-        <p className="text-2xl text-gray-400">Level not found</p>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-sky-100 gap-4 p-4 text-center">
+        <p className="text-4xl">🌟</p>
+        <p className="text-2xl font-bold text-gray-700">Level not available</p>
+        <p className="text-sm text-gray-500 max-w-xs">Please check your connection or return to the world map.</p>
+        <button
+          onClick={() => router.push(levelData?.worldSlug ? `/world/${levelData.worldSlug}` : '/')}
+          className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-2xl font-bold text-lg shadow-md cursor-pointer transition-transform active:scale-95"
+        >
+          Back to Worlds 🗺️
+        </button>
       </div>
     );
   }
