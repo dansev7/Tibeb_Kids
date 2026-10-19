@@ -64,24 +64,32 @@ export async function POST(request: Request) {
 
     const existingSettings = db.select().from(settings).where(eq(settings.childId, childId)).get();
     if (existingSettings) {
+      const sanitizedVoiceGender = (voiceGender === 'male' || voiceGender === 'parent' || voiceGender === 'female')
+        ? voiceGender
+        : 'female';
+
       db.update(settings)
         .set({
           sessionLimitMin: typeof sessionLimitMin === 'number' ? sessionLimitMin : 15,
           volume: typeof volume === 'number' ? volume : 0.8,
           enabledWorldsJson,
-          voiceGender: voiceGender === 'male' ? 'male' : 'female',
+          voiceGender: sanitizedVoiceGender,
           voiceSpeed: typeof voiceSpeed === 'number' ? voiceSpeed : 0.9,
         })
         .where(eq(settings.childId, childId))
         .run();
     } else {
+      const sanitizedVoiceGender = (voiceGender === 'male' || voiceGender === 'parent' || voiceGender === 'female')
+        ? voiceGender
+        : 'female';
+
       db.insert(settings)
         .values({
           childId,
           sessionLimitMin: typeof sessionLimitMin === 'number' ? sessionLimitMin : 15,
           volume: typeof volume === 'number' ? volume : 0.8,
           enabledWorldsJson,
-          voiceGender: voiceGender === 'male' ? 'male' : 'female',
+          voiceGender: sanitizedVoiceGender,
           voiceSpeed: typeof voiceSpeed === 'number' ? voiceSpeed : 0.9,
         })
         .run();

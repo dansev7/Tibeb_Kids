@@ -28,7 +28,7 @@ async function runTests() {
 
   const childSettings = db.select().from(settings).where(eq(settings.childId, 1)).get();
   assert(childSettings, 'Default settings must exist');
-  assert(['female', 'male'].includes(childSettings.voiceGender || ''), 'Voice gender must be female or male');
+  assert(['female', 'male', 'parent'].includes(childSettings.voiceGender || ''), 'Voice gender must be female, male, or parent');
   assert(typeof childSettings.voiceSpeed === 'number' && childSettings.voiceSpeed >= 0.5 && childSettings.voiceSpeed <= 1.5, 'Voice speed must be between 0.5 and 1.5');
   console.log(`✓ Child settings verified: session limit ${childSettings.sessionLimitMin}m, volume ${childSettings.volume}, voice: ${childSettings.voiceGender} (${childSettings.voiceSpeed}x speed)`);
 
