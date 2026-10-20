@@ -146,54 +146,24 @@ export default function SpeakerButton({
   };
 
   const fallbackSpeech = () => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window && actualText) {
+    if (typeof window !== 'undefined' && actualText) {
       setIsPlaying(true);
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(actualText);
       try {
-        const { getVoiceSettings, selectVoiceForGender, isVoiceMale } = require('@/utils/sound');
-        const { gender, speed } = getVoiceSettings();
-        const voices = window.speechSynthesis.getVoices();
-        const chosenVoice = selectVoiceForGender(voices, gender, 'en-US');
-
-        // Always bind a voice and sync utterance.lang so pitch/rate apply reliably on mobile
-        if (chosenVoice) {
-          utterance.voice = chosenVoice;
-          utterance.lang = chosenVoice.lang || 'en-US';
-        } else if (voices.length > 0) {
-          const langFallback = voices.find((v: SpeechSynthesisVoice) => v.lang.toLowerCase().startsWith('en'));
-          if (langFallback) {
-            utterance.voice = langFallback;
-            utterance.lang = langFallback.lang || 'en-US';
-          } else {
-            utterance.lang = 'en-US';
+        const { speakText } = require('@/utils/sound');
+        speakText(
+          actualText,
+          'en-US',
+          () => {
+            setIsPlaying(false);
+            onAudioEnd?.();
+          },
+          () => {
+            setIsPlaying(false);
           }
-        } else {
-          utterance.lang = 'en-US';
-        }
-
-        // Use the same pitch/rate values as the main synthesizeSpeech engine (male or parent)
-        if (gender === 'parent') {
-          utterance.pitch = 1.05;
-          utterance.rate = Math.max(0.5, Math.min(1.6, speed));
-        } else {
-          const confirmedMale = chosenVoice && isVoiceMale(chosenVoice);
-          utterance.pitch = confirmedMale ? 0.88 : 0.55;
-          utterance.rate = Math.max(0.5, Math.min(1.6, speed * (confirmedMale ? 0.95 : 0.8)));
-        }
+        );
       } catch {
-        utterance.rate = 0.9;
-        utterance.pitch = 1.15;
+        setIsPlaying(false);
       }
-
-      utterance.onend = () => {
-        setIsPlaying(false);
-        onAudioEnd?.();
-      };
-      utterance.onerror = () => {
-        setIsPlaying(false);
-      };
-      window.speechSynthesis.speak(utterance);
     } else {
       setIsPlaying(false);
     }

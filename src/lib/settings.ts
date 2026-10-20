@@ -31,7 +31,7 @@ export async function fetchSettings(): Promise<AppSettings> {
       childName: typeof data.childName === 'string' ? data.childName : DEFAULT_SETTINGS.childName,
       sessionLimitMin: typeof data.sessionLimitMin === 'number' ? data.sessionLimitMin : DEFAULT_SETTINGS.sessionLimitMin,
       volume: typeof data.volume === 'number' ? data.volume : DEFAULT_SETTINGS.volume,
-      voiceGender: data.voiceGender === 'parent' ? 'parent' : 'male',
+      voiceGender: data.voiceGender === 'parent' ? 'parent' : (data.voiceGender === 'female' ? 'female' : 'male'),
       voiceSpeed: typeof data.voiceSpeed === 'number' ? data.voiceSpeed : DEFAULT_SETTINGS.voiceSpeed,
       enabledWorlds: Array.isArray(data.enabledWorlds) && data.enabledWorlds.length > 0
         ? data.enabledWorlds
@@ -44,8 +44,11 @@ export async function fetchSettings(): Promise<AppSettings> {
     if (typeof window !== 'undefined') {
       try {
         const g = localStorage.getItem('little_learner_voice_gender');
-        if (g === 'parent') localGender = 'parent';
-        else localGender = 'male';
+        if (g === 'parent' || g === 'female' || g === 'male') {
+          localGender = g;
+        } else {
+          localGender = 'male';
+        }
         const sp = parseFloat(localStorage.getItem('little_learner_voice_speed') ?? '');
         if (!isNaN(sp)) localSpeed = sp;
         const vol = parseFloat(localStorage.getItem('little_learner_volume') ?? '');

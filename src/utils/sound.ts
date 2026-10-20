@@ -185,16 +185,42 @@ export function playFanfare() {
 }
 
 /**
- * Voice settings (male teacher vs parent voice, speed multiplier)
+ * Voice settings (male vs female vs parent, speed multiplier)
  */
-export type VoiceGender = 'male' | 'parent';
+export type VoiceGender = 'male' | 'female' | 'parent';
 
 let currentVoiceGender: VoiceGender = 'male';
 let currentVoiceSpeed: number = 0.9;
 let voiceSettingsLoaded = false;
 
+/**
+ * Constant, fixed-pitch static voiceover profiles across the entire project.
+ * Male voice uses a fixed pitch of 0.85 and rate of 0.90 for a stable, warm, natural teacher tone.
+ */
+export const STATIC_VOICE_CONFIG = {
+  male: {
+    pitch: 0.85,  // Constant fixed static male pitch
+    rate: 0.90,   // Constant fixed static male rate
+    label: 'Male Teacher',
+  },
+  female: {
+    pitch: 1.20,  // Constant fixed static female pitch
+    rate: 0.95,   // Constant fixed static female rate
+    label: 'Female Teacher',
+  },
+  parent: {
+    pitch: 0.85,  // Fallback to static male pitch if unrecorded
+    rate: 0.90,
+    label: 'Parent Voice',
+  },
+} as const;
+
 export function setVoiceSettings(gender: VoiceGender, speed: number) {
-  currentVoiceGender = gender === 'parent' ? 'parent' : 'male';
+  if (gender === 'female' || gender === 'parent') {
+    currentVoiceGender = gender;
+  } else {
+    currentVoiceGender = 'male';
+  }
   currentVoiceSpeed = speed;
   if (typeof window !== 'undefined') {
     try {
@@ -209,13 +235,10 @@ export function getVoiceSettings(): { gender: VoiceGender; speed: number } {
     try {
       const storedGender = localStorage.getItem('little_learner_voice_gender');
       const storedSpeed = localStorage.getItem('little_learner_voice_speed');
-      if (storedGender === 'parent') {
-        currentVoiceGender = 'parent';
+      if (storedGender === 'female' || storedGender === 'parent' || storedGender === 'male') {
+        currentVoiceGender = storedGender;
       } else {
         currentVoiceGender = 'male';
-        if (storedGender && storedGender !== 'male') {
-          localStorage.setItem('little_learner_voice_gender', 'male');
-        }
       }
       if (storedSpeed) {
         const parsed = parseFloat(storedSpeed);
@@ -230,6 +253,8 @@ export function getVoiceSettings(): { gender: VoiceGender; speed: number } {
 }
 
 let cachedVoices: SpeechSynthesisVoice[] = [];
+let cachedMaleVoice: SpeechSynthesisVoice | null = null;
+let cachedFemaleVoice: SpeechSynthesisVoice | null = null;
 
 function loadVoices(): SpeechSynthesisVoice[] {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return [];
@@ -249,6 +274,8 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       const v = window.speechSynthesis.getVoices();
       if (v && v.length > 0) {
         cachedVoices = v;
+        cachedMaleVoice = null;
+        cachedFemaleVoice = null;
       }
     } catch {}
   };
@@ -399,8 +426,6 @@ export function isVoiceMale(v: SpeechSynthesisVoice): boolean {
   }
 
   // Android Google TTS specific male voice tags and models:
-  // tpf = Google US Male, iom = Google US Male, iol = Google US Male, iob = Google US Male
-  // rjs = Google UK Male, fis = Google UK Male, aub = Google AU Male, cxx = Google IN Male
   const androidMaleTags = [
     'tpf', 'iom', 'iol', 'iob', 'rjs', 'fis', 'aub', 'cxx',
     'en-us-x-sfg#male', 'en-us-x-tpf', 'en-us-x-iom', 'en-gb-x-rjs', 'en-gb-x-fis',
@@ -423,88 +448,98 @@ export function isVoiceMale(v: SpeechSynthesisVoice): boolean {
   return maleNames.some(name => str.includes(name));
 }
 
+/**
+ * Select a single, static voice instance for the requested gender.
+ * Once resolved, it stays locked to that voice to prevent switching between different weird voices.
+ */
 export function selectVoiceForGender(
   voices: SpeechSynthesisVoice[],
-  _gender?: VoiceGender,
-  lang = 'en-US'
+  gender: VoiceGender = 'male',
+  _lang = 'en-US'
 ): SpeechSynthesisVoice | null {
   const pool = voices && voices.length > 0 ? voices : loadVoices();
   if (!pool || pool.length === 0) return null;
 
-  const targetNorm = lang.toLowerCase().replace('_', '-');
-  const langPrefix = targetNorm.split('-')[0];
+  if (gender === 'female') {
+    if (cachedFemaleVoice) return cachedFemaleVoice;
+    const englishVoices = pool.filter((v) => (v.lang || '').toLowerCase().startsWith('en'));
+    const femaleVoice = englishVoices.find(v => {
+      const l = (v.lang || '').toLowerCase();
+      return (l.startsWith('en-us') || l.startsWith('en-gb')) && isVoiceFemale(v);
+    })
+      || englishVoices.find(isVoiceFemale)
+      || englishVoices.find((v) => (v.lang || '').toLowerCase().startsWith('en-us'))
+      || englishVoices[0]
+      || pool[0];
+    cachedFemaleVoice = femaleVoice || null;
+    return cachedFemaleVoice;
+  }
 
-  // Specific exact locale match (e.g. 'en-us')
-  const exactLocaleVoices = pool.filter((v) => (v.lang || '').toLowerCase().replace('_', '-') === targetNorm);
-  // Same language family (e.g. 'en-gb', 'en-us', 'en-au')
-  const langFamilyVoices = pool.filter((v) => (v.lang || '').toLowerCase().startsWith(langPrefix));
-  // All English voices
+  // Male voice selection: find one natural male voice and lock it statically
+  if (cachedMaleVoice) return cachedMaleVoice;
+
   const englishVoices = pool.filter((v) => (v.lang || '').toLowerCase().startsWith('en'));
 
-  // 1. Confirmed male voice in exact requested locale (e.g. en-US male)
-  const exactLocaleMale = exactLocaleVoices.find(isVoiceMale);
-  if (exactLocaleMale) return exactLocaleMale;
-
-  // 2. High-priority standard mobile male voices:
-  //    Daniel (standard on iOS), Google UK English Male (standard on Android), George, Guy, David
-  const premiumMale = pool.find((v) => {
-    const s = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
-    return (
-      s.includes('daniel') ||
-      s.includes('google uk english male') ||
-      s.includes('rjs') ||
-      s.includes('tpf') ||
-      s.includes('iom') ||
-      s.includes('david') ||
-      s.includes('george') ||
-      s.includes('oliver') ||
-      s.includes('arthur')
-    );
+  // 1. Confirmed male voice in en-US
+  const usMale = englishVoices.find((v) => {
+    const l = (v.lang || '').toLowerCase();
+    return (l === 'en-us' || l === 'en_us') && isVoiceMale(v);
   });
-  if (premiumMale) return premiumMale;
+  if (usMale) {
+    cachedMaleVoice = usMale;
+    return cachedMaleVoice;
+  }
 
-  // 3. Any confirmed male voice in same language family (e.g. en-GB, en-AU, en-IN)
-  const familyMale = langFamilyVoices.find(isVoiceMale);
-  if (familyMale) return familyMale;
+  // 2. High-quality standard mobile male voice (Daniel on iOS, Google UK Male on Android, David on Windows)
+  const standardMobileMale = pool.find((v) => {
+    const s = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
+    return s.includes('daniel') || s.includes('google uk english male') || s.includes('david') || s.includes('alex') || s.includes('fred');
+  });
+  if (standardMobileMale) {
+    cachedMaleVoice = standardMobileMale;
+    return cachedMaleVoice;
+  }
 
-  // 4. Any confirmed male voice in English
-  const anyEnglishMale = englishVoices.find(isVoiceMale);
-  if (anyEnglishMale) return anyEnglishMale;
+  // 3. Any confirmed English male voice (prefer en-US / en-GB over others)
+  const anyEnglishMale = englishVoices.find(v => {
+    const l = (v.lang || '').toLowerCase();
+    return (l.startsWith('en-us') || l.startsWith('en-gb')) && isVoiceMale(v);
+  }) || englishVoices.find(isVoiceMale);
 
-  // 5. Any confirmed male voice in entire device pool
-  const anyMale = pool.find(isVoiceMale);
-  if (anyMale) return anyMale;
+  if (anyEnglishMale) {
+    cachedMaleVoice = anyEnglishMale;
+    return cachedMaleVoice;
+  }
 
-  // 6. If no confirmed male voice is installed on device OS:
-  //    Prefer a non-female English voice, or fallback to first available
-  const nonFemale = exactLocaleVoices.find((v) => !isVoiceFemale(v))
-    || langFamilyVoices.find((v) => !isVoiceFemale(v))
-    || englishVoices.find((v) => !isVoiceFemale(v));
-  if (nonFemale) return nonFemale;
+  // 4. Standard English voice (we apply the static fixed male pitch 0.85 to it)
+  const defaultEn = englishVoices.find((v) => (v.lang || '').toLowerCase().startsWith('en-us'))
+    || englishVoices[0]
+    || pool[0];
 
-  return pool[0] || null;
+  cachedMaleVoice = defaultEn || null;
+  return cachedMaleVoice;
 }
 
 /**
  * Returns diagnostic information about the voice selected on the current device.
  */
-export function getActiveVoiceInfo(_gender?: VoiceGender): {
+export function getActiveVoiceInfo(gender: VoiceGender = 'male'): {
   name: string;
   lang: string;
   isConfirmedMale: boolean;
   isFallback: boolean;
 } {
   const voices = loadVoices();
-  const voice = selectVoiceForGender(voices, 'male', 'en-US');
+  const voice = selectVoiceForGender(voices, gender, 'en-US');
   if (!voice) {
-    return { name: 'Default System Voice', lang: 'en-US', isConfirmedMale: false, isFallback: true };
+    return { name: 'Default System Voice', lang: 'en-US', isConfirmedMale: false, isFallback: gender === 'male' };
   }
   const isMale = isVoiceMale(voice);
   return {
     name: voice.name || voice.voiceURI || 'System Voice',
     lang: voice.lang || 'en-US',
     isConfirmedMale: isMale,
-    isFallback: !isMale,
+    isFallback: gender === 'male' && !isMale,
   };
 }
 
@@ -512,8 +547,18 @@ import { isEthiopicText, getAmharicPhonetic } from './amharicSpeech';
 import { resolveAudioPath, hasCustomVoice, findCustomVoiceForTextOrItem } from '@/lib/audioStorage';
 export { resolveAudioPath, hasCustomVoice, findCustomVoiceForTextOrItem };
 
-function synthesizeSpeech(text: string, lang = 'en-US', gender: VoiceGender = 'male', speed = 0.9) {
-  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+function synthesizeSpeech(
+  text: string,
+  lang = 'en-US',
+  gender: VoiceGender = 'male',
+  speed = 0.9,
+  onEnd?: () => void,
+  onError?: () => void
+) {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+    onError?.();
+    return;
+  }
   try {
     if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
       window.speechSynthesis.cancel();
@@ -522,22 +567,20 @@ function synthesizeSpeech(text: string, lang = 'en-US', gender: VoiceGender = 'm
       window.speechSynthesis.resume();
     }
 
-    const voices = loadVoices();
     const hasAmharic = isEthiopicText(text);
-
     let textToSpeak = text;
     let targetLang = lang;
 
-    // Check if system has a native Amharic voice installed
+    const voices = loadVoices();
     const nativeAmharicVoice = hasAmharic
-      ? voices.find(v => v.lang.toLowerCase().startsWith('am'))
+      ? voices.find(v => (v.lang || '').toLowerCase().startsWith('am'))
       : null;
 
     if (hasAmharic) {
       if (nativeAmharicVoice) {
         targetLang = 'am-ET';
       } else {
-        // Transliterate Amharic script into phonetics so standard TTS pronounces authentic Amharic syllables
+        // Transliterate Amharic script into phonetics
         textToSpeak = getAmharicPhonetic(text);
         targetLang = 'en-US';
       }
@@ -549,25 +592,10 @@ function synthesizeSpeech(text: string, lang = 'en-US', gender: VoiceGender = 'm
       ? nativeAmharicVoice
       : selectVoiceForGender(voices, gender, targetLang);
 
-    // Synchronize utterance.lang with chosenVoice.lang on mobile
     if (chosenVoice) {
       utterance.voice = chosenVoice;
       if (!hasAmharic || !nativeAmharicVoice) {
         utterance.lang = chosenVoice.lang || targetLang;
-      } else {
-        utterance.lang = targetLang;
-      }
-    } else if (voices.length > 0) {
-      const langFallback = voices.find(v =>
-        v.lang.toLowerCase().startsWith(targetLang.split('-')[0].toLowerCase())
-      );
-      if (langFallback) {
-        utterance.voice = langFallback;
-        if (!hasAmharic || !nativeAmharicVoice) {
-          utterance.lang = langFallback.lang || targetLang;
-        } else {
-          utterance.lang = targetLang;
-        }
       } else {
         utterance.lang = targetLang;
       }
@@ -577,29 +605,22 @@ function synthesizeSpeech(text: string, lang = 'en-US', gender: VoiceGender = 'm
 
     utterance.volume = getVolume();
 
-    // Pitch & Rate tuning for Male Teacher vs Parent Voice:
-    if (gender === 'parent') {
-      utterance.pitch = 1.05;
-      utterance.rate = Math.max(0.5, Math.min(1.6, speed));
-    } else {
-      // Male teacher voice (the exclusive computer voiceover)
-      const isExplicitMale = chosenVoice && isVoiceMale(chosenVoice);
-      if (isExplicitMale) {
-        // Confirmed male voice active: warm, encouraging, resonant teacher tone
-        utterance.pitch = 0.88;
-        utterance.rate = Math.max(0.5, Math.min(1.6, speed * 0.95));
-      } else {
-        // Fallback when phone OS has no male voice pack:
-        // Deep pitch 0.55 and noticeably calmer pace (0.8x) gives a distinct,
-        // deeper masculine delivery even on devices with limited pitch support.
-        utterance.pitch = 0.55;
-        utterance.rate = Math.max(0.5, Math.min(1.6, speed * 0.8));
-      }
+    // FIXED STATIC PITCH & RATE THROUGHOUT THE ENTIRE PROJECT
+    const config = STATIC_VOICE_CONFIG[gender] || STATIC_VOICE_CONFIG.male;
+    utterance.pitch = config.pitch; // 0.85 for male (constant fixed static pitch)
+    utterance.rate = Math.max(0.6, Math.min(1.4, config.rate * (speed / 0.9)));
+
+    if (onEnd) {
+      utterance.onend = () => onEnd();
+    }
+    if (onError) {
+      utterance.onerror = () => onError();
     }
 
     window.speechSynthesis.speak(utterance);
   } catch (err) {
     console.debug('SpeechSynthesis error:', err);
+    onError?.();
   }
 }
 
@@ -608,8 +629,16 @@ function synthesizeSpeech(text: string, lang = 'en-US', gender: VoiceGender = 'm
  * If Parent Voiceover style is active, ALWAYS cross-checks if a parent recording exists
  * for this word or letter first, seamlessly falling back to computer speech if not.
  */
-export function speakText(text: string, lang = 'en-US') {
-  if (typeof window === 'undefined') return;
+export function speakText(
+  text: string,
+  lang = 'en-US',
+  onEnd?: () => void,
+  onError?: () => void
+) {
+  if (typeof window === 'undefined') {
+    onError?.();
+    return;
+  }
 
   const { gender, speed } = getVoiceSettings();
 
@@ -620,11 +649,13 @@ export function speakText(text: string, lang = 'en-US') {
       try {
         const audio = new Audio(parentBlobUrl);
         audio.volume = getVolume();
+        currentActiveAudio = audio;
+        if (onEnd) audio.onended = () => { onEnd(); };
+        if (onError) audio.onerror = () => { onError(); };
         const playPromise = audio.play();
         if (playPromise !== undefined) {
           playPromise.catch(() => {
-            // Fall back to computer voice synthesis if audio play fails
-            synthesizeSpeech(text, lang, gender, speed);
+            synthesizeSpeech(text, lang, gender, speed, onEnd, onError);
           });
         }
         return;
@@ -634,8 +665,8 @@ export function speakText(text: string, lang = 'en-US') {
     }
   }
 
-  // Choose computer voiceover
-  synthesizeSpeech(text, lang, gender, speed);
+  // Static male or female computer voiceover
+  synthesizeSpeech(text, lang, gender, speed, onEnd, onError);
 }
 
 /**
@@ -666,8 +697,7 @@ export function playAudioOrSpeech(
           if (currentActiveAudio === audio) currentActiveAudio = null;
           if (!fallbackTriggered && fallbackText) {
             fallbackTriggered = true;
-            speakText(fallbackText);
-            if (onEnded) setTimeout(onEnded, 1000);
+            speakText(fallbackText, 'en-US', onEnded);
           }
         };
 
@@ -684,8 +714,7 @@ export function playAudioOrSpeech(
         return audio;
       } catch {
         if (fallbackText) {
-          speakText(fallbackText);
-          if (onEnded) setTimeout(onEnded, 1000);
+          speakText(fallbackText, 'en-US', onEnded);
         }
         return null;
       }
@@ -693,8 +722,7 @@ export function playAudioOrSpeech(
 
     // No parent voice exists for this specific letter, word, or prompt -> Choose computer voiceover!
     if (fallbackText) {
-      speakText(fallbackText);
-      if (onEnded) setTimeout(onEnded, 1000);
+      speakText(fallbackText, 'en-US', onEnded);
     }
     return null;
   }
@@ -712,8 +740,7 @@ export function playAudioOrSpeech(
         if (currentActiveAudio === audio) currentActiveAudio = null;
         if (!fallbackTriggered && fallbackText) {
           fallbackTriggered = true;
-          speakText(fallbackText);
-          if (onEnded) setTimeout(onEnded, 1000);
+          speakText(fallbackText, 'en-US', onEnded);
         }
       };
 
@@ -730,8 +757,7 @@ export function playAudioOrSpeech(
       return audio;
     } catch {
       if (fallbackText) {
-        speakText(fallbackText);
-        if (onEnded) setTimeout(onEnded, 1000);
+        speakText(fallbackText, 'en-US', onEnded);
       }
       return null;
     }
@@ -739,8 +765,7 @@ export function playAudioOrSpeech(
 
   // Choose computer voiceover
   if (fallbackText) {
-    speakText(fallbackText);
-    if (onEnded) setTimeout(onEnded, 1000);
+    speakText(fallbackText, 'en-US', onEnded);
   }
   return null;
 }

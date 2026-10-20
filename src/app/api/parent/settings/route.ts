@@ -25,7 +25,7 @@ export async function GET() {
       childName: currentChild?.name || 'Learner',
       sessionLimitMin: currentSettings?.sessionLimitMin ?? 15,
       volume: currentSettings?.volume ?? 0.8,
-      voiceGender: currentSettings?.voiceGender === 'parent' ? 'parent' : 'male',
+      voiceGender: currentSettings?.voiceGender === 'parent' ? 'parent' : (currentSettings?.voiceGender === 'female' ? 'female' : 'male'),
       voiceSpeed: currentSettings?.voiceSpeed ?? 0.9,
       enabledWorlds,
     });
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
     const enabledWorldsJson = JSON.stringify(worldsToSave);
 
     const existingSettings = await db.select().from(settings).where(eq(settings.childId, childId)).get();
-    const sanitizedVoiceGender = voiceGender === 'parent' ? 'parent' : 'male';
+    const sanitizedVoiceGender = voiceGender === 'parent' ? 'parent' : (voiceGender === 'female' ? 'female' : 'male');
 
     if (existingSettings) {
       await db.update(settings)
