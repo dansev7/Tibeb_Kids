@@ -67,6 +67,28 @@ export const VOCABULARY_EMOJIS: Record<string, string> = {
   // Number farm countables & quantities
   'empty basket': '🧺',
   basket: '🧺',
+  bottle: '🍼',
+  bottles: '🍼',
+  '1 apple': '🍎',
+  '2 oranges': '🍊',
+  '3 mangoes': '🥭',
+  '4 flowers': '🌸',
+  '5 bottles': '🍼',
+  '6 balloons': '🎈',
+  '7 stars': '⭐',
+  '8 candies': '🍬',
+  '9 butterflies': '🦋',
+  '10 pencils': '✏️',
+  '11 hearts': '❤️',
+  '12 fish': '🐟',
+  '13 birds': '🐦',
+  '14 eggs': '🥚',
+  '15 leaves': '🍃',
+  '16 trees': '🌳',
+  '17 books': '📚',
+  '18 cups': '🥛',
+  '19 buttons': '🔘',
+  '20 cows': '🐄',
   stars: '⭐',
   star: '⭐',
   flowers: '🌸',
@@ -307,3 +329,19 @@ export function getItemEmoji(item?: {
   if (item.kind === 'fidel') return '🇪🇹';
   return '⭐';
 }
+
+/**
+ * Returns the single unit emoji to repeat when rendering a quantity for numbers (e.g. 🍎 for "1 Apple", 🍊 for "2 Oranges").
+ */
+export function getNumberUnitEmoji(item?: {
+  pictureWord?: string | null;
+  symbol?: string | null;
+} | null): string {
+  if (!item?.pictureWord) return '🍎';
+  const clean = item.pictureWord.toLowerCase().replace(/^[0-9]+\s*/, '').trim();
+  if (VOCABULARY_EMOJIS[clean]) return VOCABULARY_EMOJIS[clean];
+  if (clean.endsWith('es') && VOCABULARY_EMOJIS[clean.slice(0, -2)]) return VOCABULARY_EMOJIS[clean.slice(0, -2)];
+  if (clean.endsWith('s') && VOCABULARY_EMOJIS[clean.slice(0, -1)]) return VOCABULARY_EMOJIS[clean.slice(0, -1)];
+  return getItemEmoji(item);
+}
+

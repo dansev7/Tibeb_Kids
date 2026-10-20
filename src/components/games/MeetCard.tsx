@@ -204,7 +204,7 @@ export function MeetCard({ items, onComplete, themeColor }: MeetCardProps) {
               <div className="mb-1.5">
                 <ItemVisualBadge
                   item={currentItem}
-                  className="w-24 h-24 sm:w-28 sm:h-28"
+                  className={currentItem.kind === 'number' ? "w-28 h-28 sm:w-36 sm:h-36" : "w-24 h-24 sm:w-28 sm:h-28"}
                   emojiSize="text-6xl sm:text-7xl"
                 />
               </div>
