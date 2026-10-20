@@ -42,7 +42,7 @@ export function seedDatabase(sqlite: Database.Database): void {
       // Insert default settings if not exists
       sqlite.prepare(`
         INSERT OR IGNORE INTO settings (child_id, session_limit_min, volume, enabled_worlds_json, voice_gender, voice_speed)
-        VALUES (1, 15, 0.8, '["abc-garden","number-farm","fidel-village"]', 'parent', 0.9)
+        VALUES (1, 15, 0.8, '["abc-garden","number-farm","fidel-village"]', 'male', 0.9)
       `).run();
 
       // Read JSON content files

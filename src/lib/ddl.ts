@@ -100,14 +100,14 @@ export const DDL_SCHEMA_SQL = `
     session_limit_min INTEGER DEFAULT 15,
     volume REAL DEFAULT 0.8,
     enabled_worlds_json TEXT DEFAULT '["abc-garden","number-farm","fidel-village"]',
-    voice_gender TEXT DEFAULT 'female',
+    voice_gender TEXT DEFAULT 'male',
     voice_speed REAL DEFAULT 0.9
   );
 `;
 
 const SCHEMA_MIGRATIONS: Array<string> = [
   'ALTER TABLE level ADD COLUMN stages_json TEXT',
-  "ALTER TABLE settings ADD COLUMN voice_gender TEXT DEFAULT 'female'",
+  "ALTER TABLE settings ADD COLUMN voice_gender TEXT DEFAULT 'male'",
   'ALTER TABLE settings ADD COLUMN voice_speed REAL DEFAULT 0.9',
 ];
 

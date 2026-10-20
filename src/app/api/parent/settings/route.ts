@@ -25,7 +25,7 @@ export async function GET() {
       childName: currentChild?.name || 'Learner',
       sessionLimitMin: currentSettings?.sessionLimitMin ?? 15,
       volume: currentSettings?.volume ?? 0.8,
-      voiceGender: currentSettings?.voiceGender || 'female',
+      voiceGender: currentSettings?.voiceGender || 'male',
       voiceSpeed: currentSettings?.voiceSpeed ?? 0.9,
       enabledWorlds,
     });
@@ -36,7 +36,7 @@ export async function GET() {
       childName: 'Learner',
       sessionLimitMin: 15,
       volume: 0.8,
-      voiceGender: 'female',
+      voiceGender: 'male',
       voiceSpeed: 0.9,
       enabledWorlds: ['abc-garden', 'number-farm', 'fidel-village'],
     });
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
     if (existingSettings) {
       const sanitizedVoiceGender = (voiceGender === 'male' || voiceGender === 'parent' || voiceGender === 'female')
         ? voiceGender
-        : 'female';
+        : 'male';
 
       await db.update(settings)
         .set({
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     } else {
       const sanitizedVoiceGender = (voiceGender === 'male' || voiceGender === 'parent' || voiceGender === 'female')
         ? voiceGender
-        : 'female';
+        : 'male';
 
       await db.insert(settings)
         .values({

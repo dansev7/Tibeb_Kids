@@ -168,7 +168,7 @@ export const settings = sqliteTable('settings', {
   enabledWorldsJson: text('enabled_worlds_json').default(
     '["abc-garden","number-farm","fidel-village"]'
   ),
-  voiceGender: text('voice_gender').default('female'),
+  voiceGender: text('voice_gender').default('male'),
   voiceSpeed: real('voice_speed').default(0.9),
 });
 

@@ -474,7 +474,7 @@ export default function VoiceStudioPage() {
     setGlobalVoicePreference(pref);
     setGlobalVoicePref(pref);
     const { speed } = getVoiceSettings();
-    setVoiceSettings(pref === 'parent' ? 'parent' : 'female', speed);
+    setVoiceSettings(pref === 'parent' ? 'parent' : 'male', speed);
   };
 
   // Play custom voice from card

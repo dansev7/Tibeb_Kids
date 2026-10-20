@@ -189,7 +189,7 @@ export function playFanfare() {
  */
 export type VoiceGender = 'female' | 'male' | 'parent';
 
-let currentVoiceGender: VoiceGender = 'female';
+let currentVoiceGender: VoiceGender = 'male';
 let currentVoiceSpeed: number = 0.9;
 let voiceSettingsLoaded = false;
 
@@ -211,6 +211,8 @@ export function getVoiceSettings(): { gender: VoiceGender; speed: number } {
       const storedSpeed = localStorage.getItem('little_learner_voice_speed');
       if (storedGender === 'female' || storedGender === 'male' || storedGender === 'parent') {
         currentVoiceGender = storedGender;
+      } else {
+        currentVoiceGender = 'male';
       }
       if (storedSpeed) {
         const parsed = parseFloat(storedSpeed);
@@ -340,7 +342,7 @@ import { isEthiopicText, getAmharicPhonetic } from './amharicSpeech';
 import { resolveAudioPath, hasCustomVoice, findCustomVoiceForTextOrItem } from '@/lib/audioStorage';
 export { resolveAudioPath, hasCustomVoice, findCustomVoiceForTextOrItem };
 
-function synthesizeSpeech(text: string, lang = 'en-US', gender: VoiceGender = 'female', speed = 0.9) {
+function synthesizeSpeech(text: string, lang = 'en-US', gender: VoiceGender = 'male', speed = 0.9) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
   try {
     window.speechSynthesis.cancel(); // Stop prior speech

@@ -18,7 +18,7 @@ export default function SettingsPage() {
     childName: 'Learner',
     sessionLimitMin: 15,
     volume: 0.8,
-    voiceGender: 'parent' as VoiceGender,
+    voiceGender: 'male' as VoiceGender,
     voiceSpeed: 0.9,
     enabledWorlds: ['abc-garden', 'number-farm', 'fidel-village'],
   });
@@ -52,7 +52,7 @@ export default function SettingsPage() {
         if (data && !data.error) {
           const loadedGender: VoiceGender = (data.voiceGender === 'male' || data.voiceGender === 'female' || data.voiceGender === 'parent')
             ? data.voiceGender
-            : 'parent';
+            : 'male';
 
           setSettings(prev => ({
             childName: data.childName || prev.childName,
@@ -302,7 +302,7 @@ export default function SettingsPage() {
               </label>
               <button
                 type="button"
-                onClick={() => handleTestVoice(settings.voiceGender || 'female', settings.voiceSpeed ?? 0.9)}
+                onClick={() => handleTestVoice(settings.voiceGender || 'male', settings.voiceSpeed ?? 0.9)}
                 className={`px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                   isTestingVoice
                     ? 'bg-amber-400 text-white animate-pulse'
@@ -322,7 +322,7 @@ export default function SettingsPage() {
               onChange={(e) => {
                 const newSpeed = parseFloat(e.target.value);
                 setSettings(prev => ({ ...prev, voiceSpeed: newSpeed }));
-                setVoiceSettings(settings.voiceGender || 'female', newSpeed);
+                setVoiceSettings(settings.voiceGender || 'male', newSpeed);
               }}
               className="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500"
             />
@@ -381,8 +381,8 @@ export default function SettingsPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      setSettings(prev => ({ ...prev, voiceGender: prev.voiceGender === 'parent' ? 'female' : prev.voiceGender }));
-                      setVoiceSettings(settings.voiceGender === 'parent' ? 'female' : settings.voiceGender, settings.voiceSpeed);
+                      setSettings(prev => ({ ...prev, voiceGender: prev.voiceGender === 'parent' ? 'male' : prev.voiceGender }));
+                      setVoiceSettings(settings.voiceGender === 'parent' ? 'male' : settings.voiceGender, settings.voiceSpeed);
                       setGlobalVoicePreference('computer');
                       setGlobalVoicePref('computer');
                     }}

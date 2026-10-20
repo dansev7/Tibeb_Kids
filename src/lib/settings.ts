@@ -15,7 +15,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   childName: 'Learner',
   sessionLimitMin: 15,
   volume: 0.8,
-  voiceGender: 'female',
+  voiceGender: 'male',
   voiceSpeed: 0.9,
   enabledWorlds: ['abc-garden', 'number-farm', 'fidel-village'],
 };
@@ -31,7 +31,7 @@ export async function fetchSettings(): Promise<AppSettings> {
       childName: typeof data.childName === 'string' ? data.childName : DEFAULT_SETTINGS.childName,
       sessionLimitMin: typeof data.sessionLimitMin === 'number' ? data.sessionLimitMin : DEFAULT_SETTINGS.sessionLimitMin,
       volume: typeof data.volume === 'number' ? data.volume : DEFAULT_SETTINGS.volume,
-      voiceGender: (data.voiceGender === 'male' || data.voiceGender === 'parent') ? data.voiceGender : 'female',
+      voiceGender: (data.voiceGender === 'female' || data.voiceGender === 'parent') ? data.voiceGender : 'male',
       voiceSpeed: typeof data.voiceSpeed === 'number' ? data.voiceSpeed : DEFAULT_SETTINGS.voiceSpeed,
       enabledWorlds: Array.isArray(data.enabledWorlds) && data.enabledWorlds.length > 0
         ? data.enabledWorlds
