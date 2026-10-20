@@ -38,7 +38,7 @@ interface ShapeMatchResult {
 }
 
 const CANVAS_SIZE = 400;
-const PASSING_ACCURACY_THRESHOLD = 90; // User requested 90% match accuracy threshold
+const PASSING_ACCURACY_THRESHOLD = 85; // Decreased to 85% per user request
 const ON_PATH_RADIUS = 26; // Tolerance radius around stroke for precision calculation
 const CHECKPOINT_HIT_RADIUS = 22; // Checkpoint collection radius
 
@@ -512,10 +512,10 @@ export default function TraceIt({
       let reminder = '';
       if (!isAccuracyPassed) {
         reminder = isFidel
-          ? `ትክክለኛነቱ ${matchAccuracy}% ነው — ለመጨረስ 90% ድረስ! ⭐`
-          : `Match is ${matchAccuracy}% — reach 90% to finish! ⭐`;
+          ? `ትክክለኛነቱ ${matchAccuracy}% ነው — ለመጨረስ 85% ድረስ! ⭐`
+          : `Match is ${matchAccuracy}% — reach 85% to finish! ⭐`;
       } else {
-        // Accuracy reached 90% but shape check detected missing parts
+        // Accuracy reached 85% but shape check detected missing parts
         reminder = isFidel
           ? `ጥቂት ቀርቶሃል! የ${currentItem.symbol} ፊደልን ሁሉንም መስመሮች አሟልተህ ጻፍ! ✍️`
           : `Almost there! Trace all strokes of the letter ${currentItem.displayName || currentItem.symbol}! ✍️`;
@@ -551,7 +551,7 @@ export default function TraceIt({
         </div>
       </div>
 
-      {/* Match Accuracy Meter Bar (Target: 90%) */}
+      {/* Match Accuracy Meter Bar (Target: 85%) */}
       <div className="w-full max-w-[340px] md:max-w-[380px] mb-1.5 bg-white rounded-2xl p-2 shadow-xs border border-gray-100 shrink-0">
         <div className="flex items-center justify-between text-xs font-black text-gray-600 mb-1">
           <span className="flex items-center gap-1">
@@ -567,7 +567,7 @@ export default function TraceIt({
               {matchAccuracy}% {matchAccuracy >= PASSING_ACCURACY_THRESHOLD ? '⭐' : ''}
             </span>
             <span className="text-[11px] font-bold text-white bg-indigo-600 px-2 py-0.5 rounded-full shadow-xs">
-              {isFidel ? 'ዒላማ: 90%' : 'Goal: 90%'}
+              {isFidel ? 'ዒላማ: 85%' : 'Goal: 85%'}
             </span>
           </div>
         </div>

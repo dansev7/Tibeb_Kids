@@ -83,7 +83,7 @@ function PlayContent() {
     const firstTryCorrect = results.filter(r => r.correct && r.firstTry).length;
     const total = results.length;
     const percentage = (firstTryCorrect / total) * 100;
-    if (percentage >= 90) return 3;
+    if (percentage >= 85) return 3;
     if (percentage >= 70) return 2;
     return 1;
   }, []);
