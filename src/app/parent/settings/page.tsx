@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { setVoiceSettings, speakText, stopAllSpeech, setVolume, type VoiceGender } from '@/utils/sound';
+import { setVoiceSettings, speakText, stopAllSpeech, setVolume, getActiveVoiceInfo, type VoiceGender } from '@/utils/sound';
 import {
   getCustomVoiceCount,
   getGlobalVoicePreference,
@@ -28,6 +28,12 @@ export default function SettingsPage() {
   const [swActive, setSwActive] = useState(false);
   const [voiceCount, setVoiceCount] = useState(0);
   const [globalVoicePref, setGlobalVoicePref] = useState<'parent' | 'computer'>('parent');
+  const [activeVoiceInfo, setActiveVoiceInfo] = useState<{
+    name: string;
+    lang: string;
+    isConfirmedMale: boolean;
+    isFallback: boolean;
+  } | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -71,10 +77,30 @@ export default function SettingsPage() {
             setGlobalVoicePreference('computer');
             setGlobalVoicePref('computer');
           }
+
+          try {
+            setActiveVoiceInfo(getActiveVoiceInfo(loadedGender));
+          } catch {}
         }
       })
       .catch(console.error);
-  }, []);
+
+    const handleVoicesChanged = () => {
+      try {
+        setActiveVoiceInfo(getActiveVoiceInfo(settings.voiceGender));
+      } catch {}
+    };
+
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged);
+    }
+
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged);
+      }
+    };
+  }, [settings.voiceGender]);
 
   const handleSave = () => {
     setVoiceSettings(settings.voiceGender, settings.voiceSpeed);
@@ -279,17 +305,38 @@ export default function SettingsPage() {
                 </button>
               </div>
             ) : (
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 flex items-center justify-between">
-                <span>
-                  Active Voice: <strong>{settings.voiceGender === 'female' ? '👩‍🏫 Female Teacher (Warm & Cheerful)' : '👨‍🏫 Male Teacher (Encouraging & Clear)'}</strong>
-                </span>
-                <button
-                  type="button"
-                  onClick={() => handleTestVoice(settings.voiceGender, settings.voiceSpeed)}
-                  className="text-blue-600 font-bold hover:underline cursor-pointer"
-                >
-                  Test Voice 🔊
-                </button>
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <span>
+                    Active Voice: <strong>{settings.voiceGender === 'female' ? '👩‍🏫 Female Teacher (Warm & Cheerful)' : '👨‍🏫 Male Teacher (Encouraging & Clear)'}</strong>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleTestVoice(settings.voiceGender, settings.voiceSpeed)}
+                    className="text-blue-600 font-bold hover:underline cursor-pointer"
+                  >
+                    Test Voice 🔊
+                  </button>
+                </div>
+                {activeVoiceInfo && (
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px] text-slate-500 pt-1.5 border-t border-slate-200/60">
+                    <span className="truncate">
+                      Device Voice: <strong>{activeVoiceInfo.name} ({activeVoiceInfo.lang})</strong>
+                    </span>
+                    <span className={`self-start sm:self-auto px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                      settings.voiceGender === 'male' && !activeVoiceInfo.isConfirmedMale
+                        ? 'bg-amber-100 text-amber-800'
+                        : 'bg-emerald-100 text-emerald-800'
+                    }`}>
+                      {settings.voiceGender === 'male' && !activeVoiceInfo.isConfirmedMale ? '⚡ Pitch/Pace Shifted' : '✓ Hardware Voice'}
+                    </span>
+                  </div>
+                )}
+                {settings.voiceGender === 'male' && activeVoiceInfo?.isFallback && (
+                  <div className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200/80 leading-relaxed mt-1">
+                    💡 <strong>Tip for Android:</strong> If your phone only has female voice files downloaded, open phone <strong>Settings → Accessibility → Text-to-speech output → Install voice data → English → select Male/Voice 2</strong> to hear an authentic human-sounding male teacher.
+                  </div>
+                )}
               </div>
             )}
           </div>

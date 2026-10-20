@@ -151,13 +151,39 @@ export default function SpeakerButton({
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(actualText);
       try {
-        const { getVoiceSettings, selectVoiceForGender } = require('@/utils/sound');
+        const { getVoiceSettings, selectVoiceForGender, isVoiceMale } = require('@/utils/sound');
         const { gender, speed } = getVoiceSettings();
         const voices = window.speechSynthesis.getVoices();
         const chosenVoice = selectVoiceForGender(voices, gender, 'en-US');
-        if (chosenVoice) utterance.voice = chosenVoice;
-        utterance.rate = Math.max(0.5, Math.min(1.6, speed));
-        utterance.pitch = gender === 'female' ? 1.2 : 0.85;
+
+        // Always bind a voice and sync utterance.lang so pitch/rate apply reliably on mobile
+        if (chosenVoice) {
+          utterance.voice = chosenVoice;
+          utterance.lang = chosenVoice.lang || 'en-US';
+        } else if (voices.length > 0) {
+          const langFallback = voices.find((v: SpeechSynthesisVoice) => v.lang.toLowerCase().startsWith('en'));
+          if (langFallback) {
+            utterance.voice = langFallback;
+            utterance.lang = langFallback.lang || 'en-US';
+          } else {
+            utterance.lang = 'en-US';
+          }
+        } else {
+          utterance.lang = 'en-US';
+        }
+
+        // Use the same pitch/rate values as the main synthesizeSpeech engine
+        if (gender === 'male') {
+          const confirmedMale = chosenVoice && isVoiceMale(chosenVoice);
+          utterance.pitch = confirmedMale ? 0.88 : 0.55;
+          utterance.rate = Math.max(0.5, Math.min(1.6, speed * (confirmedMale ? 0.95 : 0.8)));
+        } else if (gender === 'female') {
+          utterance.pitch = 1.25;
+          utterance.rate = Math.max(0.5, Math.min(1.6, speed * 1.08));
+        } else {
+          utterance.pitch = 1.05;
+          utterance.rate = Math.max(0.5, Math.min(1.6, speed));
+        }
       } catch {
         utterance.rate = 0.9;
         utterance.pitch = 1.15;

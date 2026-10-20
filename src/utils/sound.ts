@@ -257,6 +257,15 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
   try {
     window.speechSynthesis.onvoiceschanged = updateVoices;
   } catch {}
+
+  // Mobile WebKit (iOS) & Android Chrome: speech synthesis voices populate
+  // after the first user gesture. Prime voice cache on first touch or click.
+  const primeVoicesOnGesture = () => {
+    updateVoices();
+  };
+  window.addEventListener('touchstart', primeVoicesOnGesture, { once: true, passive: true });
+  window.addEventListener('pointerdown', primeVoicesOnGesture, { once: true, passive: true });
+  window.addEventListener('click', primeVoicesOnGesture, { once: true, passive: true });
 }
 
 let currentActiveAudio: HTMLAudioElement | null = null;
@@ -265,7 +274,9 @@ export function stopAllSpeech() {
   if (typeof window !== 'undefined') {
     if ('speechSynthesis' in window) {
       try {
-        window.speechSynthesis.cancel();
+        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+          window.speechSynthesis.cancel();
+        }
       } catch {}
     }
   }
@@ -284,16 +295,26 @@ export function stopAllSpeech() {
 export function isVoiceFemale(v: SpeechSynthesisVoice): boolean {
   const str = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
 
-  // If explicit male tag is present (e.g. #male_1), it is NOT female
+  // If explicit male tag or name is present, it is NEVER female
   if (
     str.includes('#male') ||
     str.includes('male_') ||
     str.includes('-male') ||
     str.includes('_male') ||
     str.includes(' male') ||
-    str.endsWith('male')
+    str.endsWith('male') ||
+    str.includes('daniel') ||
+    str.includes('david') ||
+    str.includes('george') ||
+    str.includes('oliver') ||
+    str.includes('arthur') ||
+    str.includes('fred') ||
+    str.includes('rishi') ||
+    str.includes('gordon') ||
+    str.includes('alex') ||
+    str.includes('aaron')
   ) {
-    if (!str.includes('female')) return false;
+    if (!str.includes('female') && !str.includes('woman')) return false;
   }
 
   if (
@@ -318,9 +339,9 @@ export function isVoiceFemale(v: SpeechSynthesisVoice): boolean {
     // Samsung TTS female tags
     str.includes('smt_en_usa_f') ||
     str.includes('smt_en_gbr_f') ||
-    // Google default US English on Android is female
-    str === 'google us english' ||
-    str.includes('google us english') ||
+    // Google default US English on Android is female (unless tagged male)
+    (str.includes('google us english') && !str.includes('male')) ||
+    str.includes('google uk english female') ||
     // Well-known female voice names across Apple, Microsoft, Android
     str.includes('zira') ||
     str.includes('samantha') ||
@@ -365,7 +386,7 @@ export function isVoiceMale(v: SpeechSynthesisVoice): boolean {
   // If flagged as female, it is NEVER male
   if (isVoiceFemale(v)) return false;
 
-  // Standalone or tagged "male" (e.g. #male_1, male-local, Google UK English Male)
+  // Standalone or tagged "male"
   if (
     str.includes('male') ||
     str.includes('masculine') ||
@@ -374,23 +395,25 @@ export function isVoiceMale(v: SpeechSynthesisVoice): boolean {
     return true;
   }
 
-  // Android Google TTS specific male voice tags:
+  // Android Google TTS specific male voice tags and models:
   // tpf = Google US Male, iom = Google US Male, iol = Google US Male, iob = Google US Male
   // rjs = Google UK Male, fis = Google UK Male, aub = Google AU Male, cxx = Google IN Male
   const androidMaleTags = [
     'tpf', 'iom', 'iol', 'iob', 'rjs', 'fis', 'aub', 'cxx',
     'en-us-x-sfg#male', 'en-us-x-tpf', 'en-us-x-iom', 'en-gb-x-rjs', 'en-gb-x-fis',
-    'smt_en_usa_m', 'smt_en_gbr_m'
+    'smt_en_usa_m', 'smt_en_gbr_m',
+    'voice 2', 'voice 4', 'voice 6', 'voice 8',
+    'voice ii', 'voice iv', 'voice vi', 'voice viii'
   ];
   if (androidMaleTags.some(tag => str.includes(tag))) {
     return true;
   }
 
-  // Common male voice names across Windows, Apple iOS/macOS, Android, Linux:
+  // Common authentic male voice names across iOS, macOS, Windows, Android, Linux:
   const maleNames = [
-    'david', 'alex', 'daniel', 'george', 'fred', 'oliver', 'rishi', 'guy',
+    'daniel', 'david', 'alex', 'george', 'fred', 'oliver', 'rishi', 'guy',
     'christopher', 'mark', 'ryan', 'james', 'eric', 'steffan', 'brian',
-    'tom', 'aaron', 'arthur', 'gordon', 'nicky', 'evan', 'nathan',
+    'tom', 'aaron', 'arthur', 'gordon', 'evan', 'nathan',
     'richard', 'charles', 'martin', 'russell', 'jack', 'thomas', 'lee',
     'm0', 'm1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'mb-en1'
   ];
@@ -405,44 +428,112 @@ export function selectVoiceForGender(
   const pool = voices && voices.length > 0 ? voices : loadVoices();
   if (!pool || pool.length === 0) return null;
 
-  const langPrefix = lang.split('-')[0].toLowerCase();
-  const matchingLang = pool.filter((v) => v.lang.toLowerCase().startsWith(langPrefix));
-  const englishVoices = pool.filter((v) => v.lang.toLowerCase().startsWith('en'));
+  const targetNorm = lang.toLowerCase().replace('_', '-');
+  const langPrefix = targetNorm.split('-')[0];
+
+  // Specific exact locale match (e.g. 'en-us')
+  const exactLocaleVoices = pool.filter((v) => (v.lang || '').toLowerCase().replace('_', '-') === targetNorm);
+  // Same language family (e.g. 'en-gb', 'en-us', 'en-au')
+  const langFamilyVoices = pool.filter((v) => (v.lang || '').toLowerCase().startsWith(langPrefix));
+  // All English voices
+  const englishVoices = pool.filter((v) => (v.lang || '').toLowerCase().startsWith('en'));
 
   if (gender === 'male') {
-    // 1. Look for confirmed male voice in requested language (e.g. en-US)
-    const exactMatch = matchingLang.find(isVoiceMale);
-    if (exactMatch) return exactMatch;
+    // 1. Confirmed male voice in exact requested locale (e.g. en-US male)
+    const exactLocaleMale = exactLocaleVoices.find(isVoiceMale);
+    if (exactLocaleMale) return exactLocaleMale;
 
-    // 2. Look for confirmed male voice in ANY English locale (en-GB, en-AU, en-IN, etc.)
+    // 2. High-priority standard mobile male voices:
+    //    Daniel (standard on iOS), Google UK English Male (standard on Android), George, Guy, David
+    const premiumMale = pool.find((v) => {
+      const s = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
+      return (
+        s.includes('daniel') ||
+        s.includes('google uk english male') ||
+        s.includes('rjs') ||
+        s.includes('tpf') ||
+        s.includes('iom') ||
+        s.includes('david') ||
+        s.includes('george') ||
+        s.includes('oliver') ||
+        s.includes('arthur')
+      );
+    });
+    if (premiumMale) return premiumMale;
+
+    // 3. Any confirmed male voice in same language family (e.g. en-GB, en-AU, en-IN)
+    const familyMale = langFamilyVoices.find(isVoiceMale);
+    if (familyMale) return familyMale;
+
+    // 4. Any confirmed male voice in English
     const anyEnglishMale = englishVoices.find(isVoiceMale);
     if (anyEnglishMale) return anyEnglishMale;
 
-    // 3. Look for confirmed male voice in entire pool
+    // 5. Any confirmed male voice in entire device pool
     const anyMale = pool.find(isVoiceMale);
     if (anyMale) return anyMale;
 
-    // 4. CRITICAL: If no true male voice exists in the OS/browser, DO NOT return a female voice!
-    // Returning null ensures synthesizeSpeech does NOT bind utterance.voice to a female voice object,
-    // allowing pitch (0.65) to lower the default stream into an authentic masculine register!
-    return null;
+    // 6. Device has no confirmed male voice installed:
+    //    Simulate female pick first so we deliberately choose a DIFFERENT voice
+    const femalePick = exactLocaleVoices.find(isVoiceFemale)
+      || langFamilyVoices.find(isVoiceFemale)
+      || englishVoices.find(isVoiceFemale)
+      || pool[0];
+
+    // Pick an en-GB voice if female is en-US (audibly different accent/tone!)
+    const ukVoice = englishVoices.find(v => (v.lang || '').toLowerCase().includes('gb') && v !== femalePick);
+    if (ukVoice) return ukVoice;
+
+    // Try any voice with a different language or accent
+    const diffVoice = englishVoices.find(v => v !== femalePick) || pool.find(v => v !== femalePick);
+    if (diffVoice) return diffVoice;
+
+    return pool[0] || null;
   } else {
     // Female voice
-    // 1. Look for confirmed female voice in requested language
-    const exactMatch = matchingLang.find(isVoiceFemale);
-    if (exactMatch) return exactMatch;
+    // 1. Exact locale female voice (e.g. en-US female: Samantha, Google US English, Zira)
+    const exactLocaleFemale = exactLocaleVoices.find(isVoiceFemale);
+    if (exactLocaleFemale) return exactLocaleFemale;
 
-    // 2. Look for confirmed female voice in ANY English locale
-    const anyEnglishFemale = englishVoices.find(isVoiceFemale);
-    if (anyEnglishFemale) return anyEnglishFemale;
+    // 2. Confirmed female in language family
+    const familyFemale = langFamilyVoices.find(isVoiceFemale);
+    if (familyFemale) return familyFemale;
 
-    // 3. Look for non-male voice in requested language (e.g. Google US English default)
-    const nonMale = matchingLang.find((v) => !isVoiceMale(v));
+    // 3. Confirmed female in English
+    const englishFemale = englishVoices.find(isVoiceFemale);
+    if (englishFemale) return englishFemale;
+
+    // 4. Any voice that is not explicitly male
+    const nonMale = exactLocaleVoices.find(v => !isVoiceMale(v))
+      || langFamilyVoices.find(v => !isVoiceMale(v))
+      || pool.find(v => !isVoiceMale(v));
     if (nonMale) return nonMale;
 
-    // 4. Fallback to candidate in matching language or pool
-    return matchingLang[0] || pool[0] || null;
+    return pool[0] || null;
   }
+}
+
+/**
+ * Returns diagnostic information about the voice selected for a given gender on the current device.
+ */
+export function getActiveVoiceInfo(gender: VoiceGender): {
+  name: string;
+  lang: string;
+  isConfirmedMale: boolean;
+  isFallback: boolean;
+} {
+  const voices = loadVoices();
+  const voice = selectVoiceForGender(voices, gender, 'en-US');
+  if (!voice) {
+    return { name: 'Default System Voice', lang: 'en-US', isConfirmedMale: false, isFallback: gender === 'male' };
+  }
+  const isMale = isVoiceMale(voice);
+  return {
+    name: voice.name || voice.voiceURI || 'System Voice',
+    lang: voice.lang || 'en-US',
+    isConfirmedMale: isMale,
+    isFallback: gender === 'male' && !isMale,
+  };
 }
 
 import { isEthiopicText, getAmharicPhonetic } from './amharicSpeech';
@@ -452,7 +543,12 @@ export { resolveAudioPath, hasCustomVoice, findCustomVoiceForTextOrItem };
 function synthesizeSpeech(text: string, lang = 'en-US', gender: VoiceGender = 'male', speed = 0.9) {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
   try {
-    window.speechSynthesis.cancel(); // Stop prior speech
+    if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+      window.speechSynthesis.cancel();
+    }
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
 
     const voices = loadVoices();
     const hasAmharic = isEthiopicText(text);
@@ -476,38 +572,67 @@ function synthesizeSpeech(text: string, lang = 'en-US', gender: VoiceGender = 'm
     }
 
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
-    utterance.lang = targetLang;
 
     const chosenVoice = (hasAmharic && nativeAmharicVoice)
       ? nativeAmharicVoice
       : selectVoiceForGender(voices, gender, targetLang);
 
+    // CRITICAL FOR MOBILE PWA (Android Chrome & iOS Safari):
+    // If utterance.lang does not match utterance.voice.lang (e.g. en-US vs en-GB for Daniel / Google UK Male),
+    // the mobile browser silences or discards the chosen voice and reverts to the default female voice.
+    // Synchronizing utterance.lang with chosenVoice.lang guarantees the mobile device plays the authentic male voice!
     if (chosenVoice) {
       utterance.voice = chosenVoice;
+      if (!hasAmharic || !nativeAmharicVoice) {
+        utterance.lang = chosenVoice.lang || targetLang;
+      } else {
+        utterance.lang = targetLang;
+      }
+    } else if (voices.length > 0) {
+      const langFallback = voices.find(v =>
+        v.lang.toLowerCase().startsWith(targetLang.split('-')[0].toLowerCase())
+      );
+      if (langFallback) {
+        utterance.voice = langFallback;
+        if (!hasAmharic || !nativeAmharicVoice) {
+          utterance.lang = langFallback.lang || targetLang;
+        } else {
+          utterance.lang = targetLang;
+        }
+      } else {
+        utterance.lang = targetLang;
+      }
+    } else {
+      utterance.lang = targetLang;
     }
 
     utterance.volume = getVolume();
 
-    // Pitch & Rate tuning for Male vs Female vs Parent:
+    // Pitch & Rate tuning for Male vs Female vs Parent.
+    // Mobile browsers (Android Chrome, mobile Safari) often ignore or heavily
+    // clamp utterance.pitch, so we ALSO shift the rate to guarantee an audible
+    // difference between male and female on every device.
     if (gender === 'male') {
       const isExplicitMale = chosenVoice && isVoiceMale(chosenVoice);
       if (isExplicitMale) {
-        // A confirmed male voice is active: resonant, warm, encouraging teacher pitch
+        // Confirmed male voice active: warm, encouraging, resonant teacher tone
         utterance.pitch = 0.88;
-        utterance.rate = Math.max(0.5, Math.min(1.6, speed));
+        utterance.rate = Math.max(0.5, Math.min(1.6, speed * 0.95));
       } else {
-        // Fallback when device OS has no male voice pack:
-        // Deep pitch 0.65 and slightly slower pace (0.92x) shifts the unassigned default stream into a distinct masculine register
-        utterance.pitch = 0.65;
-        utterance.rate = Math.max(0.5, Math.min(1.6, speed * 0.92));
+        // Fallback when phone OS has no male voice pack:
+        // Deep pitch 0.55 and noticeably calmer pace (0.8x) gives a distinct,
+        // deeper masculine delivery even on devices with limited pitch support.
+        utterance.pitch = 0.55;
+        utterance.rate = Math.max(0.5, Math.min(1.6, speed * 0.8));
       }
     } else if (gender === 'parent') {
       utterance.pitch = 1.05;
       utterance.rate = Math.max(0.5, Math.min(1.6, speed));
     } else {
-      // Female voice: cheerful, bright, friendly teacher pitch
-      utterance.pitch = 1.15;
-      utterance.rate = Math.max(0.5, Math.min(1.6, speed));
+      // Female voice: bright, cheerful, friendly teacher pitch & slightly
+      // faster pace — maximises contrast with the slower, deeper male voice.
+      utterance.pitch = 1.25;
+      utterance.rate = Math.max(0.5, Math.min(1.6, speed * 1.08));
     }
 
     window.speechSynthesis.speak(utterance);
