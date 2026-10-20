@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { GameItem, StageResult } from '@/types';
-import { playAudioOrSpeech, playChime, playBoop, playPop, speakText } from '@/utils/sound';
+import { playAudioOrSpeech, playChime, playBoop, playPop, speakText, stopAllSpeech } from '@/utils/sound';
 import { getThemeConfig } from '@/utils/theme';
 import { ConfettiBurst } from './ConfettiBurst';
 
@@ -34,6 +34,7 @@ export function FindIt({
   const theme = getThemeConfig(themeColor);
   const currentItem = items[currentIndex];
   const isTransitioningRef = useRef(false);
+  const promptTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Prepare 3-4 options (1 target + 2-3 distractors) shuffled
   const currentOptions = useMemo(() => {
@@ -61,15 +62,25 @@ export function FindIt({
 
   // Audio prompt playing
   const playPromptSound = useCallback(() => {
-    if (!currentItem) return;
+    if (!currentItem || isTransitioningRef.current || isCorrectSuccess) return;
     const promptText = currentItem.kind === 'fidel'
       ? `${currentItem.symbol} ፊደልን ፈልግ!`
       : `Find the ${currentItem.displayName}!`;
     playAudioOrSpeech(currentItem.audioPath, promptText);
-  }, [currentItem]);
+  }, [currentItem, isCorrectSuccess]);
 
+  // Clean up all speech and pending timers on unmount
+  useEffect(() => {
+    return () => {
+      if (promptTimerRef.current) {
+        clearTimeout(promptTimerRef.current);
+        promptTimerRef.current = null;
+      }
+      stopAllSpeech();
+    };
+  }, []);
 
-  // Play audio when entering new question
+  // Play audio when entering a new question (ONLY on question index change)
   useEffect(() => {
     if (!currentItem) {
       if (items.length > 0 && results.length >= items.length) {
@@ -86,17 +97,31 @@ export function FindIt({
     setSelectedCorrectId(null);
     isTransitioningRef.current = false;
 
-    const timer = setTimeout(() => {
-      playPromptSound();
+    // Clear any previous timer and cancel any running prompt
+    if (promptTimerRef.current) {
+      clearTimeout(promptTimerRef.current);
+      promptTimerRef.current = null;
+    }
+    stopAllSpeech();
+
+    promptTimerRef.current = setTimeout(() => {
+      if (!isTransitioningRef.current) {
+        playPromptSound();
+      }
     }, 350);
 
-    return () => clearTimeout(timer);
-  }, [currentIndex, currentItem, items.length, onComplete, playPromptSound, results]);
+    return () => {
+      if (promptTimerRef.current) {
+        clearTimeout(promptTimerRef.current);
+        promptTimerRef.current = null;
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentIndex]);
 
   // Move to next item or finish stage
   const advanceToNext = useCallback(
     (stageResult: StageResult) => {
-      if (isTransitioningRef.current) return;
       isTransitioningRef.current = true;
 
       const updatedResults = [...results, stageResult];
@@ -117,8 +142,16 @@ export function FindIt({
   const handleCardClick = (option: GameItem) => {
     if (isTransitioningRef.current || isCorrectSuccess || isRevealingCorrect) return;
 
+    // Immediately stop prompt speech and cancel any queued prompt timer upon answering
+    if (promptTimerRef.current) {
+      clearTimeout(promptTimerRef.current);
+      promptTimerRef.current = null;
+    }
+    stopAllSpeech();
+
     if (option.id === currentItem.id) {
       // Correct!
+      isTransitioningRef.current = true;
       setSelectedCorrectId(option.id);
       setIsCorrectSuccess(true);
       setShowConfetti(true);
@@ -156,6 +189,7 @@ export function FindIt({
 
       // After 2 wrong attempts on same item, show the correct answer highlighted, then move on
       if (newAttempts >= 2) {
+        isTransitioningRef.current = true;
         setIsRevealingCorrect(true);
         setSelectedCorrectId(currentItem.id);
 
