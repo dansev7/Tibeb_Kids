@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { setVoiceSettings, speakText, setVolume, type VoiceGender } from '@/utils/sound';
+import { setVoiceSettings, speakText, stopAllSpeech, setVolume, type VoiceGender } from '@/utils/sound';
 import {
   getCustomVoiceCount,
   getGlobalVoicePreference,
@@ -102,6 +102,7 @@ export default function SettingsPage() {
   const handleTestVoice = (gender: VoiceGender = settings.voiceGender, speed = settings.voiceSpeed) => {
     setIsTestingVoice(true);
     setVoiceSettings(gender, speed);
+    stopAllSpeech();
 
     if (gender === 'parent') {
       const allKeys = Array.from(getAllCustomVoiceKeys());
@@ -123,6 +124,9 @@ export default function SettingsPage() {
       }
       speakText(`Hello ${settings.childName}! Parent Voiceover is active. Any letters you record in Voice Studio play in your natural voice, and unrecorded ones automatically use computer voice!`);
       setTimeout(() => setIsTestingVoice(false), 3000);
+    } else if (gender === 'male') {
+      speakText(`Hello ${settings.childName}! I am your male teacher. Let's play and learn together!`);
+      setTimeout(() => setIsTestingVoice(false), 2500);
     } else {
       speakText(`Hello ${settings.childName}! Welcome to Little Learner. Let's play and learn together!`);
       setTimeout(() => setIsTestingVoice(false), 2500);

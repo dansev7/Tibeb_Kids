@@ -224,25 +224,116 @@ export function getVoiceSettings(): { gender: VoiceGender; speed: number } {
   return { gender: currentVoiceGender, speed: currentVoiceSpeed };
 }
 
+let cachedVoices: SpeechSynthesisVoice[] = [];
+
+function loadVoices(): SpeechSynthesisVoice[] {
+  if (typeof window === 'undefined' || !('speechSynthesis' in window)) return [];
+  if (cachedVoices.length > 0) return cachedVoices;
+  try {
+    const list = window.speechSynthesis.getVoices();
+    if (list && list.length > 0) {
+      cachedVoices = list;
+    }
+  } catch {}
+  return cachedVoices;
+}
+
+if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+  loadVoices();
+  try {
+    window.speechSynthesis.addEventListener('voiceschanged', () => {
+      try {
+        cachedVoices = window.speechSynthesis.getVoices();
+      } catch {}
+    });
+  } catch {
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        try {
+          cachedVoices = window.speechSynthesis.getVoices();
+        } catch {}
+      };
+    }
+  }
+}
+
+let currentActiveAudio: HTMLAudioElement | null = null;
+
+export function stopAllSpeech() {
+  if (typeof window !== 'undefined') {
+    if ('speechSynthesis' in window) {
+      try {
+        window.speechSynthesis.cancel();
+      } catch {}
+    }
+  }
+  if (currentActiveAudio) {
+    try {
+      currentActiveAudio.pause();
+      currentActiveAudio.currentTime = 0;
+    } catch {}
+    currentActiveAudio = null;
+  }
+}
+
 export function selectVoiceForGender(
   voices: SpeechSynthesisVoice[],
   gender: VoiceGender,
   lang: string
 ): SpeechSynthesisVoice | null {
-  if (!voices || voices.length === 0) return null;
+  const pool = voices && voices.length > 0 ? voices : loadVoices();
+  if (!pool || pool.length === 0) return null;
 
   const langPrefix = lang.split('-')[0].toLowerCase();
-  const matchingLang = voices.filter(v => v.lang.toLowerCase().startsWith(langPrefix));
-  const pool = matchingLang.length > 0 ? matchingLang : voices;
+  const matchingLang = pool.filter((v) => v.lang.toLowerCase().startsWith(langPrefix));
+  const candidatePool = matchingLang.length > 0 ? matchingLang : pool;
 
-  const femaleKeywords = ['female', 'samantha', 'zira', 'karen', 'victoria', 'moira', 'catherine', 'eva', 'fiona', 'jenny', 'aria'];
-  const maleKeywords = ['male', 'david', 'alex', 'daniel', 'george', 'fred', 'oliver', 'rishi', 'guy', 'christopher'];
+  if (gender === 'male') {
+    const isMaleVoice = (v: SpeechSynthesisVoice) => {
+      const name = (v.name + ' ' + (v.voiceURI || '')).toLowerCase();
+      // CRITICAL: if name contains 'female' or 'woman' or 'girl', it is NEVER a male voice!
+      // This prevents "Google UK English Female" from incorrectly matching substring "male"
+      if (name.includes('female') || name.includes('woman') || name.includes('girl')) {
+        return false;
+      }
 
-  // If gender is 'male', look for male voice; if 'female' or computer fallback for 'parent', look for warm female voice
-  const targetKeywords = gender === 'male' ? maleKeywords : femaleKeywords;
+      // Check for standalone word "male"
+      if (/\bmale\b/i.test(name)) return true;
 
-  const bestMatch = pool.find(v => targetKeywords.some(kw => v.name.toLowerCase().includes(kw)));
-  return bestMatch || pool[0] || null;
+      // Common male TTS voice names across Windows, Mac, iOS, Android, Chrome, Linux
+      const maleNames = [
+        'david', 'alex', 'daniel', 'george', 'fred', 'oliver', 'rishi', 'guy',
+        'christopher', 'mark', 'ryan', 'james', 'eric', 'steffan', 'brian',
+        'tom', 'aaron', 'arthur', 'evan', 'nathan', 'richard', 'charles',
+        'martin', 'russell', 'jack', 'man', 'boy', 'masculine', 'm0', 'm1'
+      ];
+      return maleNames.some((kw) => name.includes(kw));
+    };
+
+    const maleMatch = candidatePool.find(isMaleVoice) || pool.find(isMaleVoice);
+    if (maleMatch) return maleMatch;
+
+    // Fallback if no specific male-named voice exists: pick any voice that does not contain 'female'
+    const nonFemale = candidatePool.find(
+      (v) => !v.name.toLowerCase().includes('female') && !v.name.toLowerCase().includes('woman')
+    );
+    if (nonFemale) return nonFemale;
+
+    return candidatePool[0] || pool[0] || null;
+  } else {
+    // Female voice check
+    const isFemaleVoice = (v: SpeechSynthesisVoice) => {
+      const name = (v.name + ' ' + (v.voiceURI || '')).toLowerCase();
+      const femaleNames = [
+        'female', 'samantha', 'zira', 'karen', 'victoria', 'moira', 'catherine',
+        'eva', 'fiona', 'jenny', 'aria', 'woman', 'girl', 'ava', 'allison', 'susan', 'hazel'
+      ];
+      return femaleNames.some((kw) => name.includes(kw));
+    };
+
+    const femaleMatch = candidatePool.find(isFemaleVoice) || pool.find(isFemaleVoice);
+    return femaleMatch || candidatePool[0] || pool[0] || null;
+  }
 }
 
 import { isEthiopicText, getAmharicPhonetic } from './amharicSpeech';
@@ -254,7 +345,7 @@ function synthesizeSpeech(text: string, lang = 'en-US', gender: VoiceGender = 'f
   try {
     window.speechSynthesis.cancel(); // Stop prior speech
 
-    const voices = window.speechSynthesis.getVoices();
+    const voices = loadVoices();
     const hasAmharic = isEthiopicText(text);
 
     let textToSpeak = text;
@@ -278,21 +369,33 @@ function synthesizeSpeech(text: string, lang = 'en-US', gender: VoiceGender = 'f
     const utterance = new SpeechSynthesisUtterance(textToSpeak);
     utterance.lang = targetLang;
 
-    if (hasAmharic && nativeAmharicVoice) {
-      utterance.voice = nativeAmharicVoice;
-    } else {
-      const chosenVoice = selectVoiceForGender(voices, gender, targetLang);
-      if (chosenVoice) {
-        utterance.voice = chosenVoice;
-      }
+    const chosenVoice = (hasAmharic && nativeAmharicVoice)
+      ? nativeAmharicVoice
+      : selectVoiceForGender(voices, gender, targetLang);
+
+    if (chosenVoice) {
+      utterance.voice = chosenVoice;
     }
 
     // Adjust rate according to parent setting
     utterance.rate = Math.max(0.5, Math.min(1.6, speed));
     utterance.volume = getVolume();
 
-    // Pitch: higher warm pitch for female (~1.2), deeper resonant pitch for male (~0.85), friendly neutral for parent computer fallback (~1.15)
-    utterance.pitch = gender === 'male' ? 0.85 : (gender === 'parent' ? 1.15 : 1.2);
+    // Pitch:
+    // When male is selected:
+    // If a male voice was matched, 0.85 gives a resonant teacher tone.
+    // If we had to fall back to a generic/neutral voice, deeper pitch 0.7 transforms the voice distinctly into a masculine register!
+    if (gender === 'male') {
+      const isExplicitMale = chosenVoice && (
+        (/\bmale\b/i.test(chosenVoice.name)) ||
+        ['david', 'alex', 'daniel', 'george', 'fred', 'oliver', 'rishi', 'guy', 'christopher', 'mark', 'ryan', 'james', 'eric', 'steffan', 'brian', 'tom'].some(n => chosenVoice.name.toLowerCase().includes(n))
+      );
+      utterance.pitch = isExplicitMale ? 0.85 : 0.7;
+    } else if (gender === 'parent') {
+      utterance.pitch = 1.15;
+    } else {
+      utterance.pitch = 1.2;
+    }
 
     window.speechSynthesis.speak(utterance);
   } catch (err) {
@@ -356,9 +459,11 @@ export function playAudioOrSpeech(
       try {
         const audio = new Audio(parentBlobUrl);
         audio.volume = getVolume();
+        currentActiveAudio = audio;
         let fallbackTriggered = false;
 
         const triggerFallback = () => {
+          if (currentActiveAudio === audio) currentActiveAudio = null;
           if (!fallbackTriggered && fallbackText) {
             fallbackTriggered = true;
             speakText(fallbackText);
@@ -367,7 +472,10 @@ export function playAudioOrSpeech(
         };
 
         audio.onerror = () => triggerFallback();
-        if (onEnded) audio.onended = onEnded;
+        audio.onended = () => {
+          if (currentActiveAudio === audio) currentActiveAudio = null;
+          if (onEnded) onEnded();
+        };
 
         const playPromise = audio.play();
         if (playPromise !== undefined) {
@@ -397,9 +505,11 @@ export function playAudioOrSpeech(
     try {
       const audio = new Audio(resolvedPath);
       audio.volume = getVolume();
+      currentActiveAudio = audio;
       let fallbackTriggered = false;
 
       const triggerFallback = () => {
+        if (currentActiveAudio === audio) currentActiveAudio = null;
         if (!fallbackTriggered && fallbackText) {
           fallbackTriggered = true;
           speakText(fallbackText);
@@ -408,7 +518,10 @@ export function playAudioOrSpeech(
       };
 
       audio.onerror = () => triggerFallback();
-      if (onEnded) audio.onended = onEnded;
+      audio.onended = () => {
+        if (currentActiveAudio === audio) currentActiveAudio = null;
+        if (onEnded) onEnded();
+      };
 
       const playPromise = audio.play();
       if (playPromise !== undefined) {
