@@ -524,13 +524,13 @@ export default function SettingsPage() {
                       window.dispatchEvent(new CustomEvent('show-pwa-install'));
                     }
                   } else {
-                    alert('To install Little Learner: On Chrome/Edge, click the install icon (⊕) in the browser address bar. On iPhone/iPad Safari, tap Share ⎋ and choose "Add to Home Screen".');
+                    alert('To install Little Learner - ኪንደርጋርደን: On Chrome/Edge, click the install icon (⊕) in the browser address bar. On iPhone/iPad Safari, tap Share ⎋ and choose "Add to Home Screen".');
                   }
                 }}
                 className="mt-3 w-full py-2.5 px-4 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-bold rounded-xl text-sm shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
                 <span>📥</span>
-                <span>Install Little Learner as App</span>
+                <span>Install Little Learner - ኪንደርጋርደን as App</span>
               </button>
             )}
           </div>

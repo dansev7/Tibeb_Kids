@@ -1,8 +1,7 @@
-const CACHE_NAME = 'little-learner-v4';
+const CACHE_NAME = 'little-learner-v5';
 
 const ASSETS_TO_PRECACHE = [
   '/',
-  '/manifest.json',
   '/icon-192.png',
   '/icon-512.png',
   '/icon-192.svg',
@@ -57,8 +56,7 @@ self.addEventListener('fetch', (event) => {
     url.pathname.startsWith('/images/') ||
     url.pathname.startsWith('/fonts/') ||
     url.pathname.startsWith('/icon-') ||
-    url.pathname === '/favicon.ico' ||
-    url.pathname === '/manifest.json'
+    url.pathname === '/favicon.ico'
   ) {
     event.respondWith(
       caches.match(event.request).then((cachedResponse) => {

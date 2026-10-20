@@ -92,7 +92,7 @@ export default function PwaInstallPrompt() {
           <span className="text-2xl animate-bounce">📲</span>
           <div>
             <div className="font-extrabold text-xs sm:text-sm leading-tight">
-              Install Little Learner App
+              Install Little Learner - ኪንደርጋርደን
             </div>
             <div className="text-[11px] text-white/80 leading-tight">
               Play offline anytime without Wi-Fi!

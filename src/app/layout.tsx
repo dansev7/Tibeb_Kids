@@ -12,6 +12,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: "Little Learner - ኪንደርጋርደን",
+  applicationName: "Little Learner - ኪንደርጋርደን",
   description: "Letters, Numbers & Fidel Village for young learners",
   manifest: "/manifest.json",
   icons: {
@@ -27,7 +28,12 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Little Learner",
+    title: "Little Learner - ኪንደርጋርደን",
+  },
+  openGraph: {
+    title: "Little Learner - ኪንደርጋርደን",
+    siteName: "Little Learner - ኪንደርጋርደን",
+    description: "Letters, Numbers & Fidel Village for young learners",
   },
 };
 
