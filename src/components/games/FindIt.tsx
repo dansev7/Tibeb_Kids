@@ -34,6 +34,7 @@ export function FindIt({
   const theme = getThemeConfig(themeColor);
   const currentItem = items[currentIndex];
   const isTransitioningRef = useRef(false);
+  const isAnsweredRef = useRef(false);
   const promptTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Prepare 3-4 options (1 target + 2-3 distractors) shuffled
@@ -60,14 +61,15 @@ export function FindIt({
     return combined.sort(() => 0.5 - Math.random());
   }, [currentIndex, currentItem, distractors, items]);
 
-  // Audio prompt playing
-  const playPromptSound = useCallback(() => {
-    if (!currentItem || isTransitioningRef.current || isCorrectSuccess) return;
-    const promptText = currentItem.kind === 'fidel'
-      ? `${currentItem.symbol} ፊደልን ፈልግ!`
-      : `Find the ${currentItem.displayName}!`;
-    playAudioOrSpeech(currentItem.audioPath, promptText);
-  }, [currentItem, isCorrectSuccess]);
+  // Audio prompt playing for a specific character
+  const playPromptForItem = useCallback((target?: GameItem) => {
+    const item = target || items[currentIndex];
+    if (!item) return;
+    const promptText = item.kind === 'fidel'
+      ? `${item.symbol} ፊደልን ፈልግ!`
+      : `Find the ${item.displayName || item.symbol}!`;
+    playAudioOrSpeech(item.audioPath, promptText);
+  }, [currentIndex, items]);
 
   // Clean up all speech and pending timers on unmount
   useEffect(() => {
@@ -80,9 +82,10 @@ export function FindIt({
     };
   }, []);
 
-  // Play audio when entering a new question (ONLY on question index change)
+  // Play audio when entering a new question (triggered on each character index)
   useEffect(() => {
-    if (!currentItem) {
+    const item = items[currentIndex];
+    if (!item) {
       if (items.length > 0 && results.length >= items.length) {
         onComplete(results);
       }
@@ -96,17 +99,19 @@ export function FindIt({
     setIsRevealingCorrect(false);
     setSelectedCorrectId(null);
     isTransitioningRef.current = false;
+    isAnsweredRef.current = false;
 
-    // Clear any previous timer and cancel any running prompt
+    // Clear any previous timer and cancel any running speech
     if (promptTimerRef.current) {
       clearTimeout(promptTimerRef.current);
       promptTimerRef.current = null;
     }
     stopAllSpeech();
 
+    // Play prompt for this specific character after short entry transition
     promptTimerRef.current = setTimeout(() => {
-      if (!isTransitioningRef.current) {
-        playPromptSound();
+      if (!isAnsweredRef.current) {
+        playPromptForItem(item);
       }
     }, 350);
 
@@ -116,14 +121,11 @@ export function FindIt({
         promptTimerRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentIndex]);
+  }, [currentIndex, items, onComplete, playPromptForItem]);
 
   // Move to next item or finish stage
   const advanceToNext = useCallback(
     (stageResult: StageResult) => {
-      isTransitioningRef.current = true;
-
       const updatedResults = [...results, stageResult];
       setResults(updatedResults);
 
@@ -140,7 +142,7 @@ export function FindIt({
 
   // Handle clicking an option card
   const handleCardClick = (option: GameItem) => {
-    if (isTransitioningRef.current || isCorrectSuccess || isRevealingCorrect) return;
+    if (isAnsweredRef.current || isTransitioningRef.current || isCorrectSuccess || isRevealingCorrect) return;
 
     // Immediately stop prompt speech and cancel any queued prompt timer upon answering
     if (promptTimerRef.current) {
@@ -268,7 +270,9 @@ export function FindIt({
           whileTap={{ scale: 0.92 }}
           onClick={() => {
             playPop();
-            playPromptSound();
+            if (!isAnsweredRef.current && currentItem) {
+              playPromptForItem(currentItem);
+            }
           }}
           aria-label="Repeat instruction"
           className="min-w-[64px] min-h-[64px] w-16 h-16 rounded-full bg-white shadow-lg border-4 border-amber-300 flex items-center justify-center text-3xl active:bg-amber-50 cursor-pointer"
@@ -286,7 +290,9 @@ export function FindIt({
           transition={{ type: 'spring', stiffness: 300, damping: 24 }}
           onClick={() => {
             playPop();
-            playPromptSound();
+            if (!isAnsweredRef.current && currentItem) {
+              playPromptForItem(currentItem);
+            }
           }}
           className="bg-white/90 backdrop-blur-sm rounded-3xl border-4 px-6 py-4 shadow-xl flex items-center justify-center gap-4 cursor-pointer active:scale-98 transition-transform"
           style={{ borderColor: theme.primary }}
