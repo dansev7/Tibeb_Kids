@@ -11,7 +11,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "Little Learner - ኪንደርጋርተን",
+  title: "Little Learner - ኪንደርጋርደን",
   description: "Letters, Numbers & Fidel Village for young learners",
   manifest: "/manifest.json",
   icons: {
