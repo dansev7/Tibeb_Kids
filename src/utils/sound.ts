@@ -230,33 +230,33 @@ let cachedVoices: SpeechSynthesisVoice[] = [];
 
 function loadVoices(): SpeechSynthesisVoice[] {
   if (typeof window === 'undefined' || !('speechSynthesis' in window)) return [];
-  if (cachedVoices.length > 0) return cachedVoices;
   try {
     const list = window.speechSynthesis.getVoices();
     if (list && list.length > 0) {
       cachedVoices = list;
+      return cachedVoices;
     }
   } catch {}
   return cachedVoices;
 }
 
 if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-  loadVoices();
+  const updateVoices = () => {
+    try {
+      const v = window.speechSynthesis.getVoices();
+      if (v && v.length > 0) {
+        cachedVoices = v;
+      }
+    } catch {}
+  };
+
+  updateVoices();
   try {
-    window.speechSynthesis.addEventListener('voiceschanged', () => {
-      try {
-        cachedVoices = window.speechSynthesis.getVoices();
-      } catch {}
-    });
-  } catch {
-    if (window.speechSynthesis.onvoiceschanged !== undefined) {
-      window.speechSynthesis.onvoiceschanged = () => {
-        try {
-          cachedVoices = window.speechSynthesis.getVoices();
-        } catch {}
-      };
-    }
-  }
+    window.speechSynthesis.addEventListener('voiceschanged', updateVoices);
+  } catch {}
+  try {
+    window.speechSynthesis.onvoiceschanged = updateVoices;
+  } catch {}
 }
 
 let currentActiveAudio: HTMLAudioElement | null = null;
@@ -278,6 +278,125 @@ export function stopAllSpeech() {
   }
 }
 
+/**
+ * Determine whether a SpeechSynthesisVoice is female across Android, iOS, Windows, Mac, and Linux.
+ */
+export function isVoiceFemale(v: SpeechSynthesisVoice): boolean {
+  const str = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
+
+  // If explicit male tag is present (e.g. #male_1), it is NOT female
+  if (
+    str.includes('#male') ||
+    str.includes('male_') ||
+    str.includes('-male') ||
+    str.includes('_male') ||
+    str.includes(' male') ||
+    str.endsWith('male')
+  ) {
+    if (!str.includes('female')) return false;
+  }
+
+  if (
+    str.includes('female') ||
+    str.includes('woman') ||
+    str.includes('girl') ||
+    str.includes('feminine') ||
+    str.includes('#female') ||
+    str.includes('female_') ||
+    str.includes('-female') ||
+    str.includes('_female') ||
+    // Android Google TTS female offline/network tags
+    str.includes('sfg-local') ||
+    str.includes('sfg-network') ||
+    str.includes('sfg#female') ||
+    str.includes('iog-local') ||
+    str.includes('iog-network') ||
+    str.includes('tpc-local') ||
+    str.includes('tpc-network') ||
+    str.includes('gba-local') ||
+    str.includes('gba-network') ||
+    // Samsung TTS female tags
+    str.includes('smt_en_usa_f') ||
+    str.includes('smt_en_gbr_f') ||
+    // Google default US English on Android is female
+    str === 'google us english' ||
+    str.includes('google us english') ||
+    // Well-known female voice names across Apple, Microsoft, Android
+    str.includes('zira') ||
+    str.includes('samantha') ||
+    str.includes('karen') ||
+    str.includes('victoria') ||
+    str.includes('moira') ||
+    str.includes('catherine') ||
+    str.includes('eva') ||
+    str.includes('fiona') ||
+    str.includes('jenny') ||
+    str.includes('aria') ||
+    str.includes('ava') ||
+    str.includes('allison') ||
+    str.includes('susan') ||
+    str.includes('hazel') ||
+    str.includes('zoe') ||
+    str.includes('lucy') ||
+    str.includes('kate') ||
+    str.includes('stephanie') ||
+    str.includes('helena') ||
+    str.includes('heera') ||
+    str.includes('kalpana') ||
+    str.includes('ayanda') ||
+    str.includes('tessa') ||
+    str.includes('serena') ||
+    str.includes('yuri') ||
+    str.includes('kyoko') ||
+    str.includes('ting-ting')
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Determine whether a SpeechSynthesisVoice is male across Android, iOS, Windows, Mac, and Linux.
+ */
+export function isVoiceMale(v: SpeechSynthesisVoice): boolean {
+  const str = ((v.name || '') + ' ' + (v.voiceURI || '')).toLowerCase();
+
+  // If flagged as female, it is NEVER male
+  if (isVoiceFemale(v)) return false;
+
+  // Standalone or tagged "male" (e.g. #male_1, male-local, Google UK English Male)
+  if (
+    str.includes('male') ||
+    str.includes('masculine') ||
+    /\b(man|boy)\b/i.test(str)
+  ) {
+    return true;
+  }
+
+  // Android Google TTS specific male voice tags:
+  // tpf = Google US Male, iom = Google US Male, iol = Google US Male, iob = Google US Male
+  // rjs = Google UK Male, fis = Google UK Male, aub = Google AU Male, cxx = Google IN Male
+  const androidMaleTags = [
+    'tpf', 'iom', 'iol', 'iob', 'rjs', 'fis', 'aub', 'cxx',
+    'en-us-x-sfg#male', 'en-us-x-tpf', 'en-us-x-iom', 'en-gb-x-rjs', 'en-gb-x-fis',
+    'smt_en_usa_m', 'smt_en_gbr_m'
+  ];
+  if (androidMaleTags.some(tag => str.includes(tag))) {
+    return true;
+  }
+
+  // Common male voice names across Windows, Apple iOS/macOS, Android, Linux:
+  const maleNames = [
+    'david', 'alex', 'daniel', 'george', 'fred', 'oliver', 'rishi', 'guy',
+    'christopher', 'mark', 'ryan', 'james', 'eric', 'steffan', 'brian',
+    'tom', 'aaron', 'arthur', 'gordon', 'nicky', 'evan', 'nathan',
+    'richard', 'charles', 'martin', 'russell', 'jack', 'thomas', 'lee',
+    'm0', 'm1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'mb-en1'
+  ];
+  return maleNames.some(name => str.includes(name));
+}
+
 export function selectVoiceForGender(
   voices: SpeechSynthesisVoice[],
   gender: VoiceGender,
@@ -288,53 +407,41 @@ export function selectVoiceForGender(
 
   const langPrefix = lang.split('-')[0].toLowerCase();
   const matchingLang = pool.filter((v) => v.lang.toLowerCase().startsWith(langPrefix));
-  const candidatePool = matchingLang.length > 0 ? matchingLang : pool;
+  const englishVoices = pool.filter((v) => v.lang.toLowerCase().startsWith('en'));
 
   if (gender === 'male') {
-    const isMaleVoice = (v: SpeechSynthesisVoice) => {
-      const name = (v.name + ' ' + (v.voiceURI || '')).toLowerCase();
-      // CRITICAL: if name contains 'female' or 'woman' or 'girl', it is NEVER a male voice!
-      // This prevents "Google UK English Female" from incorrectly matching substring "male"
-      if (name.includes('female') || name.includes('woman') || name.includes('girl')) {
-        return false;
-      }
+    // 1. Look for confirmed male voice in requested language (e.g. en-US)
+    const exactMatch = matchingLang.find(isVoiceMale);
+    if (exactMatch) return exactMatch;
 
-      // Check for standalone word "male"
-      if (/\bmale\b/i.test(name)) return true;
+    // 2. Look for confirmed male voice in ANY English locale (en-GB, en-AU, en-IN, etc.)
+    const anyEnglishMale = englishVoices.find(isVoiceMale);
+    if (anyEnglishMale) return anyEnglishMale;
 
-      // Common male TTS voice names across Windows, Mac, iOS, Android, Chrome, Linux
-      const maleNames = [
-        'david', 'alex', 'daniel', 'george', 'fred', 'oliver', 'rishi', 'guy',
-        'christopher', 'mark', 'ryan', 'james', 'eric', 'steffan', 'brian',
-        'tom', 'aaron', 'arthur', 'evan', 'nathan', 'richard', 'charles',
-        'martin', 'russell', 'jack', 'man', 'boy', 'masculine', 'm0', 'm1'
-      ];
-      return maleNames.some((kw) => name.includes(kw));
-    };
+    // 3. Look for confirmed male voice in entire pool
+    const anyMale = pool.find(isVoiceMale);
+    if (anyMale) return anyMale;
 
-    const maleMatch = candidatePool.find(isMaleVoice) || pool.find(isMaleVoice);
-    if (maleMatch) return maleMatch;
-
-    // Fallback if no specific male-named voice exists: pick any voice that does not contain 'female'
-    const nonFemale = candidatePool.find(
-      (v) => !v.name.toLowerCase().includes('female') && !v.name.toLowerCase().includes('woman')
-    );
-    if (nonFemale) return nonFemale;
-
-    return candidatePool[0] || pool[0] || null;
+    // 4. CRITICAL: If no true male voice exists in the OS/browser, DO NOT return a female voice!
+    // Returning null ensures synthesizeSpeech does NOT bind utterance.voice to a female voice object,
+    // allowing pitch (0.65) to lower the default stream into an authentic masculine register!
+    return null;
   } else {
-    // Female voice check
-    const isFemaleVoice = (v: SpeechSynthesisVoice) => {
-      const name = (v.name + ' ' + (v.voiceURI || '')).toLowerCase();
-      const femaleNames = [
-        'female', 'samantha', 'zira', 'karen', 'victoria', 'moira', 'catherine',
-        'eva', 'fiona', 'jenny', 'aria', 'woman', 'girl', 'ava', 'allison', 'susan', 'hazel'
-      ];
-      return femaleNames.some((kw) => name.includes(kw));
-    };
+    // Female voice
+    // 1. Look for confirmed female voice in requested language
+    const exactMatch = matchingLang.find(isVoiceFemale);
+    if (exactMatch) return exactMatch;
 
-    const femaleMatch = candidatePool.find(isFemaleVoice) || pool.find(isFemaleVoice);
-    return femaleMatch || candidatePool[0] || pool[0] || null;
+    // 2. Look for confirmed female voice in ANY English locale
+    const anyEnglishFemale = englishVoices.find(isVoiceFemale);
+    if (anyEnglishFemale) return anyEnglishFemale;
+
+    // 3. Look for non-male voice in requested language (e.g. Google US English default)
+    const nonMale = matchingLang.find((v) => !isVoiceMale(v));
+    if (nonMale) return nonMale;
+
+    // 4. Fallback to candidate in matching language or pool
+    return matchingLang[0] || pool[0] || null;
   }
 }
 
@@ -379,24 +486,28 @@ function synthesizeSpeech(text: string, lang = 'en-US', gender: VoiceGender = 'm
       utterance.voice = chosenVoice;
     }
 
-    // Adjust rate according to parent setting
-    utterance.rate = Math.max(0.5, Math.min(1.6, speed));
     utterance.volume = getVolume();
 
-    // Pitch:
-    // When male is selected:
-    // If a male voice was matched, 0.85 gives a resonant teacher tone.
-    // If we had to fall back to a generic/neutral voice, deeper pitch 0.7 transforms the voice distinctly into a masculine register!
+    // Pitch & Rate tuning for Male vs Female vs Parent:
     if (gender === 'male') {
-      const isExplicitMale = chosenVoice && (
-        (/\bmale\b/i.test(chosenVoice.name)) ||
-        ['david', 'alex', 'daniel', 'george', 'fred', 'oliver', 'rishi', 'guy', 'christopher', 'mark', 'ryan', 'james', 'eric', 'steffan', 'brian', 'tom'].some(n => chosenVoice.name.toLowerCase().includes(n))
-      );
-      utterance.pitch = isExplicitMale ? 0.85 : 0.7;
+      const isExplicitMale = chosenVoice && isVoiceMale(chosenVoice);
+      if (isExplicitMale) {
+        // A confirmed male voice is active: resonant, warm, encouraging teacher pitch
+        utterance.pitch = 0.88;
+        utterance.rate = Math.max(0.5, Math.min(1.6, speed));
+      } else {
+        // Fallback when device OS has no male voice pack:
+        // Deep pitch 0.65 and slightly slower pace (0.92x) shifts the unassigned default stream into a distinct masculine register
+        utterance.pitch = 0.65;
+        utterance.rate = Math.max(0.5, Math.min(1.6, speed * 0.92));
+      }
     } else if (gender === 'parent') {
-      utterance.pitch = 1.15;
+      utterance.pitch = 1.05;
+      utterance.rate = Math.max(0.5, Math.min(1.6, speed));
     } else {
-      utterance.pitch = 1.2;
+      // Female voice: cheerful, bright, friendly teacher pitch
+      utterance.pitch = 1.15;
+      utterance.rate = Math.max(0.5, Math.min(1.6, speed));
     }
 
     window.speechSynthesis.speak(utterance);

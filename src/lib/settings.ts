@@ -38,7 +38,25 @@ export async function fetchSettings(): Promise<AppSettings> {
         : DEFAULT_SETTINGS.enabledWorlds,
     };
   } catch {
-    return DEFAULT_SETTINGS;
+    let localGender: VoiceGender = 'male';
+    let localSpeed = 0.9;
+    let localVolume = 0.8;
+    if (typeof window !== 'undefined') {
+      try {
+        const g = localStorage.getItem('little_learner_voice_gender');
+        if (g === 'female' || g === 'male' || g === 'parent') localGender = g;
+        const sp = parseFloat(localStorage.getItem('little_learner_voice_speed') ?? '');
+        if (!isNaN(sp)) localSpeed = sp;
+        const vol = parseFloat(localStorage.getItem('little_learner_volume') ?? '');
+        if (!isNaN(vol)) localVolume = vol;
+      } catch {}
+    }
+    return {
+      ...DEFAULT_SETTINGS,
+      voiceGender: localGender,
+      voiceSpeed: localSpeed,
+      volume: localVolume,
+    };
   }
 }
 
