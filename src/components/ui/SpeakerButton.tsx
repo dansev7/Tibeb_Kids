@@ -172,17 +172,14 @@ export default function SpeakerButton({
           utterance.lang = 'en-US';
         }
 
-        // Use the same pitch/rate values as the main synthesizeSpeech engine
-        if (gender === 'male') {
+        // Use the same pitch/rate values as the main synthesizeSpeech engine (male or parent)
+        if (gender === 'parent') {
+          utterance.pitch = 1.05;
+          utterance.rate = Math.max(0.5, Math.min(1.6, speed));
+        } else {
           const confirmedMale = chosenVoice && isVoiceMale(chosenVoice);
           utterance.pitch = confirmedMale ? 0.88 : 0.55;
           utterance.rate = Math.max(0.5, Math.min(1.6, speed * (confirmedMale ? 0.95 : 0.8)));
-        } else if (gender === 'female') {
-          utterance.pitch = 1.25;
-          utterance.rate = Math.max(0.5, Math.min(1.6, speed * 1.08));
-        } else {
-          utterance.pitch = 1.05;
-          utterance.rate = Math.max(0.5, Math.min(1.6, speed));
         }
       } catch {
         utterance.rate = 0.9;

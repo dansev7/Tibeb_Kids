@@ -12,12 +12,10 @@ console.log('✓ Text normalization works accurately for English and Amharic');
 
 // Test 2: Voice settings type acceptance
 import type { VoiceGender } from '../src/utils/sound';
-const female: VoiceGender = 'female';
 const male: VoiceGender = 'male';
 const parent: VoiceGender = 'parent';
-assert.strictEqual(female, 'female');
 assert.strictEqual(male, 'male');
 assert.strictEqual(parent, 'parent');
-console.log('✓ VoiceGender type successfully supports female, male, and parent');
+console.log('✓ VoiceGender type successfully supports male and parent');
 
 console.log('\n🎉 Parent Voice Logic Verification Passed!');

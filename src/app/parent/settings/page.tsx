@@ -56,9 +56,7 @@ export default function SettingsPage() {
       .then(res => res.json())
       .then(data => {
         if (data && !data.error) {
-          const loadedGender: VoiceGender = (data.voiceGender === 'male' || data.voiceGender === 'female' || data.voiceGender === 'parent')
-            ? data.voiceGender
-            : 'male';
+          const loadedGender: VoiceGender = data.voiceGender === 'parent' ? 'parent' : 'male';
 
           setSettings(prev => ({
             childName: data.childName || prev.childName,
@@ -148,13 +146,10 @@ export default function SettingsPage() {
           } catch {}
         }
       }
-      speakText(`Hello ${settings.childName}! Parent Voiceover is active. Any letters you record in Voice Studio play in your natural voice, and unrecorded ones automatically use computer voice!`);
+      speakText(`Hello ${settings.childName}! Parent Voiceover is active. Any letters you record in Voice Studio play in your natural voice, and unrecorded ones automatically use the male teacher voice!`);
       setTimeout(() => setIsTestingVoice(false), 3000);
-    } else if (gender === 'male') {
-      speakText(`Hello ${settings.childName}! I am your male teacher. Let's play and learn together!`);
-      setTimeout(() => setIsTestingVoice(false), 2500);
     } else {
-      speakText(`Hello ${settings.childName}! Welcome to Little Learner. Let's play and learn together!`);
+      speakText(`Hello ${settings.childName}! I am your male teacher. Let's play and learn together!`);
       setTimeout(() => setIsTestingVoice(false), 2500);
     }
   };
@@ -198,40 +193,19 @@ export default function SettingsPage() {
             />
           </div>
 
-          {/* Voiceover Style Selector (Female, Male, Parent) */}
+          {/* Voiceover Style Selector (Male Voice, Parent Voice) */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <div className="flex items-center justify-between mb-3">
               <label className="text-sm font-semibold text-gray-700">
                 Teacher Voiceover Style
               </label>
               <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-full">
-                3 Options
+                2 Options
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-              {/* 1. Female Voice */}
-              <button
-                type="button"
-                onClick={() => {
-                  setSettings(prev => ({ ...prev, voiceGender: 'female' }));
-                  setGlobalVoicePreference('computer');
-                  setGlobalVoicePref('computer');
-                  handleTestVoice('female', settings.voiceSpeed);
-                }}
-                className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border-3 transition-all cursor-pointer ${
-                  settings.voiceGender === 'female'
-                    ? 'border-purple-500 bg-purple-50/80 shadow-md scale-102 ring-2 ring-purple-200'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
-                }`}
-              >
-                <span className="text-3xl mb-1">👩‍🏫</span>
-                <span className="font-bold text-gray-800 text-sm">Female Voice</span>
-                <span className="text-[11px] text-purple-600 font-semibold mt-0.5">Warm & Cheerful</span>
-                <span className="text-[10px] text-gray-400">Computer TTS</span>
-              </button>
-
-              {/* 2. Male Voice */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+              {/* 1. Male Voice (Default Computer Voice) */}
               <button
                 type="button"
                 onClick={() => {
@@ -247,12 +221,12 @@ export default function SettingsPage() {
                 }`}
               >
                 <span className="text-3xl mb-1">👨‍🏫</span>
-                <span className="font-bold text-gray-800 text-sm">Male Voice</span>
+                <span className="font-bold text-gray-800 text-sm">Male Teacher</span>
                 <span className="text-[11px] text-blue-600 font-semibold mt-0.5">Encouraging & Clear</span>
-                <span className="text-[10px] text-gray-400">Computer TTS</span>
+                <span className="text-[10px] text-gray-400">Clear Computer Voice</span>
               </button>
 
-              {/* 3. Parent Voice (Recommended) */}
+              {/* 2. Parent Voice (Recommended) */}
               <button
                 type="button"
                 onClick={() => {
@@ -271,7 +245,7 @@ export default function SettingsPage() {
                 <span className="font-bold text-gray-800 text-sm">Parent Voice</span>
                 <span className="text-[11px] text-emerald-600 font-semibold mt-0.5">Family Voice First</span>
                 <span className="text-[10px] text-gray-400">
-                  {voiceCount > 0 ? `${voiceCount} Saved • Auto Fallback` : 'Auto Fallback'}
+                  {voiceCount > 0 ? `${voiceCount} Saved • Auto Male Fallback` : 'Auto Male Fallback'}
                 </span>
                 {voiceCount > 0 && (
                   <span className="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold shadow-sm">
@@ -292,7 +266,7 @@ export default function SettingsPage() {
                     </div>
                     <p className="text-emerald-700 text-[11px] mt-0.5 leading-relaxed">
                       Little Learner cross-checks every letter, word, and fidel for your recorded voice.
-                      If an item hasn&apos;t been recorded yet, the clear computer voice seamlessly steps in!
+                      If an item hasn&apos;t been recorded yet, the clear male teacher voice seamlessly steps in!
                     </p>
                   </div>
                 </div>
@@ -308,11 +282,11 @@ export default function SettingsPage() {
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 flex flex-col gap-2">
                 <div className="flex items-center justify-between">
                   <span>
-                    Active Voice: <strong>{settings.voiceGender === 'female' ? '👩‍🏫 Female Teacher (Warm & Cheerful)' : '👨‍🏫 Male Teacher (Encouraging & Clear)'}</strong>
+                    Active Voice: <strong>👨‍🏫 Male Teacher (Encouraging & Clear)</strong>
                   </span>
                   <button
                     type="button"
-                    onClick={() => handleTestVoice(settings.voiceGender, settings.voiceSpeed)}
+                    onClick={() => handleTestVoice('male', settings.voiceSpeed)}
                     className="text-blue-600 font-bold hover:underline cursor-pointer"
                   >
                     Test Voice 🔊
@@ -324,15 +298,15 @@ export default function SettingsPage() {
                       Device Voice: <strong>{activeVoiceInfo.name} ({activeVoiceInfo.lang})</strong>
                     </span>
                     <span className={`self-start sm:self-auto px-2 py-0.5 rounded-full font-bold text-[10px] ${
-                      settings.voiceGender === 'male' && !activeVoiceInfo.isConfirmedMale
+                      !activeVoiceInfo.isConfirmedMale
                         ? 'bg-amber-100 text-amber-800'
                         : 'bg-emerald-100 text-emerald-800'
                     }`}>
-                      {settings.voiceGender === 'male' && !activeVoiceInfo.isConfirmedMale ? '⚡ Pitch/Pace Shifted' : '✓ Hardware Voice'}
+                      {!activeVoiceInfo.isConfirmedMale ? '⚡ Pitch/Pace Shifted' : '✓ Hardware Voice'}
                     </span>
                   </div>
                 )}
-                {settings.voiceGender === 'male' && activeVoiceInfo?.isFallback && (
+                {activeVoiceInfo?.isFallback && (
                   <div className="text-[11px] text-amber-800 bg-amber-50 p-2.5 rounded-lg border border-amber-200/80 leading-relaxed mt-1">
                     💡 <strong>Tip for Android:</strong> If your phone only has female voice files downloaded, open phone <strong>Settings → Accessibility → Text-to-speech output → Install voice data → English → select Male/Voice 2</strong> to hear an authentic human-sounding male teacher.
                   </div>
