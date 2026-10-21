@@ -176,12 +176,13 @@ export default function SettingsPage() {
         <div className="flex items-center justify-between mb-6">
           <button
             onClick={() => router.push('/parent')}
-            className="text-gray-500 hover:text-gray-700 font-semibold cursor-pointer"
+            className="w-10 h-10 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer text-xl font-bold shrink-0"
+            aria-label="Back"
           >
-            ← Back
+            ←
           </button>
           <h1 className="text-2xl font-bold text-gray-800">⚙️ Parent Settings</h1>
-          <div />
+          <div className="w-10 h-10 shrink-0" />
         </div>
 
         <div className="space-y-6">

@@ -218,9 +218,10 @@ export default function ParentGate({
                 <button
                   type="button"
                   onClick={onCancel}
-                  className="flex-1 py-3 rounded-2xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-base transition-colors cursor-pointer"
+                  className="flex-1 py-3 rounded-2xl bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xl transition-colors cursor-pointer flex items-center justify-center"
+                  aria-label="Back"
                 >
-                  Back
+                  ←
                 </button>
               )}
               <button

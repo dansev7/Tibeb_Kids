@@ -41,12 +41,13 @@ export default function ParentPage() {
       <div className="flex items-center justify-between mb-6">
         <button
           onClick={() => router.push('/')}
-          className="text-gray-500 hover:text-gray-700 text-lg"
+          className="w-10 h-10 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer text-xl font-bold shrink-0"
+          aria-label="Back to Home"
         >
-          ← Home
+          ←
         </button>
         <h1 className="text-2xl font-bold text-gray-800">Parent Dashboard</h1>
-        <div />
+        <div className="w-10 h-10 shrink-0" />
       </div>
 
       {!dashboardData ? (

@@ -544,9 +544,10 @@ export default function VoiceStudioPage() {
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <button
             onClick={() => router.push('/parent')}
-            className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-semibold text-base transition-colors cursor-pointer"
+            className="w-10 h-10 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer text-xl font-bold shrink-0"
+            aria-label="Back"
           >
-            ← Back to Dashboard
+            ←
           </button>
           <div className="flex items-center gap-2">
             <span className="text-2xl">🎙️</span>
@@ -556,9 +557,10 @@ export default function VoiceStudioPage() {
           </div>
           <button
             onClick={() => router.push('/parent/settings')}
-            className="text-slate-500 hover:text-slate-800 text-sm font-medium cursor-pointer"
+            className="w-10 h-10 rounded-full bg-white shadow-sm border border-slate-200 flex items-center justify-center text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors cursor-pointer text-xl shrink-0"
+            aria-label="Settings"
           >
-            ⚙️ Settings
+            ⚙️
           </button>
         </div>
       </header>
