@@ -125,7 +125,7 @@ export default function CountIt({
             audioPath=""
             fallbackSpeech={
               targetCount === 0
-                ? "How many in the basket? Zero! Tap the number zero!"
+                ? "How many in the basket? Zero! tap the number!"
                 : "Count the objects and tap the number!"
             }
             size="md"
