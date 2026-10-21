@@ -1,4 +1,4 @@
-const CACHE_NAME = 'little-learner-v8';
+const CACHE_NAME = 'little-learner-v9';
 
 const ASSETS_TO_PRECACHE = [
   '/',

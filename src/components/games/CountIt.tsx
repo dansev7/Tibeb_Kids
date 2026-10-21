@@ -26,16 +26,20 @@ export default function CountIt({
   const [attemptsOnItem, setAttemptsOnItem] = useState(0);
 
   const currentItem = items[currentIndex];
-  const targetCount = parseInt(currentItem?.symbol || '1', 10);
+  const rawCount = parseInt(currentItem?.symbol || '1', 10);
+  const targetCount = isNaN(rawCount) ? 1 : Math.max(0, rawCount);
   const emoji = objectEmojis[currentIndex % objectEmojis.length];
 
   const playPrompt = useCallback(() => {
     if (!currentItem) return;
+    const prompt = targetCount === 0
+      ? `How many in the basket? Zero! Tap the number zero!`
+      : `How many? Count and tap the number!`;
     playAudioOrSpeech(
       currentItem.audioPath,
-      `How many? Count and tap the number!`
+      prompt
     );
-  }, [currentItem]);
+  }, [currentItem, targetCount]);
 
   useEffect(() => {
     playPrompt();
@@ -43,17 +47,31 @@ export default function CountIt({
     setAttemptsOnItem(0);
   }, [currentIndex, playPrompt]);
 
-  // Generate 4 choice numbers including correct one
+  // Generate 4 choice numbers including correct one (guaranteed non-infinite)
   const choices = React.useMemo(() => {
-    const list = [targetCount];
-    while (list.length < 4) {
-      const delta = Math.floor(Math.random() * 5) - 2;
-      const candidate = Math.max(0, targetCount + delta);
-      if (!list.includes(candidate)) {
-        list.push(candidate);
-      }
+    const set = new Set<number>([targetCount]);
+    const candidates = [
+      targetCount - 1,
+      targetCount + 1,
+      targetCount + 2,
+      targetCount - 2,
+      targetCount + 3,
+      targetCount + 4,
+      0, 1, 2, 3, 4, 5
+    ].filter((n) => n >= 0 && n !== targetCount);
+
+    const shuffled = [...candidates].sort(() => Math.random() - 0.5);
+    for (const num of shuffled) {
+      set.add(num);
+      if (set.size === 4) break;
     }
-    return list.sort(() => Math.random() - 0.5);
+
+    let fallback = 0;
+    while (set.size < 4) {
+      set.add(fallback++);
+    }
+
+    return Array.from(set).sort(() => Math.random() - 0.5);
   }, [targetCount]);
 
   const handleTapObject = (idx: number) => {
@@ -105,7 +123,11 @@ export default function CountIt({
         <div className="flex items-center gap-3">
           <SpeakerButton
             audioPath=""
-            fallbackSpeech="Count the objects and tap the number!"
+            fallbackSpeech={
+              targetCount === 0
+                ? "How many in the basket? Zero! Tap the number zero!"
+                : "Count the objects and tap the number!"
+            }
             size="md"
           />
           <span className="text-2xl font-extrabold text-amber-800">
@@ -119,28 +141,44 @@ export default function CountIt({
 
       {/* Objects pasture/area */}
       <div className="w-full min-h-[220px] bg-amber-50 rounded-3xl p-6 border-4 border-amber-200 shadow-inner flex flex-wrap items-center justify-center gap-4">
-        {Array.from({ length: targetCount }).map((_, idx) => {
-          const isCounted = countedIndices.includes(idx);
-          return (
-            <motion.button
-              key={idx}
-              whileTap={{ scale: 0.8 }}
-              onClick={() => handleTapObject(idx)}
-              className={`relative text-5xl md:text-6xl p-3 rounded-2xl transition-all ${
-                isCounted
-                  ? 'bg-amber-200/80 scale-105 shadow-md'
-                  : 'bg-white shadow hover:scale-105'
-              }`}
-            >
-              {emoji}
-              {isCounted && (
-                <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-green-500 text-white text-xs font-bold flex items-center justify-center">
-                  ✓
-                </span>
-              )}
-            </motion.button>
-          );
-        })}
+        {targetCount === 0 ? (
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="flex flex-col items-center justify-center py-4 text-center select-none"
+          >
+            <span className="text-7xl md:text-8xl mb-2 drop-shadow-sm">🧺</span>
+            <span className="text-2xl md:text-3xl font-black text-amber-800">
+              Empty Basket!
+            </span>
+            <span className="text-base font-bold text-amber-600 mt-1">
+              Zero (0) items inside
+            </span>
+          </motion.div>
+        ) : (
+          Array.from({ length: targetCount }).map((_, idx) => {
+            const isCounted = countedIndices.includes(idx);
+            return (
+              <motion.button
+                key={idx}
+                whileTap={{ scale: 0.8 }}
+                onClick={() => handleTapObject(idx)}
+                className={`relative text-5xl md:text-6xl p-3 rounded-2xl transition-all ${
+                  isCounted
+                    ? 'bg-amber-200/80 scale-105 shadow-md'
+                    : 'bg-white shadow hover:scale-105'
+                }`}
+              >
+                {emoji}
+                {isCounted && (
+                  <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-green-500 text-white text-xs font-bold flex items-center justify-center">
+                    ✓
+                  </span>
+                )}
+              </motion.button>
+            );
+          })
+        )}
       </div>
 
       {/* Number Answer Choices */}

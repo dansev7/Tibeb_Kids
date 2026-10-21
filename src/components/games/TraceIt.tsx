@@ -72,7 +72,7 @@ export default function TraceIt({
     if (!currentItem) return;
     const prompt = isFidel
       ? `${currentItem.symbol} ፊደልን በትክክል ጻፍ!`
-      : `Trace the letter ${currentItem.displayName || currentItem.symbol}!`;
+      : `Trace the ${currentItem.kind === 'number' ? 'number' : 'letter'} ${currentItem.displayName || currentItem.symbol}!`;
     playAudioOrSpeech(currentItem.audioPath, prompt);
   }, [currentItem, isFidel]);
 
