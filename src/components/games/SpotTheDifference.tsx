@@ -8,7 +8,8 @@ import SpeakerButton from '@/components/ui/SpeakerButton';
 import { getItemEmoji } from '@/utils/itemVisuals';
 
 interface SpotTheDifferenceProps {
-  targetItem: GameItem;
+  targetItem?: GameItem;
+  items?: GameItem[];
   confusables: GameItem[];
   onComplete: (results: StageResult[]) => void;
   themeColor?: string;
@@ -16,46 +17,72 @@ interface SpotTheDifferenceProps {
 
 export default function SpotTheDifference({
   targetItem,
+  items,
   confusables,
   onComplete,
   themeColor = '#9C27B0',
 }: SpotTheDifferenceProps) {
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [wrongId, setWrongId] = useState<string | null>(null);
   const [firstTry, setFirstTry] = useState(true);
+  const [results, setResults] = useState<StageResult[]>([]);
+
+  const activeItems = items && items.length > 0 ? items : targetItem ? [targetItem] : [];
+  const currentTarget = activeItems[currentIndex] || targetItem;
 
   const playPrompt = useCallback(() => {
-    if (!targetItem) return;
-    const prompt = targetItem.kind === 'fidel'
-      ? `${targetItem.symbol} ፊደልን ለይተህ ፈልግ!`
-      : `Look closely! Find the ${targetItem.displayName || targetItem.symbol}!`;
+    if (!currentTarget) return;
+    const prompt = currentTarget.kind === 'fidel'
+      ? `${currentTarget.symbol} ፊደልን ለይተህ ፈልግ!`
+      : currentTarget.kind === 'number'
+      ? `Look closely! Find the number ${currentTarget.displayName || currentTarget.symbol}!`
+      : `Look closely! Find the ${currentTarget.displayName || currentTarget.symbol}!`;
     playAudioOrSpeech(
-      targetItem.audioPath,
+      currentTarget.audioPath,
       prompt
     );
-  }, [targetItem]);
+  }, [currentTarget]);
 
   useEffect(() => {
     playPrompt();
-  }, [playPrompt]);
+    setFirstTry(true);
+  }, [currentIndex, playPrompt]);
 
   const cards = React.useMemo(() => {
-    const list = [targetItem, ...confusables];
+    if (!currentTarget) return [];
+    const pool = [...activeItems, ...confusables].filter((it) => it.id !== currentTarget.id);
+    const confusableIds = currentTarget.confusableWith || [];
+
+    // Prioritize direct confusables
+    const confusableMatches = pool.filter((it) => confusableIds.includes(it.id));
+    const otherMatches = pool.filter((it) => !confusableIds.includes(it.id));
+
+    const selectedDistractors = [...confusableMatches, ...otherMatches].slice(0, 3);
+    const list = [currentTarget, ...selectedDistractors];
     return list.sort(() => Math.random() - 0.5);
-  }, [targetItem, confusables]);
+  }, [currentTarget, activeItems, confusables]);
 
   const handleSelect = (item: GameItem) => {
-    if (item.id === targetItem.id) {
+    if (!currentTarget) return;
+    if (item.id === currentTarget.id) {
       playFeedbackTone('correct');
 
+      const result: StageResult = {
+        itemId: currentTarget.id,
+        correct: true,
+        usedHint: !firstTry,
+        firstTry,
+      };
+
+      const updatedResults = [...results, result];
+      setResults(updatedResults);
+
       setTimeout(() => {
-        onComplete([
-          {
-            itemId: targetItem.id,
-            correct: true,
-            usedHint: !firstTry,
-            firstTry,
-          },
-        ]);
+        if (currentIndex + 1 < activeItems.length) {
+          setCurrentIndex((prev) => prev + 1);
+        } else {
+          onComplete(updatedResults);
+        }
       }, 1000);
     } else {
       setFirstTry(false);
@@ -65,30 +92,39 @@ export default function SpotTheDifference({
     }
   };
 
+  if (!currentTarget) return null;
+
   return (
     <div className="flex flex-col items-center justify-between h-full p-4 max-w-xl mx-auto select-none">
-      {/* Target Preview */}
-      <div className="flex flex-col items-center gap-2">
+      {/* Top Header & Progress */}
+      <div className="w-full flex items-center justify-between mb-2">
         <div className="flex items-center gap-3">
           <SpeakerButton
-            audioPath={targetItem.audioPath}
-            fallbackSpeech={`Find ${targetItem.displayName || targetItem.symbol}`}
+            audioPath={currentTarget.audioPath}
+            fallbackSpeech={`Find ${currentTarget.displayName || currentTarget.symbol}`}
             size="md"
           />
-          <span className="text-2xl font-extrabold text-purple-900">
-            {targetItem.kind === 'fidel' ? 'ተመሳሳይ ፊደላትን ለይ:' : 'Tricky Twins! Find:'}
+          <span className="text-xl sm:text-2xl font-extrabold text-purple-900">
+            {currentTarget.kind === 'fidel' ? 'ተመሳሳይ ፊደላትን ለይ:' : 'Tricky Twins! Find:'}
           </span>
         </div>
+        {activeItems.length > 1 && (
+          <span className="text-lg font-bold text-gray-400">
+            {currentIndex + 1} / {activeItems.length}
+          </span>
+        )}
+      </div>
 
-        {/* Big target cue card */}
+      {/* Target Preview Cue Card */}
+      <div className="flex flex-col items-center gap-2">
         <div className="flex items-center gap-4 bg-purple-100 border-4 border-purple-300 rounded-3xl px-8 py-3 shadow-md">
           <span className="text-6xl font-black text-purple-700">
-            {targetItem.symbol}
+            {currentTarget.symbol}
           </span>
-          {targetItem.pictureWord && (
+          {currentTarget.pictureWord && (
             <span className="text-xl font-bold text-purple-900 flex items-center gap-2">
-              <span className="text-2xl" role="img" aria-hidden="true">{getItemEmoji(targetItem)}</span>
-              <span>{targetItem.pictureWord}</span>
+              <span className="text-2xl" role="img" aria-hidden="true">{getItemEmoji(currentTarget)}</span>
+              <span>{currentTarget.pictureWord}</span>
             </span>
           )}
         </div>

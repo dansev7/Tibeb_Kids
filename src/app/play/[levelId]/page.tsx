@@ -296,6 +296,7 @@ function PlayContent() {
             >
               <SpotTheDifference
                 targetItem={currentStage.items[0]}
+                items={currentStage.items}
                 confusables={currentStage.distractors || []}
                 onComplete={(results) => handleStageComplete(results)}
                 themeColor={levelData.themeColor}

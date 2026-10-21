@@ -87,6 +87,46 @@ async function runTests() {
   assert.strictEqual(failed.nextBox, 1, 'Incorrect answer resets to box 1');
   console.log('✓ Leitner Spaced Repetition (SRS) box promotion, reset & mastery rules verified');
 
+  // Test 7: Verify all levels and stages across all worlds (no screen overflows, valid pairs)
+  const { buildGameStages } = await import('../src/lib/levelEngine');
+  const fs = await import('fs');
+  const path = await import('path');
+  const levelsJson = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'content/levels.json'), 'utf-8'));
+  const allDbItems = await db.select().from(items).all();
+  const dbItemsMap = new Map(allDbItems.map(i => [i.id, i]));
+
+  for (const w of levelsJson.worlds) {
+    for (const lvl of w.levels) {
+      const levelItems = (lvl.itemIds || []).map((id: string) => dbItemsMap.get(id)).filter(Boolean);
+      const distractorPool = allDbItems.filter(i => i.worldId === w.id && !lvl.itemIds.includes(i.id));
+
+      const stages = buildGameStages({
+        stages: lvl.stages,
+        levelType: lvl.type,
+        worldSlug: w.slug,
+        items: levelItems,
+        distractorPool,
+        newItemIds: lvl.newItemIds || [],
+      });
+
+      assert(stages.length > 0, `Level ${lvl.id} must generate stages`);
+      for (const st of stages) {
+        assert(st.items.length > 0, `Stage ${st.type} in level ${lvl.id} must have items`);
+        if (st.type === 'match') {
+          assert(st.pairs && st.pairs.length > 0, `Match stage in ${lvl.id} must have pairs`);
+          assert(st.pairs.length <= 5, `Match stage in ${lvl.id} must not exceed 5 pairs (overflow prevention)`);
+          if (lvl.id === 'abc-14') {
+            for (const p of st.pairs) {
+              assert.strictEqual(p.left.kind, 'letter_upper', 'abc-14 left card must be capital');
+              assert.strictEqual(p.right.kind, 'letter_lower', 'abc-14 right card must be small');
+            }
+          }
+        }
+      }
+    }
+  }
+  console.log('✓ All 46 levels, stages, Big & Small pair matching, and screen overflow guards verified');
+
   console.log('\n🎉 ALL SYSTEM VERIFICATION CHECKS PASSED PERFECTLY!');
 }
 

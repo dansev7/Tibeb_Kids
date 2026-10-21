@@ -411,34 +411,71 @@ export function buildGameStages<T extends ItemLike>(opts: GameStageOptions<T>): 
         break;
       case 'match': {
         if (items.length < 2) break;
-        const matchItems = itemsToIntroduce.length > 0 ? itemsToIntroduce : items;
-        const pairs = matchItems.map((item) => ({
-          left: item,
-          right: {
-            ...item,
-            symbol: item.pictureWord ?? item.symbol,
-            displayName: item.pictureWord ?? item.displayName,
-          } as T,
-        }));
-        stages.push({ type: 'match', items: matchItems, pairs });
+
+        // Check if level has complementary uppercase and lowercase pairs (e.g. Big & Small Friends)
+        const upperItems = items.filter((i) => i.kind === 'letter_upper');
+        const lowerItems = items.filter((i) => i.kind === 'letter_lower');
+
+        const upperLowerPairs: Array<{ left: T; right: T }> = [];
+        if (upperItems.length > 0 && lowerItems.length > 0) {
+          for (const u of upperItems) {
+            const matchingLower = lowerItems.find(
+              (l) => l.symbol.toLowerCase() === u.symbol.toLowerCase()
+            );
+            if (matchingLower) {
+              upperLowerPairs.push({ left: u, right: matchingLower });
+            }
+          }
+        }
+
+        if (upperLowerPairs.length >= 2) {
+          // Chunk upper-lower pairs into child-friendly rounds of at most 5 pairs
+          const CHUNK_SIZE = 5;
+          for (let i = 0; i < upperLowerPairs.length; i += CHUNK_SIZE) {
+            const pairChunk = upperLowerPairs.slice(i, i + CHUNK_SIZE);
+            const chunkItems = pairChunk.map((p) => p.left);
+            stages.push({ type: 'match', items: chunkItems, pairs: pairChunk });
+          }
+        } else {
+          // Standard symbol-to-picture matching
+          const matchItems = itemsToIntroduce.length > 0 ? itemsToIntroduce : items;
+          const allPairs = matchItems.map((item) => ({
+            left: item,
+            right: {
+              ...item,
+              symbol: item.pictureWord ?? item.symbol,
+              displayName: item.pictureWord ?? item.displayName,
+            } as T,
+          }));
+
+          if (allPairs.length <= 5) {
+            stages.push({ type: 'match', items: matchItems, pairs: allPairs });
+          } else if (allPairs.length === 6) {
+            // Split 6 into 2 balanced stages of 3 pairs each
+            stages.push({ type: 'match', items: matchItems.slice(0, 3), pairs: allPairs.slice(0, 3) });
+            stages.push({ type: 'match', items: matchItems.slice(3, 6), pairs: allPairs.slice(3, 6) });
+          } else {
+            // Review or large levels (10, 11, 20, 26 items)
+            // Emit up to 2 balanced stages of 5 pairs each so young learners are not overwhelmed and screen never overflows
+            const stage1Pairs = allPairs.slice(0, 5);
+            const stage2Pairs = allPairs.slice(5, 10);
+            stages.push({ type: 'match', items: stage1Pairs.map((p) => p.left), pairs: stage1Pairs });
+            if (stage2Pairs.length >= 2) {
+              stages.push({ type: 'match', items: stage2Pairs.map((p) => p.left), pairs: stage2Pairs });
+            }
+          }
+        }
         break;
       }
       case 'trace':
         stages.push({ type: 'trace', items: itemsToIntroduce.length > 0 ? itemsToIntroduce : items });
         break;
       case 'spotDifference': {
-        if (levelType !== 'tricky' || !items[0]) break;
-        const target = items[0];
-        const confusableIds = getConfusables(target);
-        // Confusable siblings can live inside the level itself (e.g. b/d/p/q
-        // in "Tricky Twins") — search level items first, then world extras.
-        const pool = [...items, ...distractorPool].filter(
-          (i) => i.id !== target.id && confusableIds.includes(i.id)
-        );
+        if (levelType !== 'tricky' || items.length === 0) break;
         stages.push({
           type: 'spotDifference',
-          items: [target],
-          distractors: pool.length > 0 ? pool : distractorPool.slice(0, 3),
+          items,
+          distractors: distractorPool.slice(0, 6),
         });
         break;
       }
@@ -449,13 +486,18 @@ export function buildGameStages<T extends ItemLike>(opts: GameStageOptions<T>): 
           distractors: distractorPool.slice(0, 6),
         });
         break;
-      case 'quiz':
+      case 'quiz': {
+        const quizItems = shuffleArray(items).slice(0, Math.min(items.length, 6));
+        const quizDistractors = distractorPool.length >= 3
+          ? distractorPool.slice(0, 6)
+          : [...distractorPool, ...items.filter((i) => !quizItems.some((qi) => qi.id === i.id))].slice(0, 6);
         stages.push({
           type: 'quiz',
-          items: shuffleArray(items).slice(0, Math.min(items.length, 6)),
-          distractors: distractorPool.slice(0, 6),
+          items: quizItems,
+          distractors: quizDistractors.length > 0 ? quizDistractors : distractorPool,
         });
         break;
+      }
       case 'celebrate':
         // Rendered by the play page after the last stage — nothing to emit.
         break;

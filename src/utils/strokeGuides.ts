@@ -197,6 +197,118 @@ const NUMBER_STROKES: Record<string, NormalizedStroke[]> = {
   ],
 };
 
+// Stroke guides for English lowercase letters (a-z)
+const LOWER_STROKES: Record<string, NormalizedStroke[]> = {
+  a: [
+    { order: 1, from: { x: 0.8, y: 0.38 }, mid: { x: 0.2, y: 0.62 }, to: { x: 0.8, y: 0.78 }, type: 'curve' },
+    { order: 2, from: { x: 0.8, y: 0.35 }, to: { x: 0.8, y: 0.95 } },
+  ],
+  b: [
+    { order: 1, from: { x: 0.22, y: 0.05 }, to: { x: 0.22, y: 0.95 } },
+    { order: 2, from: { x: 0.22, y: 0.45 }, mid: { x: 0.85, y: 0.68 }, to: { x: 0.22, y: 0.92 }, type: 'curve' },
+  ],
+  c: [
+    { order: 1, from: { x: 0.8, y: 0.38 }, mid: { x: 0.2, y: 0.65 }, to: { x: 0.8, y: 0.88 }, type: 'curve' },
+  ],
+  d: [
+    { order: 1, from: { x: 0.78, y: 0.45 }, mid: { x: 0.15, y: 0.68 }, to: { x: 0.78, y: 0.92 }, type: 'curve' },
+    { order: 2, from: { x: 0.78, y: 0.05 }, to: { x: 0.78, y: 0.95 } },
+  ],
+  e: [
+    { order: 1, from: { x: 0.22, y: 0.62 }, to: { x: 0.8, y: 0.62 } },
+    { order: 2, from: { x: 0.8, y: 0.62 }, mid: { x: 0.5, y: 0.32 }, to: { x: 0.22, y: 0.62 }, type: 'curve' },
+    { order: 3, from: { x: 0.22, y: 0.62 }, mid: { x: 0.32, y: 0.92 }, to: { x: 0.8, y: 0.88 }, type: 'curve' },
+  ],
+  f: [
+    { order: 1, from: { x: 0.75, y: 0.12 }, mid: { x: 0.4, y: 0.06 }, to: { x: 0.4, y: 0.95 }, type: 'curve' },
+    { order: 2, from: { x: 0.2, y: 0.42 }, to: { x: 0.72, y: 0.42 } },
+  ],
+  g: [
+    { order: 1, from: { x: 0.8, y: 0.35 }, mid: { x: 0.18, y: 0.55 }, to: { x: 0.8, y: 0.72 }, type: 'curve' },
+    { order: 2, from: { x: 0.8, y: 0.3 }, mid: { x: 0.8, y: 0.85 }, to: { x: 0.28, y: 0.96 }, type: 'curve' },
+  ],
+  h: [
+    { order: 1, from: { x: 0.2, y: 0.05 }, to: { x: 0.2, y: 0.95 } },
+    { order: 2, from: { x: 0.2, y: 0.5 }, mid: { x: 0.5, y: 0.36 }, to: { x: 0.8, y: 0.95 }, type: 'curve' },
+  ],
+  i: [
+    { order: 1, from: { x: 0.5, y: 0.38 }, to: { x: 0.5, y: 0.95 } },
+    { order: 2, from: { x: 0.5, y: 0.15 }, to: { x: 0.5, y: 0.2 } },
+  ],
+  j: [
+    { order: 1, from: { x: 0.65, y: 0.38 }, mid: { x: 0.65, y: 0.85 }, to: { x: 0.25, y: 0.96 }, type: 'curve' },
+    { order: 2, from: { x: 0.65, y: 0.15 }, to: { x: 0.65, y: 0.2 } },
+  ],
+  k: [
+    { order: 1, from: { x: 0.22, y: 0.05 }, to: { x: 0.22, y: 0.95 } },
+    { order: 2, from: { x: 0.8, y: 0.35 }, to: { x: 0.25, y: 0.65 } },
+    { order: 3, from: { x: 0.35, y: 0.6 }, to: { x: 0.85, y: 0.95 } },
+  ],
+  l: [
+    { order: 1, from: { x: 0.5, y: 0.05 }, to: { x: 0.5, y: 0.95 } },
+  ],
+  m: [
+    { order: 1, from: { x: 0.15, y: 0.35 }, to: { x: 0.15, y: 0.95 } },
+    { order: 2, from: { x: 0.15, y: 0.5 }, mid: { x: 0.35, y: 0.35 }, to: { x: 0.5, y: 0.95 }, type: 'curve' },
+    { order: 3, from: { x: 0.5, y: 0.5 }, mid: { x: 0.7, y: 0.35 }, to: { x: 0.85, y: 0.95 }, type: 'curve' },
+  ],
+  n: [
+    { order: 1, from: { x: 0.2, y: 0.35 }, to: { x: 0.2, y: 0.95 } },
+    { order: 2, from: { x: 0.2, y: 0.5 }, mid: { x: 0.5, y: 0.35 }, to: { x: 0.8, y: 0.95 }, type: 'curve' },
+  ],
+  o: [
+    { order: 1, from: { x: 0.5, y: 0.35 }, mid: { x: 0.15, y: 0.65 }, to: { x: 0.5, y: 0.95 }, type: 'curve' },
+    { order: 2, from: { x: 0.5, y: 0.95 }, mid: { x: 0.85, y: 0.65 }, to: { x: 0.5, y: 0.35 }, type: 'curve' },
+  ],
+  p: [
+    { order: 1, from: { x: 0.22, y: 0.35 }, to: { x: 0.22, y: 0.98 } },
+    { order: 2, from: { x: 0.22, y: 0.42 }, mid: { x: 0.82, y: 0.6 }, to: { x: 0.22, y: 0.82 }, type: 'curve' },
+  ],
+  q: [
+    { order: 1, from: { x: 0.78, y: 0.42 }, mid: { x: 0.18, y: 0.6 }, to: { x: 0.78, y: 0.82 }, type: 'curve' },
+    { order: 2, from: { x: 0.78, y: 0.35 }, to: { x: 0.78, y: 0.98 } },
+  ],
+  r: [
+    { order: 1, from: { x: 0.25, y: 0.35 }, to: { x: 0.25, y: 0.95 } },
+    { order: 2, from: { x: 0.25, y: 0.55 }, mid: { x: 0.55, y: 0.35 }, to: { x: 0.8, y: 0.45 }, type: 'curve' },
+  ],
+  s: [
+    { order: 1, from: { x: 0.78, y: 0.45 }, mid: { x: 0.22, y: 0.58 }, to: { x: 0.5, y: 0.68 }, type: 'curve' },
+    { order: 2, from: { x: 0.5, y: 0.68 }, mid: { x: 0.8, y: 0.8 }, to: { x: 0.22, y: 0.92 }, type: 'curve' },
+  ],
+  t: [
+    { order: 1, from: { x: 0.48, y: 0.12 }, mid: { x: 0.48, y: 0.85 }, to: { x: 0.75, y: 0.95 }, type: 'curve' },
+    { order: 2, from: { x: 0.22, y: 0.38 }, to: { x: 0.75, y: 0.38 } },
+  ],
+  u: [
+    { order: 1, from: { x: 0.2, y: 0.35 }, mid: { x: 0.5, y: 0.95 }, to: { x: 0.8, y: 0.35 }, type: 'curve' },
+    { order: 2, from: { x: 0.8, y: 0.35 }, to: { x: 0.8, y: 0.95 } },
+  ],
+  v: [
+    { order: 1, from: { x: 0.18, y: 0.35 }, to: { x: 0.5, y: 0.95 } },
+    { order: 2, from: { x: 0.5, y: 0.95 }, to: { x: 0.82, y: 0.35 } },
+  ],
+  w: [
+    { order: 1, from: { x: 0.12, y: 0.35 }, to: { x: 0.32, y: 0.95 } },
+    { order: 2, from: { x: 0.32, y: 0.95 }, to: { x: 0.5, y: 0.55 } },
+    { order: 3, from: { x: 0.5, y: 0.55 }, to: { x: 0.68, y: 0.95 } },
+    { order: 4, from: { x: 0.68, y: 0.95 }, to: { x: 0.88, y: 0.35 } },
+  ],
+  x: [
+    { order: 1, from: { x: 0.2, y: 0.35 }, to: { x: 0.8, y: 0.95 } },
+    { order: 2, from: { x: 0.8, y: 0.35 }, to: { x: 0.2, y: 0.95 } },
+  ],
+  y: [
+    { order: 1, from: { x: 0.2, y: 0.35 }, to: { x: 0.5, y: 0.75 } },
+    { order: 2, from: { x: 0.8, y: 0.35 }, to: { x: 0.25, y: 0.98 } },
+  ],
+  z: [
+    { order: 1, from: { x: 0.2, y: 0.38 }, to: { x: 0.8, y: 0.38 } },
+    { order: 2, from: { x: 0.8, y: 0.38 }, to: { x: 0.2, y: 0.92 } },
+    { order: 3, from: { x: 0.2, y: 0.92 }, to: { x: 0.8, y: 0.92 } },
+  ],
+};
+
 // Common Amharic Fidels
 const FIDEL_STROKES: Record<string, NormalizedStroke[]> = {
   ሀ: [
@@ -261,10 +373,43 @@ export function getRenderedStrokes(
   const boxH = Math.max(20, box.maxY - box.minY);
 
   let normalizedList: NormalizedStroke[] | undefined =
+    LOWER_STROKES[symbol] ||
     UPPER_STROKES[symbol] ||
-    UPPER_STROKES[symbol.toUpperCase()] ||
     NUMBER_STROKES[symbol] ||
     FIDEL_STROKES[symbol];
+
+  // Composite stroke guides for 2-digit numbers (10..20)
+  if (!normalizedList && symbol.length === 2 && /^\d\d$/.test(symbol)) {
+    const d1Strokes = NUMBER_STROKES[symbol[0]];
+    const d2Strokes = NUMBER_STROKES[symbol[1]];
+    if (d1Strokes && d2Strokes) {
+      let order = 1;
+      const combined: NormalizedStroke[] = [];
+      for (const s of d1Strokes) {
+        combined.push({
+          order: order++,
+          from: { x: 0.05 + s.from.x * 0.42, y: s.from.y },
+          to: { x: 0.05 + s.to.x * 0.42, y: s.to.y },
+          mid: s.mid ? { x: 0.05 + s.mid.x * 0.42, y: s.mid.y } : undefined,
+          type: s.type,
+        });
+      }
+      for (const s of d2Strokes) {
+        combined.push({
+          order: order++,
+          from: { x: 0.52 + s.from.x * 0.42, y: s.from.y },
+          to: { x: 0.52 + s.to.x * 0.42, y: s.to.y },
+          mid: s.mid ? { x: 0.52 + s.mid.x * 0.42, y: s.mid.y } : undefined,
+          type: s.type,
+        });
+      }
+      normalizedList = combined;
+    }
+  }
+
+  if (!normalizedList) {
+    normalizedList = UPPER_STROKES[symbol.toUpperCase()];
+  }
 
   // Procedural fallback if no explicit stroke definition exists
   if (!normalizedList || normalizedList.length === 0) {

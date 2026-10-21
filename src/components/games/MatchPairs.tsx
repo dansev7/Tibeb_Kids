@@ -33,8 +33,15 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
     return [...pairs.map((p) => p.right)].sort(() => 0.5 - Math.random());
   }, [pairs]);
 
+  // Check if item should be matched and displayed as a letter symbol (e.g. capital to small) rather than picture
+  const isLetterSymbol = (item: GameItem) =>
+    (item.kind === 'letter_lower' || item.kind === 'letter_upper') && item.symbol !== item.pictureWord;
+
   const hasRightVisuals = useMemo(
-    () => rightItems.some((item) => Boolean(item.picturePath || (item.pictureWord && item.pictureWord !== item.symbol))),
+    () => rightItems.some((item) => {
+      if (isLetterSymbol(item)) return false;
+      return Boolean(item.picturePath || (item.pictureWord && item.pictureWord !== item.symbol));
+    }),
     [rightItems]
   );
 
@@ -128,11 +135,14 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
 
     if (matchedIds.includes(correspondingPair.left.id)) return;
     playPop();
+    const isLetter = isLetterSymbol(item);
     const rightSpeech = item.kind === 'fidel'
       ? (item.pictureWordAmharic || item.pictureWord?.replace(/\([^)]*\)/g, '').trim() || item.symbol)
+      : isLetter
+      ? (item.displayName || item.symbol)
       : (item.pictureWord || item.displayName);
     playAudioOrSpeech(
-      item.pictureWordAudioPath || item.audioPath,
+      isLetter ? item.audioPath : (item.pictureWordAudioPath || item.audioPath),
       rightSpeech
     );
 
@@ -268,7 +278,8 @@ export function MatchPairs({ pairs, onComplete, themeColor }: MatchPairsProps) {
               const isMatched = isMatchedRight(item.id);
               const isSelected = selectedRight === item.id;
               const isWiggling = wigglingRight === item.id;
-              const hasVisual = Boolean(item.picturePath || (item.pictureWord && item.pictureWord !== item.symbol));
+              const isLetter = isLetterSymbol(item);
+              const hasVisual = !isLetter && Boolean(item.picturePath || (item.pictureWord && item.pictureWord !== item.symbol));
 
               return (
                 <motion.button

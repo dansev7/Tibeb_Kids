@@ -67,6 +67,8 @@ export function FindIt({
     if (!item) return;
     const promptText = item.kind === 'fidel'
       ? `${item.symbol} ፊደልን ፈልግ!`
+      : item.kind === 'number'
+      ? `Find the number ${item.displayName || item.symbol}!`
       : `Find the ${item.displayName || item.symbol}!`;
     playAudioOrSpeech(item.audioPath, promptText);
   }, [currentIndex, items]);

@@ -88,8 +88,9 @@ export default function TraceIt({
     // Clear guide canvas
     gCtx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
 
-    // High-legibility font stack for Ethiopic and Latin
-    const fontStr = '900 230px "Noto Sans Ethiopic", "Nyala", "Kefa", "Segoe UI", system-ui, -apple-system, sans-serif';
+    // High-legibility font stack for Ethiopic and Latin (scaled for multi-digit numbers)
+    const fontSize = symbol.length > 1 ? 150 : 230;
+    const fontStr = `900 ${fontSize}px "Noto Sans Ethiopic", "Nyala", "Kefa", "Segoe UI", system-ui, -apple-system, sans-serif`;
     gCtx.font = fontStr;
     gCtx.textAlign = 'center';
     gCtx.textBaseline = 'middle';
@@ -516,15 +517,17 @@ export default function TraceIt({
           : `Match is ${matchAccuracy}% — reach 85% to finish! ⭐`;
       } else {
         // Accuracy reached 85% but shape check detected missing parts
+        const kindLabel = currentItem.kind === 'number' ? 'number' : 'letter';
         reminder = isFidel
           ? `ጥቂት ቀርቶሃል! የ${currentItem.symbol} ፊደልን ሁሉንም መስመሮች አሟልተህ ጻፍ! ✍️`
-          : `Almost there! Trace all strokes of the letter ${currentItem.displayName || currentItem.symbol}! ✍️`;
+          : `Almost there! Trace all strokes of the ${kindLabel} ${currentItem.displayName || currentItem.symbol}! ✍️`;
       }
 
       setShowNotice(reminder);
+      const kindLabel = currentItem.kind === 'number' ? 'number' : 'letter';
       playAudioOrSpeech(
         undefined,
-        isFidel ? 'ፊደሉን ሁሉንም መስመሮች አሟልተህ ጻፍ' : 'Trace along all parts of the letter shape'
+        isFidel ? 'ፊደሉን ሁሉንም መስመሮች አሟልተህ ጻፍ' : `Trace along all parts of the ${kindLabel} shape`
       );
       setTimeout(() => setShowNotice(null), 3000);
     }
@@ -539,11 +542,11 @@ export default function TraceIt({
         <div className="flex items-center gap-2.5">
           <SpeakerButton
             audioPath={currentItem.audioPath}
-            fallbackSpeech={isFidel ? `${currentItem.symbol} ፊደልን በትክክል ጻፍ!` : `Trace the letter ${currentItem.displayName || currentItem.symbol}`}
+            fallbackSpeech={isFidel ? `${currentItem.symbol} ፊደልን በትክክል ጻፍ!` : `Trace the ${currentItem.kind === 'number' ? 'number' : 'letter'} ${currentItem.displayName || currentItem.symbol}`}
             size="md"
           />
           <span className="text-xl sm:text-2xl font-extrabold text-gray-800">
-            {isFidel ? `${currentItem.symbol} ፊደልን በትክክል ጻፍ! ✍️` : `Trace the letter ${currentItem.displayName || currentItem.symbol}! ✍️`}
+            {isFidel ? `${currentItem.symbol} ፊደልን በትክክል ጻፍ! ✍️` : `Trace the ${currentItem.kind === 'number' ? 'number' : 'letter'} ${currentItem.displayName || currentItem.symbol}! ✍️`}
           </span>
         </div>
         <div className="text-lg sm:text-xl font-bold text-gray-400">

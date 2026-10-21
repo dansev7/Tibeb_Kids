@@ -27,9 +27,17 @@ export default function ListenAndTap({
 
   const playPrompt = useCallback(() => {
     if (!currentItem) return;
+    const isFidel = currentItem.kind === 'fidel';
+    const isNumber = currentItem.kind === 'number';
+    const speech = isFidel
+      ? `አዳምጥ! ይህንን ድምፅ የሚያሰማው የትኛው ፊደል ነው? ${currentItem.symbol}`
+      : isNumber
+      ? `Listen! Which number is this? ${currentItem.displayName || currentItem.symbol}`
+      : `Listen! Which letter makes this sound? ${currentItem.displayName || currentItem.symbol}`;
+
     playAudioOrSpeech(
       currentItem.audioPath,
-      `Listen! Which letter makes this sound? ${currentItem.displayName || currentItem.symbol}`
+      speech
     );
   }, [currentItem]);
 

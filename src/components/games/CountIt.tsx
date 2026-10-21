@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { GameItem, StageResult } from '@/types';
 import { playFeedbackTone, playAudioOrSpeech } from '@/utils/sound';
 import SpeakerButton from '@/components/ui/SpeakerButton';
+import { getItemEmoji } from '@/utils/itemVisuals';
 
 interface CountItProps {
   items: GameItem[]; // Target numbers
@@ -28,7 +29,8 @@ export default function CountIt({
   const currentItem = items[currentIndex];
   const rawCount = parseInt(currentItem?.symbol || '1', 10);
   const targetCount = isNaN(rawCount) ? 1 : Math.max(0, rawCount);
-  const emoji = objectEmojis[currentIndex % objectEmojis.length];
+  const mappedEmoji = getItemEmoji(currentItem);
+  const emoji = mappedEmoji && mappedEmoji !== '✨' ? mappedEmoji : objectEmojis[currentIndex % objectEmojis.length];
 
   const playPrompt = useCallback(() => {
     if (!currentItem) return;
