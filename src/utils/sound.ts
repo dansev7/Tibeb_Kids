@@ -288,19 +288,64 @@ if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
     window.speechSynthesis.onvoiceschanged = updateVoices;
   } catch {}
 
-  // Mobile WebKit (iOS) & Android Chrome: speech synthesis voices populate
-  // after the first user gesture. Prime voice cache on first touch or click.
-  const primeVoicesOnGesture = () => {
-    updateVoices();
+}
+
+let userHasInteracted = false;
+let pendingUtterance: SpeechSynthesisUtterance | null = null;
+
+export function hasUserActivated(): boolean {
+  if (typeof window === 'undefined') return false;
+  if (userHasInteracted) return true;
+  if (typeof navigator !== 'undefined' && 'userActivation' in navigator) {
+    if ((navigator as any).userActivation?.hasBeenActive) {
+      userHasInteracted = true;
+      return true;
+    }
+  }
+  return false;
+}
+
+if (typeof window !== 'undefined') {
+  const onUserGesture = () => {
+    userHasInteracted = true;
+
+    // 1. Resume AudioContext if suspended
+    if (audioCtx && audioCtx.state === 'suspended') {
+      audioCtx.resume().catch(() => {});
+    }
+
+    // 2. Prime voice cache
+    if ('speechSynthesis' in window) {
+      try {
+        const v = window.speechSynthesis.getVoices();
+        if (v && v.length > 0) cachedVoices = v;
+      } catch {}
+    }
+
+    // 3. Play any pending utterance that was safely deferred before user activation
+    if (pendingUtterance && 'speechSynthesis' in window) {
+      const u = pendingUtterance;
+      pendingUtterance = null;
+      try {
+        if (window.speechSynthesis.speaking || window.speechSynthesis.pending) {
+          window.speechSynthesis.cancel();
+        }
+        window.speechSynthesis.speak(u);
+      } catch (err) {
+        console.debug('User activation deferred speech error:', err);
+      }
+    }
   };
-  window.addEventListener('touchstart', primeVoicesOnGesture, { once: true, passive: true });
-  window.addEventListener('pointerdown', primeVoicesOnGesture, { once: true, passive: true });
-  window.addEventListener('click', primeVoicesOnGesture, { once: true, passive: true });
+
+  ['pointerdown', 'touchstart', 'mousedown', 'keydown'].forEach((evt) => {
+    window.addEventListener(evt, onUserGesture, { capture: true, passive: true });
+  });
 }
 
 let currentActiveAudio: HTMLAudioElement | null = null;
 
 export function stopAllSpeech() {
+  pendingUtterance = null;
   if (typeof window !== 'undefined') {
     if ('speechSynthesis' in window) {
       try {
@@ -615,6 +660,14 @@ function synthesizeSpeech(
     }
     if (onError) {
       utterance.onerror = () => onError();
+    }
+
+    // Guard against Chrome deprecation: speechSynthesis.speak() without user activation.
+    // If the page was just loaded or refreshed and the user hasn't tapped yet,
+    // queue the utterance so it speaks immediately upon their first tap without triggering the warning.
+    if (!hasUserActivated()) {
+      pendingUtterance = utterance;
+      return;
     }
 
     window.speechSynthesis.speak(utterance);
