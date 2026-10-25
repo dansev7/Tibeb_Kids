@@ -22,7 +22,18 @@ export interface StageResult {
   gameType?: string;
 }
 
-export type StageType = 'meet' | 'find' | 'match' | 'quiz' | 'celebrate';
+export type StageType =
+  | 'meet'
+  | 'find'
+  | 'match'
+  | 'count'
+  | 'trace'
+  | 'whatsNext'
+  | 'spotDifference'
+  | 'listen'
+  | 'quiz'
+  | 'celebrate'
+  | string;
 
 export interface Stage {
   type: StageType;

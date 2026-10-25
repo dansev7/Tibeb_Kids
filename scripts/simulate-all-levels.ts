@@ -17,7 +17,7 @@ const allItems = [
 ];
 const itemsMap = new Map(allItems.map((i: any) => [i.id, i]));
 
-const KNOWN_GAME_TYPES = ['meet', 'count', 'trace', 'find', 'match', 'spotDifference', 'listen', 'quiz'];
+const KNOWN_GAME_TYPES = ['meet', 'count', 'whatsNext', 'trace', 'find', 'match', 'spotDifference', 'listen', 'quiz'];
 
 let failureCount = 0;
 let warningCount = 0;
@@ -82,6 +82,18 @@ for (const world of levelsJson.worlds) {
             if (!p.left || !p.right) {
               fail(lvl.id, 'match', `Invalid pair structure: ${JSON.stringify(p)}`);
             }
+          }
+        }
+      }
+
+      if (stage.type === 'whatsNext') {
+        if (!stage.items || stage.items.length === 0) {
+          fail(lvl.id, 'whatsNext', 'No items in whatsNext stage');
+        }
+        for (const item of stage.items) {
+          const raw = parseInt(item.symbol, 10);
+          if (isNaN(raw)) {
+            fail(lvl.id, 'whatsNext', `Non-numeric symbol '${item.symbol}' in whatsNext game!`);
           }
         }
       }

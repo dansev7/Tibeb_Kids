@@ -16,6 +16,7 @@ const TraceIt = dynamic(() => import('@/components/games/TraceIt'), { ssr: false
 const CountIt = dynamic(() => import('@/components/games/CountIt'), { ssr: false });
 const SpotTheDifference = dynamic(() => import('@/components/games/SpotTheDifference'), { ssr: false });
 const ListenAndTap = dynamic(() => import('@/components/games/ListenAndTap'), { ssr: false });
+const WhatsNext = dynamic(() => import('@/components/games/WhatsNext'), { ssr: false });
 const CelebrationScreen = dynamic(() => import('@/components/games/CelebrationScreen'), { ssr: false });
 
 interface GameItem {
@@ -235,6 +236,21 @@ function PlayContent() {
             >
               <CountIt
                 items={currentStage.items}
+                onComplete={(results) => handleStageComplete(results)}
+                themeColor={levelData.themeColor}
+              />
+            </motion.div>
+          ) : currentStage?.type === 'whatsNext' ? (
+            <motion.div
+              key={`whatsNext-${currentStageIndex}`}
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
+              className="h-full"
+            >
+              <WhatsNext
+                items={currentStage.items}
+                distractors={currentStage.distractors || []}
                 onComplete={(results) => handleStageComplete(results)}
                 themeColor={levelData.themeColor}
               />

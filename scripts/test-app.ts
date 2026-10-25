@@ -112,6 +112,9 @@ async function runTests() {
       assert(stages.length > 0, `Level ${lvl.id} must generate stages`);
       for (const st of stages) {
         assert(st.items.length > 0, `Stage ${st.type} in level ${lvl.id} must have items`);
+        if (st.type === 'whatsNext') {
+          assert(st.items && st.items.length > 0, `WhatsNext stage in ${lvl.id} must have items`);
+        }
         if (st.type === 'match') {
           assert(st.pairs && st.pairs.length > 0, `Match stage in ${lvl.id} must have pairs`);
           assert(st.pairs.length <= 5, `Match stage in ${lvl.id} must not exceed 5 pairs (overflow prevention)`);

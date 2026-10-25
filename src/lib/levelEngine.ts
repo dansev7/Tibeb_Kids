@@ -362,13 +362,14 @@ export interface GameStageOptions<T extends ItemLike> {
  */
 export function defaultStagesForLevel(levelType: string, hasNumbers: boolean): string[] {
   const picker = hasNumbers ? 'count' : 'find';
+  const linker = hasNumbers ? 'whatsNext' : 'match';
   if (levelType === 'review') {
-    return [picker, 'match', 'quiz', 'celebrate'];
+    return [picker, linker, 'quiz', 'celebrate'];
   }
   if (levelType === 'tricky') {
-    return ['meet', picker, 'match', 'trace', 'spotDifference', 'quiz', 'celebrate'];
+    return ['meet', picker, linker, 'trace', 'spotDifference', 'quiz', 'celebrate'];
   }
-  return ['meet', picker, 'match', 'trace', 'quiz', 'celebrate'];
+  return ['meet', picker, linker, 'trace', 'quiz', 'celebrate'];
 }
 
 /**
@@ -409,7 +410,27 @@ export function buildGameStages<T extends ItemLike>(opts: GameStageOptions<T>): 
       case 'count':
         stages.push({ type: 'count', items: itemsToIntroduce.length > 0 ? itemsToIntroduce : items });
         break;
+      case 'whatsNext': {
+        const targetItems = itemsToIntroduce.length > 0 ? itemsToIntroduce : items;
+        const stageItems = targetItems.length > 5 ? targetItems.slice(0, 5) : targetItems;
+        stages.push({
+          type: 'whatsNext',
+          items: stageItems,
+          distractors: distractorPool.slice(0, 6),
+        });
+        break;
+      }
       case 'match': {
+        if (hasNumbers || opts.worldSlug === 'number-farm') {
+          const targetItems = itemsToIntroduce.length > 0 ? itemsToIntroduce : items;
+          const stageItems = targetItems.length > 5 ? targetItems.slice(0, 5) : targetItems;
+          stages.push({
+            type: 'whatsNext',
+            items: stageItems,
+            distractors: distractorPool.slice(0, 6),
+          });
+          break;
+        }
         if (items.length < 2) break;
 
         // Check if level has complementary uppercase and lowercase pairs (e.g. Big & Small Friends)
