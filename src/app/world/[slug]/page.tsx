@@ -10,6 +10,8 @@ import { getWorldVisuals, isAmharicWorld, mascotEmoji } from '@/lib/worldTheme';
 interface LevelInfo {
   id: string;
   order: number;
+  phase?: number;
+  phaseOrder?: number;
   title: string;
   type: string;
   stars: number;
@@ -35,6 +37,20 @@ function WorldContent() {
   const [loading, setLoading] = useState(true);
 
   const isAmharic = isAmharicWorld(slug);
+  const [activePhase, setActivePhase] = useState<1 | 2>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = sessionStorage.getItem('abc_garden_phase');
+      if (saved === '2') return 2;
+    }
+    return 1;
+  });
+
+  const handleSelectPhase = (p: 1 | 2) => {
+    setActivePhase(p);
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('abc_garden_phase', String(p));
+    }
+  };
 
   useEffect(() => {
     if (!slug) return;
@@ -60,8 +76,12 @@ function WorldContent() {
   }
 
   // Find the next playable level (first unlocked but not completed, or first unlocked)
-  const nextPlayableIndex = world.levels.findIndex(l => l.unlocked && !l.completed);
-  const nextPlayableId = nextPlayableIndex >= 0 ? world.levels[nextPlayableIndex].id : null;
+  const displayedLevels = slug === 'abc-garden'
+    ? world.levels.filter(l => (l.phase ?? (l.order > 17 ? 2 : 1)) === activePhase)
+    : world.levels;
+
+  const nextPlayableIndex = displayedLevels.findIndex(l => l.unlocked && !l.completed);
+  const nextPlayableId = nextPlayableIndex >= 0 ? displayedLevels[nextPlayableIndex].id : null;
 
   const totalEarnedStars = world.levels.reduce((acc, l) => acc + (l.stars || 0), 0);
   const visuals = getWorldVisuals(slug);
@@ -105,12 +125,62 @@ function WorldContent() {
       </header>
 
       {/* Levels Rows and Columns Grid */}
-      <main className="max-w-4xl mx-auto px-4 pt-8">
+      <main className="max-w-4xl mx-auto px-4 pt-6">
+        {/* Phase Selector for ABC Garden */}
+        {slug === 'abc-garden' && (
+          <div className="max-w-md mx-auto mb-6">
+            <div className="p-1.5 bg-white/75 backdrop-blur-md rounded-2xl shadow-md border border-white/80 flex items-center gap-2">
+              <button
+                onClick={() => handleSelectPhase(1)}
+                className={`flex-1 py-2.5 px-3 rounded-xl font-black text-xs sm:text-sm cursor-pointer transition-all flex items-center justify-center gap-1.5 ${
+                  activePhase === 1
+                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-200'
+                    : 'text-gray-600 hover:text-emerald-700 hover:bg-white/50'
+                }`}
+              >
+                <span>🌱</span>
+                <span>Phase 1: Letters</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                    activePhase === 1 ? 'bg-white/25 text-white' : 'bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  17 Lvls
+                </span>
+              </button>
+
+              <button
+                onClick={() => handleSelectPhase(2)}
+                className={`flex-1 py-2.5 px-3 rounded-xl font-black text-xs sm:text-sm cursor-pointer transition-all flex items-center justify-center gap-1.5 ${
+                  activePhase === 2
+                    ? 'bg-emerald-500 text-white shadow-md shadow-emerald-200'
+                    : 'text-gray-600 hover:text-emerald-700 hover:bg-white/50'
+                }`}
+              >
+                <span>🚀</span>
+                <span>Phase 2: Phonics</span>
+                <span
+                  className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                    activePhase === 2 ? 'bg-white/25 text-white' : 'bg-gray-200 text-gray-700'
+                  }`}
+                >
+                  15 Lvls
+                </span>
+              </button>
+            </div>
+            <p className="text-center text-xs font-bold text-emerald-800/80 mt-2">
+              {activePhase === 1
+                ? '🌱 Master uppercase & lowercase letters and alphabetical order'
+                : '🚀 First sounds, rhyming families, 3-letter words & sight words!'}
+            </p>
+          </div>
+        )}
         {/* Responsive Grid: 3 cols on mobile, 4 on tablet, 5 on desktop */}
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-y-8 gap-x-4 sm:gap-x-6">
-          {world.levels.map((level, index) => {
+          {displayedLevels.map((level, index) => {
             const isNext = level.id === nextPlayableId;
             const isLocked = !level.unlocked;
+            const displayOrder = level.phaseOrder ?? (level.phase === 2 || level.order > 17 ? level.order - 17 : level.order);
 
             return (
               <motion.div
@@ -132,7 +202,7 @@ function WorldContent() {
                   >
                     <span className="text-2xl sm:text-3xl opacity-75">🔒</span>
                     <span className="text-xs sm:text-sm font-bold text-slate-500 mt-0.5">
-                      {level.order}
+                      {displayOrder}
                     </span>
                   </div>
                 ) : (
@@ -161,7 +231,7 @@ function WorldContent() {
 
                       {/* Level Number */}
                       <span className="text-2xl sm:text-3xl md:text-4xl font-black drop-shadow-sm leading-none">
-                        {level.order}
+                        {displayOrder}
                       </span>
 
                       {/* Earned Stars (1-3) */}

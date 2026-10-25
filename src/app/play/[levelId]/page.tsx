@@ -70,6 +70,10 @@ function PlayContent() {
           throw new Error('Invalid level data received');
         }
         setLevelData(data);
+        if (typeof window !== 'undefined' && levelId.startsWith('abc-')) {
+          const num = parseInt(levelId.replace('abc-', ''), 10);
+          sessionStorage.setItem('abc_garden_phase', num > 17 ? '2' : '1');
+        }
         setLoading(false);
       })
       .catch((err) => {

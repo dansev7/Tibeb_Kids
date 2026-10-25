@@ -49,6 +49,8 @@ export async function GET(
     const levelsWithProgress = levelRows.map(row => ({
       id: row.id,
       order: row.order,
+      phase: slug === 'abc-garden' && row.order > 17 ? 2 : 1,
+      phaseOrder: slug === 'abc-garden' && row.order > 17 ? row.order - 17 : row.order,
       title: row.title,
       type: row.type,
       stars: row.stars || 0,
@@ -84,10 +86,12 @@ export async function GET(
             levels: (found.levels || []).map((lvl: any, idx: number) => ({
               id: lvl.id,
               order: lvl.order,
+              phase: lvl.phase || (slug === 'abc-garden' && lvl.order > 17 ? 2 : 1),
+              phaseOrder: lvl.phaseOrder || (slug === 'abc-garden' && lvl.order > 17 ? lvl.order - 17 : lvl.order),
               title: lvl.title,
               type: lvl.type,
               stars: 0,
-              unlocked: idx === 0,
+              unlocked: idx === 0 || lvl.id === 'abc-18',
               completed: false,
             })),
           });

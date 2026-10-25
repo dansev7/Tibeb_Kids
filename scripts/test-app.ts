@@ -128,7 +128,7 @@ async function runTests() {
       }
     }
   }
-  console.log('✓ All 46 levels, stages, Big & Small pair matching, and screen overflow guards verified');
+  console.log('✓ All 61 levels (including ABC Garden Phase 1 & Phase 2), stages, and screen overflow guards verified');
 
   console.log('\n🎉 ALL SYSTEM VERIFICATION CHECKS PASSED PERFECTLY!');
 }

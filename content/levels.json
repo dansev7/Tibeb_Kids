@@ -36,7 +36,9 @@
             "trace",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 1
         },
         {
           "id": "abc-2",
@@ -65,7 +67,9 @@
             "trace",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 2
         },
         {
           "id": "abc-3",
@@ -94,7 +98,9 @@
             "trace",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 3
         },
         {
           "id": "abc-4",
@@ -123,7 +129,9 @@
             "trace",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 4
         },
         {
           "id": "abc-5",
@@ -150,7 +158,9 @@
             "trace",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 5
         },
         {
           "id": "abc-6",
@@ -175,7 +185,9 @@
             "trace",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 6
         },
         {
           "id": "abc-7",
@@ -217,7 +229,9 @@
             "match",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 7
         },
         {
           "id": "abc-8",
@@ -248,7 +262,9 @@
             "trace",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 8
         },
         {
           "id": "abc-9",
@@ -275,7 +291,9 @@
             "trace",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 9
         },
         {
           "id": "abc-10",
@@ -302,7 +320,9 @@
             "trace",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 10
         },
         {
           "id": "abc-11",
@@ -325,7 +345,9 @@
             "trace",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 11
         },
         {
           "id": "abc-12",
@@ -356,7 +378,9 @@
             "trace",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 12
         },
         {
           "id": "abc-13",
@@ -383,7 +407,9 @@
             "trace",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 13
         },
         {
           "id": "abc-14",
@@ -419,7 +445,9 @@
             "match",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 14
         },
         {
           "id": "abc-15",
@@ -442,7 +470,9 @@
             "spotDifference",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 15
         },
         {
           "id": "abc-16",
@@ -470,7 +500,9 @@
             "trace",
             "quiz",
             "celebrate"
-          ]
+          ],
+          "phase": 1,
+          "phaseOrder": 16
         },
         {
           "id": "abc-17",
@@ -512,6 +544,410 @@
             "find",
             "match",
             "trace",
+            "quiz",
+            "celebrate"
+          ],
+          "phase": 1,
+          "phaseOrder": 17
+        },
+        {
+          "id": "abc-18",
+          "order": 18,
+          "phase": 2,
+          "phaseOrder": 1,
+          "title": "First Sounds A to E",
+          "type": "learn",
+          "description": "Listen to the first sound in Apple, Ball, Cat, Dog, and Egg",
+          "itemIds": [
+            "upper_A",
+            "upper_B",
+            "upper_C",
+            "upper_D",
+            "upper_E"
+          ],
+          "newItemIds": [],
+          "stages": [
+            "meet",
+            "listen",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-19",
+          "order": 19,
+          "phase": 2,
+          "phaseOrder": 2,
+          "title": "First Sounds F to J",
+          "type": "learn",
+          "description": "Listen to the first sound in Fish, Goat, House, Injera, and Jebena",
+          "itemIds": [
+            "upper_F",
+            "upper_G",
+            "upper_H",
+            "upper_I",
+            "upper_J"
+          ],
+          "newItemIds": [],
+          "stages": [
+            "meet",
+            "listen",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-20",
+          "order": 20,
+          "phase": 2,
+          "phaseOrder": 3,
+          "title": "First Sounds K to O",
+          "type": "learn",
+          "description": "Listen to the first sound in Kite, Lion, Mango, Nest, and Orange",
+          "itemIds": [
+            "upper_K",
+            "upper_L",
+            "upper_M",
+            "upper_N",
+            "upper_O"
+          ],
+          "newItemIds": [],
+          "stages": [
+            "meet",
+            "listen",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-21",
+          "order": 21,
+          "phase": 2,
+          "phaseOrder": 4,
+          "title": "First Sounds P to T",
+          "type": "learn",
+          "description": "Listen to the first sound in Pencil, Queen, Rabbit, Sun, and Tree",
+          "itemIds": [
+            "upper_P",
+            "upper_Q",
+            "upper_R",
+            "upper_S",
+            "upper_T"
+          ],
+          "newItemIds": [],
+          "stages": [
+            "meet",
+            "listen",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-22",
+          "order": 22,
+          "phase": 2,
+          "phaseOrder": 5,
+          "title": "First Sounds U to Z",
+          "type": "learn",
+          "description": "Listen to the first sound in Umbrella, Van, Water, X-ray, Yellow, and Zebra",
+          "itemIds": [
+            "upper_U",
+            "upper_V",
+            "upper_W",
+            "upper_X",
+            "upper_Y",
+            "upper_Z"
+          ],
+          "newItemIds": [],
+          "stages": [
+            "meet",
+            "listen",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-23",
+          "order": 23,
+          "phase": 2,
+          "phaseOrder": 6,
+          "title": "Ending Sounds -T, -N, -G",
+          "type": "learn",
+          "description": "Hear the final sound in Cat (T), Sun (N), and Dog (G)",
+          "itemIds": [
+            "lower_t",
+            "lower_n",
+            "lower_g"
+          ],
+          "newItemIds": [],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-24",
+          "order": 24,
+          "phase": 2,
+          "phaseOrder": 7,
+          "title": "Ending Sounds -P, -D, -M",
+          "type": "learn",
+          "description": "Hear the final sound in Cup (P), Bed (D), and Jam (M)",
+          "itemIds": [
+            "lower_p",
+            "lower_d",
+            "lower_m"
+          ],
+          "newItemIds": [],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-25",
+          "order": 25,
+          "phase": 2,
+          "phaseOrder": 8,
+          "title": "Rhyme Time: -AT Family",
+          "type": "learn",
+          "description": "Explore words that rhyme with -at: Cat, Bat, Hat, and Rat",
+          "itemIds": [
+            "word_cat",
+            "word_bat",
+            "word_hat",
+            "word_rat"
+          ],
+          "newItemIds": [
+            "word_cat",
+            "word_bat",
+            "word_hat",
+            "word_rat"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-26",
+          "order": 26,
+          "phase": 2,
+          "phaseOrder": 9,
+          "title": "Rhyme Time: -AN & -AP Family",
+          "type": "learn",
+          "description": "Explore words that rhyme with -an and -ap: Pan, Fan, Van, Cap, and Map",
+          "itemIds": [
+            "word_pan",
+            "word_fan",
+            "word_van",
+            "word_cap",
+            "word_map"
+          ],
+          "newItemIds": [
+            "word_pan",
+            "word_fan",
+            "word_van",
+            "word_cap",
+            "word_map"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-27",
+          "order": 27,
+          "phase": 2,
+          "phaseOrder": 10,
+          "title": "Rhyme Time: -OG & -OP Family",
+          "type": "learn",
+          "description": "Explore words that rhyme with -og and -op: Dog, Log, Frog, Hop, and Mop",
+          "itemIds": [
+            "word_dog",
+            "word_log",
+            "word_frog",
+            "word_hop",
+            "word_mop"
+          ],
+          "newItemIds": [
+            "word_dog",
+            "word_log",
+            "word_frog",
+            "word_hop",
+            "word_mop"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-28",
+          "order": 28,
+          "phase": 2,
+          "phaseOrder": 11,
+          "title": "Rhyme Time: -EN & -IG Family",
+          "type": "learn",
+          "description": "Explore words that rhyme with -en and -ig: Hen, Pen, Ten, Pig, and Big",
+          "itemIds": [
+            "word_hen",
+            "word_pen",
+            "word_ten",
+            "word_pig",
+            "word_big"
+          ],
+          "newItemIds": [
+            "word_hen",
+            "word_pen",
+            "word_ten",
+            "word_pig",
+            "word_big"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-29",
+          "order": 29,
+          "phase": 2,
+          "phaseOrder": 12,
+          "title": "Rhyme Time: -UG & -UN Family",
+          "type": "learn",
+          "description": "Explore words that rhyme with -ug and -un: Bug, Mug, Hug, Sun, and Run",
+          "itemIds": [
+            "word_bug",
+            "word_mug",
+            "word_hug",
+            "word_sun",
+            "word_run"
+          ],
+          "newItemIds": [
+            "word_bug",
+            "word_mug",
+            "word_hug",
+            "word_sun",
+            "word_run"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-30",
+          "order": 30,
+          "phase": 2,
+          "phaseOrder": 13,
+          "title": "3-Letter Words: Short A & O",
+          "type": "learn",
+          "description": "Read 3-letter words with A and O: Cat, Bat, Dog, Pot, and Pan",
+          "itemIds": [
+            "word_cat",
+            "word_bat",
+            "word_dog",
+            "word_pot",
+            "word_pan"
+          ],
+          "newItemIds": [
+            "word_pot"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-31",
+          "order": 31,
+          "phase": 2,
+          "phaseOrder": 14,
+          "title": "3-Letter Words: Short I, E, U",
+          "type": "learn",
+          "description": "Read 3-letter words with I, E, and U: Pig, Bed, Red, Cup, and Sun",
+          "itemIds": [
+            "word_pig",
+            "word_bed",
+            "word_red",
+            "word_cup",
+            "word_sun"
+          ],
+          "newItemIds": [
+            "word_bed",
+            "word_red",
+            "word_cup"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
+            "quiz",
+            "celebrate"
+          ]
+        },
+        {
+          "id": "abc-32",
+          "order": 32,
+          "phase": 2,
+          "phaseOrder": 15,
+          "title": "My First Sight Words",
+          "type": "review",
+          "description": "Master 5 high-frequency sight words: I, see, can, the, and go",
+          "itemIds": [
+            "word_i",
+            "word_see",
+            "word_can",
+            "word_the",
+            "word_go"
+          ],
+          "newItemIds": [
+            "word_i",
+            "word_see",
+            "word_can",
+            "word_the",
+            "word_go"
+          ],
+          "stages": [
+            "meet",
+            "find",
+            "match",
             "quiz",
             "celebrate"
           ]

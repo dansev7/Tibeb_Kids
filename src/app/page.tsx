@@ -135,6 +135,17 @@ export default function AdventureMap() {
                     <h2 className="text-2xl md:text-3xl font-extrabold text-white drop-shadow">
                       {world.title}
                     </h2>
+                    {/* Phase 1 & 2 badge */}
+                    {world.slug === 'abc-garden' && (
+                      <div className="flex items-center gap-1.5 my-1 flex-wrap">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/25 text-white backdrop-blur-xs">
+                          🌱 Phase 1: 17 Lvls
+                        </span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-white/25 text-white backdrop-blur-xs">
+                          🚀 Phase 2: 15 Lvls
+                        </span>
+                      </div>
+                    )}
                     {/* Stars progress */}
                     <div className="flex items-center gap-2 mt-2">
                       <span className="text-lg text-yellow-200">

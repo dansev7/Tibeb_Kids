@@ -726,6 +726,520 @@
       "picturePath": "/images/en/zebra.png",
       "strokePathsJson": null,
       "confusableWith": []
+    },
+    {
+      "id": "word_cat",
+      "kind": "letter_lower",
+      "symbol": "cat",
+      "displayName": "Cat",
+      "audioPath": "/audio/en/word_cat.mp3",
+      "pictureWord": "Cat",
+      "pictureWordAudioPath": "/audio/en/word_cat.mp3",
+      "picturePath": "/images/en/cat.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_bat",
+        "word_hat",
+        "word_rat"
+      ]
+    },
+    {
+      "id": "word_bat",
+      "kind": "letter_lower",
+      "symbol": "bat",
+      "displayName": "Bat",
+      "audioPath": "/audio/en/word_bat.mp3",
+      "pictureWord": "Bat",
+      "pictureWordAudioPath": "/audio/en/word_bat.mp3",
+      "picturePath": "/images/en/bat.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_cat",
+        "word_hat",
+        "word_rat"
+      ]
+    },
+    {
+      "id": "word_hat",
+      "kind": "letter_lower",
+      "symbol": "hat",
+      "displayName": "Hat",
+      "audioPath": "/audio/en/word_hat.mp3",
+      "pictureWord": "Hat",
+      "pictureWordAudioPath": "/audio/en/word_hat.mp3",
+      "picturePath": "/images/en/hat.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_cat",
+        "word_bat",
+        "word_rat"
+      ]
+    },
+    {
+      "id": "word_rat",
+      "kind": "letter_lower",
+      "symbol": "rat",
+      "displayName": "Rat",
+      "audioPath": "/audio/en/word_rat.mp3",
+      "pictureWord": "Rat",
+      "pictureWordAudioPath": "/audio/en/word_rat.mp3",
+      "picturePath": "/images/en/rat.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_cat",
+        "word_bat",
+        "word_hat"
+      ]
+    },
+    {
+      "id": "word_pan",
+      "kind": "letter_lower",
+      "symbol": "pan",
+      "displayName": "Pan",
+      "audioPath": "/audio/en/word_pan.mp3",
+      "pictureWord": "Pan",
+      "pictureWordAudioPath": "/audio/en/word_pan.mp3",
+      "picturePath": "/images/en/pan.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_fan",
+        "word_van",
+        "word_can"
+      ]
+    },
+    {
+      "id": "word_fan",
+      "kind": "letter_lower",
+      "symbol": "fan",
+      "displayName": "Fan",
+      "audioPath": "/audio/en/word_fan.mp3",
+      "pictureWord": "Fan",
+      "pictureWordAudioPath": "/audio/en/word_fan.mp3",
+      "picturePath": "/images/en/fan.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_pan",
+        "word_van",
+        "word_can"
+      ]
+    },
+    {
+      "id": "word_van",
+      "kind": "letter_lower",
+      "symbol": "van",
+      "displayName": "Van",
+      "audioPath": "/audio/en/word_van.mp3",
+      "pictureWord": "Van",
+      "pictureWordAudioPath": "/audio/en/word_van.mp3",
+      "picturePath": "/images/en/van.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_pan",
+        "word_fan",
+        "word_can"
+      ]
+    },
+    {
+      "id": "word_can",
+      "kind": "letter_lower",
+      "symbol": "can",
+      "displayName": "Can",
+      "audioPath": "/audio/en/word_can.mp3",
+      "pictureWord": "Can",
+      "pictureWordAudioPath": "/audio/en/word_can.mp3",
+      "picturePath": "/images/en/can.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_pan",
+        "word_fan",
+        "word_van"
+      ]
+    },
+    {
+      "id": "word_cap",
+      "kind": "letter_lower",
+      "symbol": "cap",
+      "displayName": "Cap",
+      "audioPath": "/audio/en/word_cap.mp3",
+      "pictureWord": "Cap",
+      "pictureWordAudioPath": "/audio/en/word_cap.mp3",
+      "picturePath": "/images/en/cap.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_map",
+        "word_can",
+        "word_cat"
+      ]
+    },
+    {
+      "id": "word_map",
+      "kind": "letter_lower",
+      "symbol": "map",
+      "displayName": "Map",
+      "audioPath": "/audio/en/word_map.mp3",
+      "pictureWord": "Map",
+      "pictureWordAudioPath": "/audio/en/word_map.mp3",
+      "picturePath": "/images/en/map.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_cap",
+        "word_pan"
+      ]
+    },
+    {
+      "id": "word_dog",
+      "kind": "letter_lower",
+      "symbol": "dog",
+      "displayName": "Dog",
+      "audioPath": "/audio/en/word_dog.mp3",
+      "pictureWord": "Dog",
+      "pictureWordAudioPath": "/audio/en/word_dog.mp3",
+      "picturePath": "/images/en/dog.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_log",
+        "word_frog"
+      ]
+    },
+    {
+      "id": "word_log",
+      "kind": "letter_lower",
+      "symbol": "log",
+      "displayName": "Log",
+      "audioPath": "/audio/en/word_log.mp3",
+      "pictureWord": "Log",
+      "pictureWordAudioPath": "/audio/en/word_log.mp3",
+      "picturePath": "/images/en/log.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_dog",
+        "word_frog"
+      ]
+    },
+    {
+      "id": "word_frog",
+      "kind": "letter_lower",
+      "symbol": "frog",
+      "displayName": "Frog",
+      "audioPath": "/audio/en/word_frog.mp3",
+      "pictureWord": "Frog",
+      "pictureWordAudioPath": "/audio/en/word_frog.mp3",
+      "picturePath": "/images/en/frog.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_dog",
+        "word_log"
+      ]
+    },
+    {
+      "id": "word_hop",
+      "kind": "letter_lower",
+      "symbol": "hop",
+      "displayName": "Hop",
+      "audioPath": "/audio/en/word_hop.mp3",
+      "pictureWord": "Hop",
+      "pictureWordAudioPath": "/audio/en/word_hop.mp3",
+      "picturePath": "/images/en/hop.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_mop"
+      ]
+    },
+    {
+      "id": "word_mop",
+      "kind": "letter_lower",
+      "symbol": "mop",
+      "displayName": "Mop",
+      "audioPath": "/audio/en/word_mop.mp3",
+      "pictureWord": "Mop",
+      "pictureWordAudioPath": "/audio/en/word_mop.mp3",
+      "picturePath": "/images/en/mop.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_hop",
+        "word_map"
+      ]
+    },
+    {
+      "id": "word_hen",
+      "kind": "letter_lower",
+      "symbol": "hen",
+      "displayName": "Hen",
+      "audioPath": "/audio/en/word_hen.mp3",
+      "pictureWord": "Hen",
+      "pictureWordAudioPath": "/audio/en/word_hen.mp3",
+      "picturePath": "/images/en/hen.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_pen",
+        "word_ten"
+      ]
+    },
+    {
+      "id": "word_pen",
+      "kind": "letter_lower",
+      "symbol": "pen",
+      "displayName": "Pen",
+      "audioPath": "/audio/en/word_pen.mp3",
+      "pictureWord": "Pen",
+      "pictureWordAudioPath": "/audio/en/word_pen.mp3",
+      "picturePath": "/images/en/pen.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_hen",
+        "word_ten",
+        "word_pan"
+      ]
+    },
+    {
+      "id": "word_ten",
+      "kind": "letter_lower",
+      "symbol": "ten",
+      "displayName": "Ten",
+      "audioPath": "/audio/en/word_ten.mp3",
+      "pictureWord": "Ten",
+      "pictureWordAudioPath": "/audio/en/word_ten.mp3",
+      "picturePath": "/images/en/ten.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_hen",
+        "word_pen"
+      ]
+    },
+    {
+      "id": "word_pig",
+      "kind": "letter_lower",
+      "symbol": "pig",
+      "displayName": "Pig",
+      "audioPath": "/audio/en/word_pig.mp3",
+      "pictureWord": "Pig",
+      "pictureWordAudioPath": "/audio/en/word_pig.mp3",
+      "picturePath": "/images/en/pig.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_big",
+        "word_dig"
+      ]
+    },
+    {
+      "id": "word_big",
+      "kind": "letter_lower",
+      "symbol": "big",
+      "displayName": "Big",
+      "audioPath": "/audio/en/word_big.mp3",
+      "pictureWord": "Big",
+      "pictureWordAudioPath": "/audio/en/word_big.mp3",
+      "picturePath": "/images/en/big.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_pig",
+        "word_dig",
+        "word_bug"
+      ]
+    },
+    {
+      "id": "word_dig",
+      "kind": "letter_lower",
+      "symbol": "dig",
+      "displayName": "Dig",
+      "audioPath": "/audio/en/word_dig.mp3",
+      "pictureWord": "Dig",
+      "pictureWordAudioPath": "/audio/en/word_dig.mp3",
+      "picturePath": "/images/en/dig.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_pig",
+        "word_big",
+        "word_dog"
+      ]
+    },
+    {
+      "id": "word_bug",
+      "kind": "letter_lower",
+      "symbol": "bug",
+      "displayName": "Bug",
+      "audioPath": "/audio/en/word_bug.mp3",
+      "pictureWord": "Bug",
+      "pictureWordAudioPath": "/audio/en/word_bug.mp3",
+      "picturePath": "/images/en/bug.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_mug",
+        "word_hug"
+      ]
+    },
+    {
+      "id": "word_mug",
+      "kind": "letter_lower",
+      "symbol": "mug",
+      "displayName": "Mug",
+      "audioPath": "/audio/en/word_mug.mp3",
+      "pictureWord": "Mug",
+      "pictureWordAudioPath": "/audio/en/word_mug.mp3",
+      "picturePath": "/images/en/mug.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_bug",
+        "word_hug"
+      ]
+    },
+    {
+      "id": "word_hug",
+      "kind": "letter_lower",
+      "symbol": "hug",
+      "displayName": "Hug",
+      "audioPath": "/audio/en/word_hug.mp3",
+      "pictureWord": "Hug",
+      "pictureWordAudioPath": "/audio/en/word_hug.mp3",
+      "picturePath": "/images/en/hug.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_bug",
+        "word_mug"
+      ]
+    },
+    {
+      "id": "word_sun",
+      "kind": "letter_lower",
+      "symbol": "sun",
+      "displayName": "Sun",
+      "audioPath": "/audio/en/word_sun.mp3",
+      "pictureWord": "Sun",
+      "pictureWordAudioPath": "/audio/en/word_sun.mp3",
+      "picturePath": "/images/en/sun.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_run"
+      ]
+    },
+    {
+      "id": "word_run",
+      "kind": "letter_lower",
+      "symbol": "run",
+      "displayName": "Run",
+      "audioPath": "/audio/en/word_run.mp3",
+      "pictureWord": "Run",
+      "pictureWordAudioPath": "/audio/en/word_run.mp3",
+      "picturePath": "/images/en/run.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_sun"
+      ]
+    },
+    {
+      "id": "word_pot",
+      "kind": "letter_lower",
+      "symbol": "pot",
+      "displayName": "Pot",
+      "audioPath": "/audio/en/word_pot.mp3",
+      "pictureWord": "Pot",
+      "pictureWordAudioPath": "/audio/en/word_pot.mp3",
+      "picturePath": "/images/en/pot.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_pan"
+      ]
+    },
+    {
+      "id": "word_bed",
+      "kind": "letter_lower",
+      "symbol": "bed",
+      "displayName": "Bed",
+      "audioPath": "/audio/en/word_bed.mp3",
+      "pictureWord": "Bed",
+      "pictureWordAudioPath": "/audio/en/word_bed.mp3",
+      "picturePath": "/images/en/bed.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_red"
+      ]
+    },
+    {
+      "id": "word_red",
+      "kind": "letter_lower",
+      "symbol": "red",
+      "displayName": "Red",
+      "audioPath": "/audio/en/word_red.mp3",
+      "pictureWord": "Red",
+      "pictureWordAudioPath": "/audio/en/word_red.mp3",
+      "picturePath": "/images/en/red.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_bed",
+        "word_rat"
+      ]
+    },
+    {
+      "id": "word_cup",
+      "kind": "letter_lower",
+      "symbol": "cup",
+      "displayName": "Cup",
+      "audioPath": "/audio/en/word_cup.mp3",
+      "pictureWord": "Cup",
+      "pictureWordAudioPath": "/audio/en/word_cup.mp3",
+      "picturePath": "/images/en/cup.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_cap",
+        "word_can"
+      ]
+    },
+    {
+      "id": "word_i",
+      "kind": "letter_lower",
+      "symbol": "I",
+      "displayName": "I",
+      "audioPath": "/audio/en/word_i.mp3",
+      "pictureWord": "I",
+      "pictureWordAudioPath": "/audio/en/word_i.mp3",
+      "picturePath": "/images/en/i.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_see"
+      ]
+    },
+    {
+      "id": "word_see",
+      "kind": "letter_lower",
+      "symbol": "see",
+      "displayName": "see",
+      "audioPath": "/audio/en/word_see.mp3",
+      "pictureWord": "see",
+      "pictureWordAudioPath": "/audio/en/word_see.mp3",
+      "picturePath": "/images/en/see.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_the",
+        "word_can"
+      ]
+    },
+    {
+      "id": "word_the",
+      "kind": "letter_lower",
+      "symbol": "the",
+      "displayName": "the",
+      "audioPath": "/audio/en/word_the.mp3",
+      "pictureWord": "the",
+      "pictureWordAudioPath": "/audio/en/word_the.mp3",
+      "picturePath": "/images/en/the.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_see"
+      ]
+    },
+    {
+      "id": "word_go",
+      "kind": "letter_lower",
+      "symbol": "go",
+      "displayName": "go",
+      "audioPath": "/audio/en/word_go.mp3",
+      "pictureWord": "go",
+      "pictureWordAudioPath": "/audio/en/word_go.mp3",
+      "picturePath": "/images/en/go.png",
+      "strokePathsJson": null,
+      "confusableWith": [
+        "word_to"
+      ]
     }
   ]
 }

@@ -99,9 +99,10 @@ export function seedDatabase(sqlite: Database.Database): void {
           });
 
           // Unlock first level in each world without overriding existing progress
+          // For ABC Garden, unlock both Phase 1 Level 1 (abc-1) and Phase 2 Level 1 (abc-18)
           insertLevelProgress.run({
             level_id: lvl.id,
-            unlocked: i === 0 ? 1 : 0,
+            unlocked: (i === 0 || lvl.id === 'abc-18') ? 1 : 0,
           });
         }
       }
