@@ -91,7 +91,9 @@ export async function migrateToTurso() {
     const sample = rows[0] as Record<string, any>;
     const columns = Object.keys(sample);
     const placeholders = columns.map(() => '?').join(', ');
-    const sql = `INSERT OR REPLACE INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`;
+    // For level_progress, use INSERT OR IGNORE so completed user progress and stars are never overwritten
+    const verb = table === 'level_progress' ? 'INSERT OR IGNORE' : 'INSERT OR REPLACE';
+    const sql = `${verb} INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`;
 
     // Batch execute to Turso in chunks of 50 to respect LibSQL batch limits
     const chunkSize = 50;
