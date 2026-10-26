@@ -31,7 +31,7 @@ function loadEnv() {
   }
 }
 
-async function migrateToTurso() {
+export async function migrateToTurso() {
   loadEnv();
   const tursoUrl = process.env.TURSO_DATABASE_URL || process.env.DATABASE_URL;
   const authToken = process.env.TURSO_AUTH_TOKEN || process.env.DATABASE_AUTH_TOKEN;

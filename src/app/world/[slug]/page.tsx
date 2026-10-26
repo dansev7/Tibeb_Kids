@@ -54,7 +54,7 @@ function WorldContent() {
 
   useEffect(() => {
     if (!slug) return;
-    fetch(`/api/worlds/${slug}`)
+    fetch(`/api/worlds/${slug}`, { cache: 'no-store' })
       .then(res => res.json())
       .then(data => {
         setWorld(data);

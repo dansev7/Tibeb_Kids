@@ -66,6 +66,10 @@ export async function GET(
       themeColor: world.themeColor,
       mascot: world.mascot,
       levels: levelsWithProgress,
+    }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+      },
     });
   } catch (error) {
     console.error('Error fetching world:', error);
